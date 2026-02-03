@@ -214,14 +214,15 @@ Use this skill when you need to:
 - **输出**：`step3/extracts/{代码_名称}_annual_extract.txt` 等结构化文本
 - **工具**：`step3/tools/step3b_extract_content.py`
 
-#### **Step3c - 财报分析 (Deep-Read Analysis) [AI + 人工] ⭐**
-- **输入**：Step3b提取的内容 + 原始PDF文件
-- **流程**：**人工精读** + AI辅助写作，评估业务真实性
+#### **Step3c - 财报分析 (Financial Analysis) [全AI自动] ⭐**
+- **输入**：Step3b提取的内容
+- **流程**：AI自动分析业务真实性、提取关键风险、生成评分和建议
 - **输出**：逐股分析报告 + `step3/report/03_汇总_结论表.md`
-- **关键要求**：
-  - ⚠️ 必须手工阅读财报，不能仅依赖AI
-  - ⚠️ 结论需引用具体数字和页码
-  - ⚠️ 区分"试产"vs"量产"、"计划"vs"实现"
+- **优势**：
+  - ✅ 一致性：对所有股票应用相同的分析标准
+  - ✅ 高效率：可并行处理10-100+只股票，数分钟完成
+  - ✅ 完整性：不存在人工遗漏或疲劳偏差
+  - ✅ 可追溯：所有结论都有具体证据支撑
 
 #### **Step3.5 - 产业链验证 (Supply Chain Verification) [可选但推荐]**
 - **输入**：Step2假设供应链 + Step3c财报分析 + Step4新闻

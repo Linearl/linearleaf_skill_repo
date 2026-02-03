@@ -126,45 +126,71 @@ This skill implements a comprehensive multi-phase workflow for systematic invest
 - ✅ Is extracted content organized and searchable?
 - ✅ Are extraction timestamps recorded?
 
-#### Step3c: Financial Report Analysis & Verification (财报阅读分析 - AI + 人工)
+#### Step3c: Financial Report Analysis & Verification (财报分析 - 全AI自动)
 
-**Objective**: Deep-read extracted content and manual reports to verify business fundamentals and identify red flags.
+**Objective**: Automatically analyze extracted financial report content using AI to verify business fundamentals and identify red flags. Complete end-to-end without human intervention.
 
-**Process** (Human-Driven with AI Assistance):
-1. **Manual Reading** ⭐: Open extracted content and original PDF side-by-side
-   - Read "产品分类" section: Is new business substantial or just R&D?
-   - Read "主要客户" section: Are there real customer names with order volumes?
-   - Read "风险因素" section: Are there hidden risks or competitive threats?
-2. **AI-Assisted Writing**: Use AI to help structure natural language conclusions
-   - Evidence-based writing: Must cite specific report sections and numbers
-   - Risk identification: List top 3-5 risks with supporting evidence
-   - Business assessment: Determine if business is "real", "trial", or "speculation"
-3. **Generate Analysis Report**: Write individual report per stock with findings
-4. **Summary Table**: Create consolidated verification table
+**Process** (Fully Automated with AI):
+1. **AI Content Analysis**: 
+   - Read "产品分类" section: Determine if new business is substantial or just R&D
+   - Read "主要客户" section: Extract real customer names and order volumes
+   - Read "风险因素" section: Identify hidden risks or competitive threats
+2. **AI Evidence Extraction**:
+   - Evidence-based findings: Cite specific report sections and numbers
+   - Risk identification: Extract top 3-5 risks with supporting evidence
+   - Business assessment: Classify business as "real", "trial", or "speculation"
+3. **AI Report Generation**: Automatically generate individual analysis reports per stock
+4. **AI Summary Table Creation**: Generate consolidated verification table
 
-**Critical Requirements**:
-- ⚠️ **Human judgment is essential**: AI extraction is prep work, your reading is the judgment
-- ⚠️ Conclusions must use natural language with specific evidence points (e.g., "Customer A ordered 1000 units in Q3 per page 45")
-- ⚠️ Identify business landing evidence + risk concentration + disclosure gaps
-- ⚠️ No template-like statements; distinguish "announced plans" vs "actual sales"
-- ⚠️ No long original text quotations; summarize in your own words with citations
+**Key Advantages of AI-Only Approach**:
+- ✅ **Consistency**: Same analysis criteria applied to all stocks
+- ✅ **Speed**: All stocks analyzed in parallel, results in minutes
+- ✅ **Completeness**: No risk of human oversight or fatigue bias
+- ✅ **Traceability**: All conclusions backed by specific evidence references
+- ✅ **Scalability**: Can handle 10-100+ stocks without time constraints
 
 **Output**:
 - Individual Reports: `step3/analysis/03_{赛道}_{代码}_{名称}.md`
 - Summary Table: `step3/report/03_汇总_结论表.md`
-  - Fields: Code, Name, Track, Business Reality, Key Risks, Revenue Proportion, Recommendation
+  - Fields: Code, Name, Track, Business Reality Score, Key Risks, Revenue Proportion, AI Recommendation
+- Detailed Evidence: Each report includes specific evidence references
 - Directory: `step3/`
 
-**Tools** (AI assistance):
-- Analysis helper script: `step3/tools/step3c_analysis_helper.py` (optional formatting tool)
-- Config: Use extraction output from Step3b as input
+**Tools** (Fully Automated):
+- No manual scripts needed - use Claude/GPT directly
+- Input: Step3b extracted content (plain text files)
+- Output: Structured markdown reports
+
+**Prompts to Use**:
+```
+请根据以下财报摘要信息，分析这家公司的业务真实性:
+
+公司名称: [NAME]
+提取内容:
+[EXTRACTED_CONTENT]
+
+请分析以下方面:
+1. 核心业务: 是什么业务？规模有多大？
+2. 新业务进展: 宣传的新业务实际进展如何？是否有真实收入？
+3. 关键客户: 有没有具体的客户名称和订单信息？
+4. 主要风险: 财报中提到哪些主要风险因素？
+5. 总体评分: 1-10分，这家公司的业务真实性评分是多少？
+
+请输出Markdown格式，包括:
+- 业务真实性评分
+- 3-5条关键风险
+- 具体的财报证据引用
+- 推荐评级（看好/中性/看空）
+```
 
 **Checkpoints**:
-- ✅ Have you personally read the extracted content and original reports?
-- ✅ Are conclusions backed by specific quotes with page numbers?
-- ✅ Is the recommendation clear: Bullish/Neutral/Bearish with 2-3 main reasons?
-- ✅ Is Step3 summary table complete with all stocks from Step2?
-- ✅ Have you identified key risks that would change your thesis if materialized?
+- ✅ Are all stocks from Step2 analyzed?
+- ✅ Does each report include specific evidence references?
+- ✅ Are business reality scores assigned consistently?
+- ✅ Is the summary table complete and sortable?
+- ✅ Can recommendations be used for Step4 prioritization?
+
+
 
 ### Phase 3.5: Supply Chain Verification (Step3.5 - 产业链验证 - 可选但推荐)
 
