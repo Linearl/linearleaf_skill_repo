@@ -31,26 +31,25 @@ import argparse
 from collections import defaultdict
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class NewsCollector:
     """新闻收集器"""
-    
+
     # 数据源配置
     SOURCES = {
         "cninfo": "巨潮资讯",  # 官方公告
-        "news": "新闻网站",      # 新闻媒体
-        "events": "事件日历",     # 重要事件
+        "news": "新闻网站",  # 新闻媒体
+        "events": "事件日历",  # 重要事件
     }
-    
+
     def __init__(self, input_file: str, output_dir: str, days: int = 60):
         """
         初始化收集器
-        
+
         Args:
             input_file: Step2的标的清单YAML文件
             output_dir: 输出目录
@@ -62,19 +61,19 @@ class NewsCollector:
         self.stocks = []
         self.all_news = {}  # {code_name: [news_items]}
         self.dedup_set = set()  # 用于去重
-        
+
         # 确保输出目录存在
         self.output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     def load_stock_list(self) -> bool:
         """
         加载标的清单
-        
+
         Returns:
             bool: 是否成功加载
         """
         try:
-            with open(self.input_file, 'r', encoding='utf-8') as f:
+            with open(self.input_file, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 self.stocks = data if isinstance(data, list) else []
                 logger.info(f"成功加载{len(self.stocks)}只股票")
@@ -82,22 +81,22 @@ class NewsCollector:
         except Exception as e:
             logger.error(f"加载标的清单失败: {e}")
             return False
-    
+
     def search_cninfo_announcements(self, code: str, name: str) -> List[Dict]:
         """
         从巨潮资讯搜索官方公告
-        
+
         Args:
             code: 股票代码
             name: 股票名称
-            
+
         Returns:
             List[Dict]: 公告列表
         """
         announcements = []
-        
+
         logger.info(f"搜索{code}_{name}的巨潮公告...")
-        
+
         try:
             # TODO: 实现真实的CNINFO API调用
             # 这里需要调用巨潮资讯的API或web爬取
@@ -105,7 +104,7 @@ class NewsCollector:
             # 1. 使用selenium爬取网页
             # 2. 调用巨潮资讯开放API
             # 3. 使用AKShare库的巨潮接口
-            
+
             # 示例占位符
             sample_announcement = {
                 "date": (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d"),
@@ -114,30 +113,30 @@ class NewsCollector:
                 "title": f"[示例] {code} 发布关于...的公告",
                 "content_summary": "这是一个示例公告内容摘要",
                 "url": f"https://www.cninfo.com.cn/new/search?code={code}",
-                "category": "announcement"
+                "category": "announcement",
             }
-            
+
             logger.debug(f"[占位符] 将从巨潮搜索 {code} 的公告")
-            
+
         except Exception as e:
             logger.warning(f"搜索{code}公告失败: {e}")
-        
+
         return announcements
-    
+
     def search_news_websites(self, name: str) -> List[Dict]:
         """
         从新闻网站搜索新闻
-        
+
         Args:
             name: 股票名称
-            
+
         Returns:
             List[Dict]: 新闻列表
         """
         news_list = []
-        
+
         logger.info(f"搜索关于{name}的新闻...")
-        
+
         try:
             # TODO: 实现真实的新闻搜索
             # 可选数据源:
@@ -145,7 +144,7 @@ class NewsCollector:
             # 2. 东方财富新闻
             # 3. 同花顺资讯
             # 4. 通用新闻API (如 NewsAPI 等)
-            
+
             # 示例占位符
             sample_news = {
                 "date": (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d"),
@@ -154,31 +153,31 @@ class NewsCollector:
                 "title": f"[示例] {name} 发布新产品公告",
                 "content_summary": "这是一个示例新闻摘要",
                 "url": "https://example.com/news",
-                "category": "news"
+                "category": "news",
             }
-            
+
             logger.debug(f"[占位符] 将从新闻网站搜索关于 {name} 的新闻")
-            
+
         except Exception as e:
             logger.warning(f"搜索{name}新闻失败: {e}")
-        
+
         return news_list
-    
+
     def search_events(self, code: str, name: str) -> List[Dict]:
         """
         从事件日历搜索重要事件
-        
+
         Args:
             code: 股票代码
             name: 股票名称
-            
+
         Returns:
             List[Dict]: 事件列表
         """
         events = []
-        
+
         logger.info(f"搜索{code}_{name}的重要事件...")
-        
+
         try:
             # TODO: 实现事件日历搜索
             # 包括:
@@ -186,7 +185,7 @@ class NewsCollector:
             # 2. 分红除权日期
             # 3. 重大会议日期
             # 4. 产品发布会日期
-            
+
             # 示例占位符
             sample_event = {
                 "date": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
@@ -196,83 +195,83 @@ class NewsCollector:
                 "content_summary": "公司将发布最新季度财务报告",
                 "url": "https://example.com/event",
                 "category": "event",
-                "event_type": "earnings_report"
+                "event_type": "earnings_report",
             }
-            
+
             logger.debug(f"[占位符] 将搜索 {code} 的重要事件")
-            
+
         except Exception as e:
             logger.warning(f"搜索{code}事件失败: {e}")
-        
+
         return events
-    
+
     def deduplicate(self, news_item: Dict) -> bool:
         """
         检查是否重复
-        
+
         Args:
             news_item: 新闻项目
-            
+
         Returns:
             bool: 是否已存在（重复）
         """
         # 使用标题作为去重键
         key = f"{news_item.get('title', '')}_{news_item.get('date', '')}"
-        
+
         if key in self.dedup_set:
             return True
-        
+
         self.dedup_set.add(key)
         return False
-    
+
     def collect_all(self) -> None:
         """
         收集所有新闻
         """
         for stock in self.stocks:
-            code = stock.get('code', '')
-            name = stock.get('name', '')
-            
+            code = stock.get("code", "")
+            name = stock.get("name", "")
+
             if not code or not name:
                 logger.warning(f"跳过无效的股票: {stock}")
                 continue
-            
+
             stock_key = f"{code}_{name}"
             self.all_news[stock_key] = []
-            
+
             # 从各数据源搜索
             announcements = self.search_cninfo_announcements(code, name)
             news_list = self.search_news_websites(name)
             events = self.search_events(code, name)
-            
+
             # 合并并去重
             all_items = announcements + news_list + events
-            
+
             for item in all_items:
                 if not self.deduplicate(item):
                     self.all_news[stock_key].append(item)
-            
-            logger.info(f"{stock_key}: 收集到{len(self.all_news[stock_key])}条新闻/事件")
-    
+
+            logger.info(
+                f"{stock_key}: 收集到{len(self.all_news[stock_key])}条新闻/事件"
+            )
+
     def save_raw_data(self) -> None:
         """
         保存原始数据为YAML格式
         """
         for stock_key, news_items in self.all_news.items():
             output_file = self.output_dir / f"{stock_key}_news_raw.yaml"
-            
+
             # 按日期排序
             sorted_items = sorted(
-                news_items,
-                key=lambda x: x.get('date', ''),
-                reverse=True
+                news_items, key=lambda x: x.get("date", ""), reverse=True
             )
-            
-            with open(output_file, 'w', encoding='utf-8') as f:
+
+            with open(output_file, "w", encoding="utf-8") as f:
                 yaml.dump(sorted_items, f, ensure_ascii=False, allow_unicode=True)
-            
+
             logger.info(f"原始新闻已保存: {output_file}")
-    
+
     def save_index(self) -> None:
         """
         保存新闻索引
@@ -282,39 +281,39 @@ class NewsCollector:
             "search_days": self.days,
             "total_stocks": len(self.stocks),
             "total_news_items": sum(len(items) for items in self.all_news.values()),
-            "stocks": {}
+            "stocks": {},
         }
-        
+
         for stock_key, news_items in self.all_news.items():
             index["stocks"][stock_key] = {
                 "count": len(news_items),
                 "file": f"{stock_key}_news_raw.yaml",
-                "categories": self._count_categories(news_items)
+                "categories": self._count_categories(news_items),
             }
-        
+
         index_file = self.output_dir / "news_index.yaml"
-        with open(index_file, 'w', encoding='utf-8') as f:
+        with open(index_file, "w", encoding="utf-8") as f:
             yaml.dump(index, f, ensure_ascii=False, allow_unicode=True)
-        
+
         logger.info(f"索引已保存: {index_file}")
-    
+
     def generate_summary_report(self) -> None:
         """
         生成汇总报告
         """
         report_file = self.output_dir / "step4a_collection_report.md"
-        
-        with open(report_file, 'w', encoding='utf-8') as f:
+
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write("# Step4a 新闻收集报告\n\n")
             f.write(f"**收集时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"**搜索周期**: 过去{self.days}天\n\n")
-            
+
             f.write(f"## 统计信息\n\n")
             f.write(f"- **搜索股票数**: {len(self.stocks)}\n")
             total_items = sum(len(items) for items in self.all_news.values())
             f.write(f"- **收集新闻总数**: {total_items}\n")
             f.write(f"- **去重后**: {len(self.dedup_set)}\n\n")
-            
+
             f.write("## 按股票统计\n\n")
             for stock_key, news_items in self.all_news.items():
                 categories = self._count_categories(news_items)
@@ -323,23 +322,23 @@ class NewsCollector:
                 for cat, count in categories.items():
                     f.write(f"  - {cat}: {count}\n")
                 f.write("\n")
-        
+
         logger.info(f"汇总报告已生成: {report_file}")
-    
+
     @staticmethod
     def _count_categories(news_items: List[Dict]) -> Dict[str, int]:
         """
         统计不同类别的新闻
-        
+
         Args:
             news_items: 新闻项目列表
-            
+
         Returns:
             Dict: 类别统计
         """
         categories = defaultdict(int)
         for item in news_items:
-            category = item.get('category', 'unknown')
+            category = item.get("category", "unknown")
             categories[category] += 1
         return dict(categories)
 
@@ -347,7 +346,7 @@ class NewsCollector:
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
-        description='Step4a: 从多个数据源搜索新闻和事件',
+        description="Step4a: 从多个数据源搜索新闻和事件",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
@@ -361,32 +360,32 @@ def main():
     --input ../step2/02_标的清单.yaml \\
     --output ../step4/raw_data/ \\
     --days 30
-        """
+        """,
     )
-    
-    parser.add_argument('--input', '-i', default='../step2/02_标的清单.yaml', help='Step2标的清单')
-    parser.add_argument('--output', '-o', default='../step4/raw_data/', help='输出目录')
-    parser.add_argument('--days', '-d', type=int, default=60, help='搜索的历史天数')
-    
+
+    parser.add_argument(
+        "--input", "-i", default="../step2/02_标的清单.yaml", help="Step2标的清单"
+    )
+    parser.add_argument("--output", "-o", default="../step4/raw_data/", help="输出目录")
+    parser.add_argument("--days", "-d", type=int, default=60, help="搜索的历史天数")
+
     args = parser.parse_args()
-    
+
     collector = NewsCollector(
-        input_file=args.input,
-        output_dir=args.output,
-        days=args.days
+        input_file=args.input, output_dir=args.output, days=args.days
     )
-    
+
     if not collector.load_stock_list():
         return 1
-    
+
     collector.collect_all()
     collector.save_raw_data()
     collector.save_index()
     collector.generate_summary_report()
-    
+
     logger.info("新闻收集完成")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

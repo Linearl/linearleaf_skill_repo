@@ -74,3 +74,9 @@ htmlcov/
 # Test and example data
 test/
 *.test.*
+# Local testing and workspace directories
+# .github: Local testing copy of skills (not for submission)
+.github/
+
+# workspace: Local analysis workspace (not for submission)
+workspace/
