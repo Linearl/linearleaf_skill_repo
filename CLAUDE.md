@@ -39,6 +39,20 @@ linearleaf_skill_repo/
 │   ├── README.md                      # User-facing documentation
 │   ├── examples/                      # Example skill designs
 │   └── templates/                     # Skill creation templates
+├── invest_analysis/                   # Investment Analysis Skill
+│   ├── SKILL.md                       # Main skill definition
+│   ├── README.md                      # User-facing documentation
+│   ├── examples/                      # Analysis examples
+│   └── invest.md                      # Original prompt templates
+├── .github/                           # VS Code Agent Skills testing directory
+│   └── skills/                        # Copies of all skills for testing
+│       ├── analysis_code/
+│       ├── debug_code/
+│       ├── file_organize/
+│       ├── refactor_code/
+│       ├── skill_builder/
+│       ├── version_compare/
+│       └── invest_analysis/
 ├── CLAUDE.md                          # This file - Claude Code guidance
 ├── README.md                          # Project overview and documentation
 ├── LICENSE                            # MIT License
@@ -57,6 +71,10 @@ linearleaf_skill_repo/
 **When to use**: Problem definition, hypothesis testing, root cause analysis, fix implementation
 
 ### 3. refactor_code - Code Refactoring Skill
+
+### 7. invest_analysis - Investment Analysis Skill
+**Purpose**: Systematic A-share market investment research
+**When to use**: Sector selection, supply chain analysis, financial report verification, market timing, cross-model validation
 **Purpose**: Three-tier planning system for systematic refactoring
 **When to use**: Overall refactoring planning, stage-level execution, priority-based task management
 

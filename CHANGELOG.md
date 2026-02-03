@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-03
+
+### Added
+
+- **invest_analysis** - A-share investment analysis skill
+  - Sector selection with catalyst identification
+  - Supply chain deep analysis
+  - Financial report verification
+  - Timing and sentiment analysis
+  - Cross-model validation framework
+  - 5 structured prompt templates
+
+### Changed
+
+- Created `.github/skills/` directory for VS Code Agent Skills testing
+- All skills are now available in both root directory (standard structure) and `.github/skills/` (testing)
+- Updated `.gitignore` to document testing directory purpose
+- Updated `README.md` and `CLAUDE.md` to include invest_analysis skill
+
 ## [1.0.0] - 2026-02-03
 
 ### Added

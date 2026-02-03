@@ -66,3 +66,7 @@ htmlcov/
 # Local development
 .local/
 *.local.*
+
+# Agent Skills testing directory
+# Keep .github directory for VS Code Agent Skills testing
+# The skills are copied here for easier testing without changing root structure

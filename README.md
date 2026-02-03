@@ -33,6 +33,7 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 | 🔧 [refactor_code](refactor_code/) | 系统化代码重构 | "重构代码"、"架构改进" |
 | 📁 [file_organize](file_organize/) | 系统化文件整理 | "整理文件"、"清理目录" |
 | 📊 [version_compare](version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
+| 💰 [invest_analysis](invest_analysis/) | A股投资分析 | "分析这个板块"、"财报验证" |
 | 🏗️ [skill_builder](skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
 
 ### 🚀 快速开始
@@ -115,6 +116,15 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 技能设计模式库
 - 质量保证检查清单
 
+#### 💰 invest_analysis - 投资分析技能
+
+系统化 A 股投资研究框架：
+- 赛道筛选和热点挖掘
+- 产业链深度分析
+- 财报验证和去伪
+- 择时分析和风险评估
+- 跨模型验证
+
 ### 🔗 相关链接
 
 - [Agent Skills 开放标准](https://agentskills.io/)
@@ -140,6 +150,7 @@ Linearleaf Agent Skills is a collection of professional skill packages compliant
 | 🔧 [refactor_code](refactor_code/) | Systematic refactoring | "refactor code", "improve architecture" |
 | 📁 [file_organize](file_organize/) | Systematic file organization | "organize files", "clean up directory" |
 | 📊 [version_compare](version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
+| 💰 [invest_analysis](invest_analysis/) | A-share investment analysis | "analyze this sector", "verify financial report" |
 | 🏗️ [skill_builder](skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
 
 ### 🚀 Quick Start
@@ -221,7 +232,14 @@ Systematic version comparison and change analysis:
 - IPD-driven skill design process
 - Skill design pattern library
 - Quality assurance checklist
+#### 💰 invest_analysis - Investment Analysis
 
+Systematic A-share investment research framework:
+- Sector selection and trend identification
+- Supply chain deep analysis
+- Financial report verification
+- Timing analysis and risk assessment
+- Cross-model validation
 ### 🔗 Related Links
 
 - [Agent Skills Open Standard](https://agentskills.io/)
