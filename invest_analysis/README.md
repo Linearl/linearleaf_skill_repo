@@ -155,50 +155,226 @@ Use this skill when you need to:
 ## 🔄 标准工作流程 | Standard Workflow
 
 ```
-Step1：赛道筛选 (Sector Selection)
+赛道筛选（Step1）
     ↓
-Step2：产业链挖掘 (Supply Chain Analysis)
+产业链挖掘（Step2）
     ↓
-Step3：深度去伪/财报验证 (Fundamental Verification)
+┌──────────────────────────────────────┐
+│ 财报验证（Step3a/b/c）               │
+│ ├─ Step3a：财报获取 [自动]          │
+│ ├─ Step3b：内容提取 [自动]          │
+│ └─ Step3c：深度分析 [AI+人工] ⭐    │
+└──────────────────────────────────────┘
     ↓
-Step4：消息与新闻检索 (News & Events)
+┌──────────────────────────────────────┐
+│ 产业链验证（Step3.5，可选但推荐）    │
+│ └─ 财报+新闻反向验证供应链           │
+└──────────────────────────────────────┘
     ↓
-Step5：技术面走势与介入策略 (Technical & Entry Strategy)
+┌──────────────────────────────────────┐
+│ 新闻事件分析（Step4a/b/c）           │
+│ ├─ Step4a：新闻搜索 [自动]          │
+│ ├─ Step4b：分类标注 [AI+人工]       │
+│ └─ Step4c：冲突检查 [混合]          │
+└──────────────────────────────────────┘
     ↓
-最终决策 (Final Decision)
+┌──────────────────────────────────────┐
+│ 技术面与入场（Step5a/b/c）           │
+│ ├─ Step5a：数据计算 [自动]          │
+│ ├─ Step5b：趋势评估 [AI+人工]       │
+│ └─ Step5c：决策执行 [人工] ⭐      │
+└──────────────────────────────────────┘
+    ↓
+跨模型验证（Bonus，关键步骤）
 ```
 
 ### 详细流程说明
 
-**Step1 - 赛道筛选**
-- 输入：时间窗口（如 2026年Q1）、即将发生的事件
-- 输出：3-5个潜力赛道 + 每个赛道的核心催化逻辑 + 代表龙头股
-- 模型：DeepSeek / Gemini Deep Research
+#### **Step1 - 赛道筛选 (Sector Selection)**
+- **输入**：时间窗口（如 2026年Q1）、即将发生的事件
+- **输出**：3-5个潜力赛道 + 每个赛道的核心催化逻辑 + 代表龙头股
+- **文件**：`step1/01_赛道筛选_YYYYQx_A股潜在爆发行情.md`
+- **推荐模型**：DeepSeek + Gemini Deep Research
 
-**Step2 - 产业链挖掘**
-- 输入：Step1的赛道清单
-- 输出：每个赛道的供应链分析 + 关键环节 + 铲子股 + 标的清单YAML
-- 分析：价值量最高处、A股龙头、备选公司
+#### **Step2 - 产业链挖掘 (Supply Chain Analysis)**
+- **输入**：Step1的赛道清单
+- **输出**：每个赛道的供应链分析 + 标的清单YAML
+- **文件**：`step2/02A~02E_产业链挖掘_*.md` + `step2/02_标的清单.yaml`
+- **分析重点**：价值量最高处、A股龙头、"铲子股"、竞争格局
 
-**Step3 - 财报验证**
-- 输入：Step2的标的清单
-- 流程：下载财报 → 提取关键字段 → 人工精读 → 生成分析报告
-- 输出：逼股分析报告 + 阶段性汇总表
-- 重点：业务真实性、主要风险、财报证据
+#### **Step3a - 财报获取 (Financial Report Download) [自动化]**
+- **输入**：Step2的标的清单YAML
+- **流程**：自动从巨潮资讯下载年报和季报PDF
+- **输出**：`step3/financials/{代码_名称}/` 目录中的PDF文件
+- **工具**：`step3/tools/step3a_download_reports.py`
 
-**Step4 - 消息与新闻**
-- 输入：标的清单
-- 流程：搜索近30-60天公告/新闻 → 提取催化/风险 → 汇总
-- 输出：逼股新闻分析 + 新闻汇总表
+#### **Step3b - 财报内容提取 (Content Extraction) [自动化]**
+- **输入**：Step3a下载的PDF文件
+- **流程**：自动提取关键信息（产品分类、客户、订单、风险因素）
+- **输出**：`step3/extracts/{代码_名称}_annual_extract.txt` 等结构化文本
+- **工具**：`step3/tools/step3b_extract_content.py`
 
-**Step5 - 介入策略**
-- 输入：Step3汇总 + Step4新闻
-- 流程：获取120日行情 → 计算MA/高低点 → 判断走势 → 制定策略
-- 输出：最终介入策略表（含技术面字段）
+#### **Step3c - 财报分析 (Deep-Read Analysis) [AI + 人工] ⭐**
+- **输入**：Step3b提取的内容 + 原始PDF文件
+- **流程**：**人工精读** + AI辅助写作，评估业务真实性
+- **输出**：逐股分析报告 + `step3/report/03_汇总_结论表.md`
+- **关键要求**：
+  - ⚠️ 必须手工阅读财报，不能仅依赖AI
+  - ⚠️ 结论需引用具体数字和页码
+  - ⚠️ 区分"试产"vs"量产"、"计划"vs"实现"
 
-**跨模型验证（可选）**
-- 在任何关键步骤应用，特别是Step1和Step2
-- 使用DeepSeek、Gemini、ChatGPT进行交叉验证
+#### **Step3.5 - 产业链验证 (Supply Chain Verification) [可选但推荐]**
+- **输入**：Step2假设供应链 + Step3c财报分析 + Step4新闻
+- **流程**：反向验证 Step2 中的产业链关系是否真实存在
+- **输出**：`step3.5/report/03.5_供应链验证表.md` + 风险地图
+- **检查重点**：
+  - ✅ 供应关系有没有在财报中被证实？
+  - ✅ 是否存在新兴竞争对手或替代方案？
+  - ✅ 有没有"单点风险"（关键公司失败整链崩溃）？
+
+#### **Step4a - 新闻搜索 (News Collection) [自动化]**
+- **输入**：标的清单
+- **流程**：自动搜索CNINFO公告、新闻网站、事件日历（过去30-60天）
+- **输出**：`step4/raw_data/` 目录中的原始新闻数据
+- **工具**：`step4/tools/step4a_search_news.py`
+
+#### **Step4b - 新闻分类 (Classification & Tagging) [AI + 人工]**
+- **输入**：Step4a搜索的原始新闻
+- **流程**：AI初步分类 + 人工验证 → 标注为正面催化/负面风险/中性/无关
+- **输出**：`step4/classified/` 目录 + `step4/report/04_汇总_新闻分类表.md`
+- **关键字段**：日期、分类、影响级别、预期兑现时间
+
+#### **Step4c - 新闻-技术面冲突检查 (Conflict Detection)**
+- **输入**：Step4b分类新闻 + Step5a技术数据
+- **流程**：对比新闻催化与股价走势，检测不匹配情况
+  - 大利好宣布但股价未涨 → 为什么？
+  - 股价已涨50%但催化还在1个月后 → 过热风险？
+- **输出**：`step4/report/04_汇总_新闻与事件表.md`
+
+#### **Step5a - 技术数据获取 (Data Collection) [自动化]**
+- **输入**：标的清单
+- **流程**：自动获取120个交易日的历史数据，计算MA、高低点、波动率
+- **输出**：`step5/raw_data/{代码_名称}_technical_data.csv`
+- **工具**：`step5/tools/step5a_fetch_technical_data.py`
+
+#### **Step5b - 趋势分析 (Trend Analysis) [AI + 人工]**
+- **输入**：Step5a技术数据 + Step4c新闻催化 + Step3c基本面评分
+- **流程**：
+  - 评估趋势：短期/中期/长期走势？
+  - 识别支撑/压力：在哪些位置容易反弹/回调？
+  - 交叉验证：技术面是否与基本面和新闻逻辑一致？
+- **输出**：`step5/analysis/05_{赛道}_{代码}_{名称}_technical.md` + 信号汇总表
+
+#### **Step5c - 入场决策 (Entry Decision) [人工] ⭐**
+- **输入**：所有前面步骤的分析
+- **流程**：综合评分决策
+  - 基本面好吗？(Step3c评分)
+  - 有没有催化？(Step4c时间线)
+  - 技术面支持吗？(Step5b信号)
+  - 供应链靠谱吗？(Step3.5确定度)
+- **输出**：`step5/report/05_汇总_介入策略表.md`
+- **最终建议**：推荐买入/观望/规避 + 入场价格 + 止损位 + 目标价
+
+#### **跨模型验证 (Cross-Model Validation) - 可选但推荐**
+- **何时使用**：在关键决策点（特别是Step1、Step2、Step5c）
+- **方法**：用DeepSeek/Gemini/ChatGPT分别分析，对比结果
+- **收益**：减少单个模型偏差，提高置信度
+
+---
+
+## 📁 输出目录结构 | Directory Structure
+
+运行完整工作流后，你的项目目录应该看起来如下：
+
+```
+project_root/
+│
+├── step1/                          # Step1 输出：赛道筛选
+│   └── 01_赛道筛选_YYYYQx_*.md
+│
+├── step2/                          # Step2 输出：产业链挖掘
+│   ├── 02A_产业链挖掘_赛道1_YYYYQx.md
+│   ├── 02B_产业链挖掘_赛道2_YYYYQx.md
+│   └── 02_标的清单.yaml            # ⭐ 关键输入文件（给Step3/4/5使用）
+│
+├── step3/                          # Step3 输出：财报验证
+│   ├── financials/                 # Step3a 生成：PDF下载目录
+│   │   ├── 000001_平安银行/
+│   │   │   ├── 2025_annual_report.pdf
+│   │   │   └── 2025_Q3_quarterly_report.pdf
+│   │   └── 000858_五粮液/
+│   │       ├── 2025_annual_report.pdf
+│   │       └── ...
+│   │
+│   ├── extracts/                   # Step3b 生成：提取的内容
+│   │   ├── 000001_平安银行_annual_extract.txt
+│   │   ├── 000001_平安银行_quarterly_extract.txt
+│   │   └── extraction_index.yaml
+│   │
+│   ├── analysis/                   # Step3c 生成：分析报告
+│   │   ├── 03_银行_000001_平安银行.md
+│   │   ├── 03_银行_000858_五粮液.md
+│   │   └── ...
+│   │
+│   └── report/
+│       └── 03_汇总_结论表.md       # Step3c 生成：汇总评估
+│
+├── step3.5/                        # Step3.5 输出：产业链验证 [可选]
+│   ├── analysis/
+│   │   └── 03.5_供应链验证_*.md    # 验证供应关系
+│   │
+│   └── report/
+│       ├── 03.5_供应链验证表.md     # 验证结果汇总
+│       └── 03.5_供应链风险地图.md   # 风险识别
+│
+├── step4/                          # Step4 输出：新闻与事件
+│   ├── raw_data/                   # Step4a 生成：原始新闻
+│   │   ├── 000001_平安银行_news_raw.yaml
+│   │   └── news_index.yaml
+│   │
+│   ├── classified/                 # Step4b 生成：分类新闻
+│   │   ├── 000001_平安银行_news_classified.yaml
+│   │   └── ...
+│   │
+│   ├── analysis/
+│   │   └── 04_新闻技术面冲突分析.md
+│   │
+│   └── report/
+│       ├── 04_汇总_新闻分类表.md   # Step4b 生成
+│       └── 04_汇总_新闻与事件表.md # Step4c 生成
+│
+├── step5/                          # Step5 输出：技术面与入场策略
+│   ├── raw_data/                   # Step5a 生成：技术数据
+│   │   ├── 000001_平安银行_technical_data.csv
+│   │   └── technical_index.yaml
+│   │
+│   ├── analysis/                   # Step5b 生成：趋势分析
+│   │   ├── 05_银行_000001_平安银行_technical.md
+│   │   └── ...
+│   │
+│   └── report/
+│       ├── 05_汇总_技术信号表.md    # Step5b 生成
+│       └── 05_汇总_介入策略表.md    # Step5c 生成 ⭐ 最终推荐
+│
+└── tools/                          # [可选] 自动化脚本
+    ├── step3a_download_reports.py
+    ├── step3b_extract_content.py
+    ├── step3.5_supply_chain_verify.py
+    ├── step4a_search_news.py
+    ├── step4b_classify_news.py
+    └── step5a_fetch_technical_data.py
+```
+
+### 关键输入/输出文件
+
+| 文件 | 生成步骤 | 用途 |
+|------|---------|------|
+| `step2/02_标的清单.yaml` | Step2 | ⭐ 关键：Step3/4/5都需要读取这个文件 |
+| `step3/report/03_汇总_结论表.md` | Step3c | 基本面评估结果，Step5c需要 |
+| `step3.5/report/03.5_供应链验证表.md` | Step3.5 | 产业链置信度评分，Step5c参考 |
+| `step4/report/04_汇总_新闻与事件表.md` | Step4c | 催化催物和时间线，Step5c需要 |
+| `step5/raw_data/` | Step5a | 技术数据CSV，Step5b/c需要 |
+| `step5/report/05_汇总_介入策略表.md` | Step5c | **最终推荐**：买入/观望/规避 |
 
 ---
 
