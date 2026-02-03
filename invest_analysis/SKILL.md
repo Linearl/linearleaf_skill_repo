@@ -29,7 +29,7 @@ Use this skill when you need to:
 
 ## Core Workflow
 
-This skill implements a comprehensive 5-step workflow for systematic investment research:
+This skill implements a comprehensive multi-phase workflow for systematic investment research:
 
 ### Phase 1: Sector Selection (Step1 - 赛道筛选)
 
@@ -77,88 +77,379 @@ This skill implements a comprehensive 5-step workflow for systematic investment 
 
 ### Phase 3: Fundamental Verification (Step3 - 深度去伪/财报验证)
 
-**Objective**: Validate investment thesis through financial reports and business fundamentals, distinguish real business from speculation.
+**Objective**: Validate investment thesis through financial reports and business fundamentals, distinguish real business from speculation. Separated into 3 layers: automated download/extraction and manual analysis.
+
+#### Step3a: Financial Report Download (财报获取 - 自动化)
+
+**Objective**: Automatically download annual and quarterly reports for all stocks from Step2.
 
 **Process**:
-1. **Download Phase**: Download annual and quarterly reports for all stocks from Step2 YAML list
-2. **Extract Phase**: Extract key sections (产品分类/客户/订单/风险因素)
-3. **Analysis Phase**: Generate individual analysis report for each stock
-4. **Manual Review**: Deep-read financial reports to write natural language conclusions
-5. **Summary Phase**: Generate interim summary table (业务真实性/主要风险/财报证据)
-
-**Critical Requirements**:
-- ⚠️ Must manually read annual/quarterly reports' "产品/行业/收入毛利/风险因素" sections
-- ⚠️ Conclusions must use natural language with specific evidence points
-- ⚠️ Identify business landing evidence + risk concentration + gaps (e.g., customer/order disclosure deficiency)
-- ⚠️ No template-like statements or long original text quotations
+1. Read `step2/02_标的清单.yaml` for stock codes
+2. Use CNINFO API to download latest annual/quarterly reports
+3. Save reports as PDF files by stock code
 
 **Output**:
-- Reports: `step3/analysis/03_{赛道}_{代码}_{名称}.md`
-- Financials: `step3/financials/{代码_名称}/`
-- Extracts: `annual_extract.txt`, `quarterly_extract.txt`
-- Interim summary: `step3/report/03_汇总_结论表.md`
-- Directory: `step3/`
+- Directory: `step3/financials/{代码_名称}/`
+- Contents: `{年份}_annual_report.pdf`, `{季度}_quarterly_report.pdf`
 
-**Tools** (optional automation):
-- Download script: `step3/tools/step3_download_reports.py`
-- Analysis script: `step3/tools/step3_cninfo_reports_and_notes.py`
-- Config: Use `step2/02_标的清单.yaml` as input
+**Tools** (automation):
+- Download script: `step3/tools/step3a_download_reports.py`
+- Config: Input `step2/02_标的清单.yaml`
 
 **Checkpoints**:
-- ✅ Are financial reports saved to `financials/`?
-- ✅ Are extracts generated (`annual_extract.txt`, `quarterly_extract.txt`)?
-- ✅ Does report include evidence and geographic risk table?
-- ✅ Is Step3 interim summary table generated?
-- ✅ Are conclusions based on manual deep-reading, not just auto-generation?
+- ✅ Are all reports for Step2 stocks downloaded?
+- ✅ Are reports organized by stock code and year/quarter?
+- ✅ Are missing reports logged for manual intervention?
+
+#### Step3b: Financial Report Content Extraction (财报内容提取 - 自动化)
+
+**Objective**: Extract key sections from downloaded reports using AI or OCR for structured analysis.
+
+**Process**:
+1. Read PDF reports from `step3/financials/`
+2. Extract key sections: 产品分类、主要客户、订单信息、风险因素、收入和毛利
+3. Generate extraction summaries with timestamps
+4. Create searchable index for manual review
+
+**Output**:
+- Extracts: `step3/extracts/{代码_名称}_annual_extract.txt`, `quarterly_extract.txt`
+- Index: `step3/extracts/extraction_index.yaml` (fields: code, name, sections, extraction_date)
+- Directory: `step3/extracts/`
+
+**Tools** (automation):
+- Extraction script: `step3/tools/step3b_extract_content.py`
+- Supports: PDF text extraction, structured data parsing
+- Config: Rules for section identification
+
+**Checkpoints**:
+- ✅ Are key sections extracted for all reports?
+- ✅ Is extracted content organized and searchable?
+- ✅ Are extraction timestamps recorded?
+
+#### Step3c: Financial Report Analysis & Verification (财报阅读分析 - AI + 人工)
+
+**Objective**: Deep-read extracted content and manual reports to verify business fundamentals and identify red flags.
+
+**Process** (Human-Driven with AI Assistance):
+1. **Manual Reading** ⭐: Open extracted content and original PDF side-by-side
+   - Read "产品分类" section: Is new business substantial or just R&D?
+   - Read "主要客户" section: Are there real customer names with order volumes?
+   - Read "风险因素" section: Are there hidden risks or competitive threats?
+2. **AI-Assisted Writing**: Use AI to help structure natural language conclusions
+   - Evidence-based writing: Must cite specific report sections and numbers
+   - Risk identification: List top 3-5 risks with supporting evidence
+   - Business assessment: Determine if business is "real", "trial", or "speculation"
+3. **Generate Analysis Report**: Write individual report per stock with findings
+4. **Summary Table**: Create consolidated verification table
+
+**Critical Requirements**:
+- ⚠️ **Human judgment is essential**: AI extraction is prep work, your reading is the judgment
+- ⚠️ Conclusions must use natural language with specific evidence points (e.g., "Customer A ordered 1000 units in Q3 per page 45")
+- ⚠️ Identify business landing evidence + risk concentration + disclosure gaps
+- ⚠️ No template-like statements; distinguish "announced plans" vs "actual sales"
+- ⚠️ No long original text quotations; summarize in your own words with citations
+
+**Output**:
+- Individual Reports: `step3/analysis/03_{赛道}_{代码}_{名称}.md`
+- Summary Table: `step3/report/03_汇总_结论表.md`
+  - Fields: Code, Name, Track, Business Reality, Key Risks, Revenue Proportion, Recommendation
+- Directory: `step3/`
+
+**Tools** (AI assistance):
+- Analysis helper script: `step3/tools/step3c_analysis_helper.py` (optional formatting tool)
+- Config: Use extraction output from Step3b as input
+
+**Checkpoints**:
+- ✅ Have you personally read the extracted content and original reports?
+- ✅ Are conclusions backed by specific quotes with page numbers?
+- ✅ Is the recommendation clear: Bullish/Neutral/Bearish with 2-3 main reasons?
+- ✅ Is Step3 summary table complete with all stocks from Step2?
+- ✅ Have you identified key risks that would change your thesis if materialized?
+
+### Phase 3.5: Supply Chain Verification (Step3.5 - 产业链验证 - 可选但推荐)
+
+**Objective**: Cross-validate Step2's supply chain assumptions using evidence from financial reports and news events. Identify if assumed relationships actually exist in the market.
+
+**Process**:
+1. **Financial Report Cross-Check**: 
+   - Review Step3c extracted content for customer/supplier relationships
+   - Does Company A (identified as supplier in Step2) mention Company B (identified as customer) in their reports?
+   - Are order volumes and cooperation status mentioned?
+   - Red flag: Assumed relationship but no mutual mention in reports
+2. **News Event Verification**:
+   - Check Step4 news for partnership announcements between Step2 companies
+   - Validate if supply chain relationships have been publicly announced
+   - Identify new partnerships not covered in Step2 analysis
+3. **Competitive Threat Assessment**:
+   - Are there alternative suppliers or competitors emerging?
+   - Has any Step2 company lost market share to new entrants?
+   - Identify potential disruption to the assumed supply chain structure
+4. **Supply Chain Risk Mapping**:
+   - Identify bottleneck positions (single supplier or customer dependency)
+   - Assess concentration risk: If key company fails, does entire chain collapse?
+
+**Output**:
+- Verification report: `step3.5/report/03.5_供应链验证表.md`
+- Fields: Company, Role, Assumed Relationships, Evidence Found, Confidence Level, Risks
+- Risk mapping: `step3.5/report/03.5_供应链风险地图.md`
+- Directory: `step3.5/`
+
+**Tools** (optional automation):
+- Verification script: `step3.5/tools/step3.5_supply_chain_verify.py`
+- Input: Step2 supply chain structure + Step3c analysis reports + Step4 news data
+
+**Checkpoints**:
+- ✅ Are supply chain relationships verified with evidence from financial reports?
+- ✅ Have you identified companies mentioned in Step2 but without actual business relationships?
+- ✅ Are bottleneck positions clearly marked?
+- ✅ Is the confidence level for each relationship documented?
+
+**Impact on Decision**:
+- 🔴 Low confidence supply chain → Reduce investment conviction or wait for clearer validation
+- 🟡 Moderate confidence → Proceed but monitor news for relationship confirmation
+- 🟢 High confidence → Thesis strengthened, ready for Step4 analysis
 
 ### Phase 4: News & Events Analysis (Step4 - 消息与新闻检索)
 
-**Objective**: Search for recent announcements, news, and events to identify catalysts and risks.
+**Objective**: Discover catalysts and risks through systematic news and event analysis.
+
+#### Step4a: News Search & Collection (新闻搜索 - 自动化)
+
+**Objective**: Automatically search and collect announcements, news, and events from multiple sources.
 
 **Process**:
-1. Search announcements/news/events from past 30-60 days for all stocks
-2. Extract positive catalysts and negative risks
-3. Identify time windows for events
-4. Distinguish between catalysts and risks clearly
+1. Search CNINFO (巨潮资讯) for official announcements from all Step2 stocks
+2. Search news platforms for industry news and company news (past 30-60 days)
+3. Search event calendars for conferences, earnings announcements, policy releases
+4. Collect metadata: source, date, title, URL
+5. De-duplicate and organize by date
 
 **Output**:
-- Reports: `step4/analysis/04_新闻与事件_{赛道}_{代码}_{名称}.md`
-- Summary: `step4/report/04_汇总_新闻表.md`
-- Directory: `step4/`
+- Raw news collection: `step4/raw_data/{代码_名称}_news_raw.yaml`
+- Fields: date, source, title, url, category (announcement/news/event)
+- News index: `step4/raw_data/news_index.yaml`
+- Directory: `step4/raw_data/`
 
-**Tools** (optional automation):
-- News script: `step4/tools/step4_news.py`
-- Summary script: `step4/tools/step4_news_summary.py`
+**Tools** (automation):
+- Search script: `step4/tools/step4a_search_news.py`
+- Supports: CNINFO API, news APIs, web scraping
+- Config: Search keywords from Step2 stock names
 
 **Checkpoints**:
-- ✅ Does it include timestamps and sources?
-- ✅ Are catalysts and risks clearly distinguished?
-- ✅ Is Step4 news summary table generated?
+- ✅ Are all Step2 stocks covered in news search?
+- ✅ Is the time window correct (30-60 days)?
+- ✅ Are duplicate news items removed?
+
+#### Step4b: News Classification & Tagging (新闻分类与标注 - AI + 人工)
+
+**Objective**: Classify news into catalysts and risks, and tag relevance and impact.
+
+**Process**:
+1. **AI-Assisted Classification**:
+   - Use AI to read news titles and summaries
+   - Classify: Positive Catalyst / Negative Risk / Neutral News / Irrelevant
+   - Extract key entities: Company affected, event type, impact area
+2. **Human Validation**:
+   - Review AI classifications for accuracy
+   - Correct misclassifications
+   - Add manual notes for ambiguous cases
+3. **Time Window Tagging**:
+   - When did the event occur? (event_date)
+   - When will impact be realized? (impact_date)
+   - Any upcoming milestones mentioned? (milestone_date)
+4. **Impact Assessment**:
+   - High Impact: Could significantly change investment thesis
+   - Medium Impact: Notable but not thesis-changing
+   - Low Impact: Routine or minor news
+
+**Output**:
+- Classified news: `step4/classified/{代码_名称}_news_classified.yaml`
+- Fields: date, source, title, classification, impact_level, event_date, impact_date, notes, reviewed
+- Summary table: `step4/report/04_汇总_新闻分类表.md`
+- Directory: `step4/classified/`
+
+**Tools** (AI assistance):
+- Classification script: `step4/tools/step4b_classify_news.py`
+- Input: Raw news from Step4a
+- Output format: Structured YAML
+
+**Checkpoints**:
+- ✅ Have you reviewed AI classifications for accuracy?
+- ✅ Are impact levels assigned based on thesis relevance?
+- ✅ Are all dates clearly documented?
+- ✅ Are ambiguous news items marked for human review?
+
+#### Step4c: News-Technical Conflict Check (新闻与技术面冲突检查)
+
+**Objective**: Cross-check if news timeline aligns with technical analysis to identify inconsistencies.
+
+**Process**:
+1. **Timeline Analysis**:
+   - Major positive catalyst → Did stock price rise after announcement? If not, red flag
+   - Major negative risk → Did stock price fall after announcement? If not, red flag
+   - Upcoming catalyst → Is stock price already pricing in expectation?
+2. **Conflict Detection**:
+   - Stock already rallied 50% but catalyst still 1 month away → Overheating risk
+   - Negative news announced but stock price unchanged → Market disagrees, investigate why
+   - Gap between news date and stock reaction → Possible delayed impact
+3. **Validation Gaps**:
+   - Which news items don't match the technical trend?
+   - Are there hidden catalysts not captured in news search?
+4. **Final News Summary**:
+   - List catalysts with timeline and confidence level
+   - Highlight conflicts and their implications
+   - Recommend: Watch for upcoming catalyst dates, avoid trading before announcements
+
+**Output**:
+- Conflict analysis: `step4/analysis/04_新闻技术面冲突分析.md`
+- Final news summary: `step4/report/04_汇总_新闻与事件表.md`
+- Fields: Stock, Event Type, Event Date, Expected Impact Date, News Catalyst, Technical Signal, Alignment, Risk Notes
+- Directory: `step4/`
+
+**Tools** (AI + manual analysis):
+- Helper script: `step4/tools/step4c_conflict_check.py` (optional)
+- Input: Step4b classified news + Step5a technical data
+- Output: Conflict report and recommendations
+
+**Checkpoints**:
+- ✅ Are major catalysts aligned with technical trends?
+- ✅ Have you identified conflicts and their implications?
+- ✅ Is the timeline clear for upcoming catalysts?
+- ✅ Are recommendations based on both news and technical signals?
+
+**Objective**: Search for recent announcements, news, and events to identify catalysts and risks.
 
 ### Phase 5: Technical Analysis & Entry Strategy (Step5 - 技术面走势与介入策略)
 
 **Objective**: Combine fundamental and news analysis with technical analysis to formulate final entry strategy.
 
+#### Step5a: Technical Data Collection & Indicator Calculation (技术数据获取与指标计算 - 自动化)
+
+**Objective**: Automatically collect historical price data and calculate technical indicators.
+
 **Process**:
-1. Retrieve recent 120 trading days' price data
-2. Calculate MA20/MA60/MA250 and 20/60/250-day high/low points
-3. Analyze trend: 走势判断
-4. Formulate entry strategy: 入场策略
-5. Determine price range: 预期价格区间 (reference only)
-6. Identify support/resistance levels: 支撑/压力位
-7. Copy Step3 summary table and update with technical fields
+1. Retrieve recent 120 trading days' price data for all stocks
+2. Calculate moving averages: MA20, MA60, MA250
+3. Calculate high/low points: 20-day/60-day/250-day high and low
+4. Calculate volatility metrics: ATR, daily range, amplitude
+5. Organize data into time-indexed format
 
 **Output**:
-- Final summary: `step5/report/05_汇总_介入策略表.md`
-- Directory: `step5/`
+- Technical data: `step5/raw_data/{代码_名称}_technical_data.csv`
+- Columns: date, open, close, high, low, volume, ma20, ma60, ma250, h20, l20, h60, l60, h250, l250
+- Data index: `step5/raw_data/technical_index.yaml`
+- Directory: `step5/raw_data/`
 
-**Tools** (optional automation):
-- Strategy script: `step5/tools/step5_strategy.py`
+**Tools** (automation):
+- Data collection script: `step5/tools/step5a_fetch_technical_data.py`
+- Supports: Wind API, Tushare, Yahoo Finance
+- Config: Stock codes from Step2 YAML
 
 **Checkpoints**:
-- ✅ Are technical fields completed?
-- ✅ Is there conflict with news event time windows?
-- ✅ Is the final entry strategy table generated?
+- ✅ Are all 120 trading days of data collected?
+- ✅ Are all indicators calculated correctly?
+- ✅ Are data gaps handled (holidays, missing data)?
+
+#### Step5b: Trend Analysis & Signal Detection (趋势判断与信号检测 - AI + 人工)
+
+**Objective**: Analyze price trends and identify technical signals aligned with fundamental and news analysis.
+
+**Process**:
+1. **Trend Assessment** ⭐:
+   - Short-term (20-day): Is price above/below MA20? Momentum direction?
+   - Medium-term (60-day): Is price above/below MA60? Established trend?
+   - Long-term (250-day): Is price above/below MA250? Overall trend?
+   - Trend health: Are MAs in proper order (MA20 > MA60 > MA250 for uptrend)?
+2. **Support & Resistance**:
+   - Recent support: 20-day low, 60-day low
+   - Potential resistance: 20-day high, 60-day high, previous highs
+   - Breakout zones: If price breaks 60-day high, where's next resistance?
+3. **Volatility & Risk**:
+   - Average daily range and amplitude
+   - Recent volatility vs historical average (high volatility = risk)
+   - Gap risk: Overnight gaps that could stop-loss?
+4. **Signal Validation with Fundamentals & News**:
+   - Does uptrend align with positive catalysts (Step4)?
+   - Does downtrend align with negative risks (Step4)?
+   - Conflict detection: Stock rallying but negative news → Be cautious
+   - Wait for signals: Is price still waiting for announced catalyst?
+5. **AI-Generated Signal Report**:
+   - Use AI to synthesize: fundamentals + news + technical signals
+   - Highlight alignment and conflicts
+   - Estimate confidence level for each signal
+
+**Output**:
+- Technical analysis: `step5/analysis/05_{赛道}_{代码}_{名称}_technical.md`
+- Signal summary: `step5/report/05_汇总_技术信号表.md`
+- Fields: Stock, Short-term Trend, Mid-term Trend, Support, Resistance, Signal Strength, Catalyst Alignment, Risk Level
+- Directory: `step5/analysis/`
+
+**Tools** (AI assistance):
+- Analysis helper: `step5/tools/step5b_trend_analysis.py` (optional)
+- Input: Technical data from Step5a + catalyst timeline from Step4c
+- Output: Signal report with recommendations
+
+**Checkpoints**:
+- ✅ Have you assessed trends at multiple timeframes?
+- ✅ Are support/resistance levels clearly identified?
+- ✅ Is technical signal aligned with fundamental analysis?
+- ✅ Are conflicts with news catalysts documented?
+
+#### Step5c: Entry Decision & Strategy Formulation (入场决策与策略制定)
+
+**Objective**: Make final investment decision based on integrated analysis (fundamentals + news + technical).
+
+**Process**:
+1. **Integrated Assessment**:
+   - Step3c: Is business fundamentally sound? (Business Reality Score: 1-10)
+   - Step4c: Are catalysts positive and upcoming? (Catalyst Timeline)
+   - Step5b: Is technical setup favorable for entry? (Trend & Signal Quality)
+   - Step3.5: Is supply chain thesis validated? (Confidence Level)
+
+2. **Decision Matrix**:
+   | Business | Catalyst | Technical | Supply Chain | **Action** |
+   |----------|----------|-----------|--------------|-----------|
+   | Bullish | Positive | Strong Up | High Conf | **BUY** |
+   | Bullish | Positive | Neutral | High Conf | **WAIT for Setup** |
+   | Bullish | Neutral | Strong Up | High Conf | **Consider BUY** |
+   | Bullish | Negative | Strong Down | High Conf | **WAIT** |
+   | Neutral | Positive | Strong Up | Mod Conf | **Monitor** |
+   | Bearish | Any | Any | Low Conf | **AVOID** |
+
+3. **Price Target & Risk Management**:
+   - Entry price range: Where is the best risk/reward ratio?
+     - Trend continuation entry: Above/near 20-day high (stronger momentum)
+     - Pullback entry: Near 20-day or 60-day support (lower risk)
+     - Breakout entry: Above resistance level (requires catalyst confirmation)
+   - Support level (Stop Loss): Where would thesis break?
+   - Profit targets: Conservative/Base/Aggressive targets based on volatility
+   - Position sizing: Based on risk (account % to risk = risk per share × position size)
+
+4. **Final Recommendation**:
+   - Clear recommendation: Buy / Hold / Avoid
+   - Reasoning: 2-3 key reasons from all analysis layers
+   - Timeline: When to enter, when to exit, when to monitor
+   - Risk triggers: What would invalidate the thesis?
+
+**Output**:
+- Final strategy table: `step5/report/05_汇总_介入策略表.md`
+- Fields: Stock, Business Score, Catalyst, Technical Signal, Supply Chain Conf, Recommendation, Entry Range, Support, Target1/2/3, Risk Triggers, Timeline
+- Executive summary: `step5/report/05_汇总_最终决策摘要.md`
+- Directory: `step5/`
+
+**Checklist Before Decision** ⭐:
+- ✅ Have you personally reviewed all analysis? (Don't just rely on AI synthesis)
+- ✅ Is the recommendation clear and backed by 2-3 key reasons?
+- ✅ Are risk triggers defined (what would change your mind)?
+- ✅ Are timeline expectations clear (when to buy, when to sell)?
+- ✅ Does entry price make sense given current technical setup?
+- ✅ Can you explain your thesis to someone else clearly?
+
+**Implementation Notes**:
+- 🎯 **High Conviction**: Business + Catalyst + Technical all aligned → Larger position
+- 🟡 **Medium Conviction**: 2 of 3 factors aligned → Normal position
+- 🔴 **Low Conviction**: Only 1 factor favorable → Small position or wait
+- ⛔ **No Setup**: Thesis broken or factors misaligned → Avoid or close position
 
 ### Bonus: Cross-Model Validation (跨模型验证)
 
@@ -172,6 +463,48 @@ This skill implements a comprehensive 5-step workflow for systematic investment 
 5. Synthesize final conclusion
 
 **Best Practice**: Apply cross-model validation at any step (especially Step1 and Step2) for critical decisions.
+
+**When to Apply Cross-Validation**:
+- Step1 sector selection: Different models may identify different macro trends
+- Step2 supply chain analysis: Different models may emphasize different segments
+- Step3c business verification: Ask different models to challenge your conclusions
+- Step5c final decision: Get second opinion on entry strategy before committing capital
+
+## Complete Workflow Architecture
+
+```
+赛道筛选（Step1）
+    ↓
+产业链挖掘（Step2）
+    ↓
+┌──────────────────────────────────────┐
+│ 财报验证（Step3a/b/c）               │
+│ ├─ Step3a：财报获取 [自动]          │
+│ ├─ Step3b：内容提取 [自动]          │
+│ └─ Step3c：深度分析 [AI+人工] ⭐    │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│ 产业链验证（Step3.5，可选但推荐）    │
+│ └─ 财报+新闻反向验证供应链           │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│ 新闻事件分析（Step4a/b/c）           │
+│ ├─ Step4a：新闻搜索 [自动]          │
+│ ├─ Step4b：分类标注 [AI+人工]       │
+│ └─ Step4c：冲突检查 [混合]          │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│ 技术面与入场（Step5a/b/c）           │
+│ ├─ Step5a：数据计算 [自动]          │
+│ ├─ Step5b：趋势评估 [AI+人工]       │
+│ └─ Step5c：决策执行 [人工] ⭐      │
+└──────────────────────────────────────┘
+    ↓
+跨模型验证（Bonus，关键步骤）
+```
 
 ## Prompt Templates
 
@@ -225,46 +558,124 @@ Please carefully review this financial/research report from [COMPANY_NAME]:
 3) 作为投资者，你认为这份报告中最大的风险点是什么？
 ```
 
-### Template 4: Sentiment & Timing Check
+### Template 4: Supply Chain Verification
 
 ```
-[STOCK_A], [STOCK_B] have experienced [describe trend, e.g., "a sharp rally followed by correction"] in the past two months. Given current market sentiment, would entering now be chasing highs?
+I previously identified [COMPANY_A] as a supplier of [COMPONENT] to [COMPANY_B]. Please review their latest financial reports and find evidence of:
 
-[公司名1]、[公司名2]在过去两个月已经经历了[描述走势，如：一波大涨后的回调]。结合当前的市场情绪，现在介入是否属于追高？
+1) Does [COMPANY_A]'s annual report mention [COMPANY_B] as a customer or mention [COMPONENT] sales?
+2) What percentage of [COMPANY_A]'s revenue comes from [COMPANY_B] and similar customers?
+3) Are there any risks to this supply relationship (e.g., customer concentration, alternative suppliers)?
+
+我之前识别[公司A]是[部件]供应商到[公司B]。请根据最新财报验证：
+
+1) [公司A]的年报中是否提到[公司B]作为客户，或提到[部件]销售？
+2) [公司A]来自[公司B]和类似客户的收入占比多少？
+3) 这个供应关系有哪些风险（如客户集中度、替代供应商）？
 ```
 
-### Template 5: Cross-Model Validation
+### Template 5: News-Technical Conflict Analysis
 
 ```
-Someone suggested I focus on [STOCK_A] and [STOCK_B] as sector leaders.
+[COMPANY_NAME] announced [POSITIVE/NEGATIVE EVENT] on [DATE], but the stock price [describe movement, e.g., "continued falling instead of rising"]. 
 
-1) Do you agree? If not, please explain why.
-2) Why weren't these two in your recommendation list?
-3) Are there any companies that were overlooked but are indispensable in the supply chain?
+1) What could explain this disconnect between news and price action?
+2) Is the market disagreeing with the event's importance, or is there hidden negative news?
+3) Should I wait for further price action confirmation before entering?
 
-有人建议我关注[股票A]和[股票B]作为该板块的龙头。
+[公司名]在[日期]宣布了[正面/负面事件]，但股价[描述走势，例如："没有上涨反而继续下跌"]。
 
-1) 你是否认同？如果不认同，请给出理由
-2) 你的推荐列表中为什么没有这两只？
-3) 还有没有被它忽略的、但在供应链中不可或缺的公司？
+1) 这种新闻和股价的脱节可能说明什么？
+2) 市场是在否定这个事件的重要性，还是存在隐藏的负面消息？
+3) 我应该等待进一步的价格确认再介入吗？
+```
+
+### Template 6: Technical Setup Validation
+
+```
+Stock [STOCK_CODE] is currently at [PRICE], with:
+- 20-day MA: [MA20]
+- 60-day MA: [MA60]  
+- 20-day high: [H20], low: [L20]
+- Recent news: [CATALYST]
+
+Given this technical setup and fundamental thesis, is [PRICE] a good entry point? When should I enter?
+
+股票[代码]目前价格[价格]，技术面：
+- 20日均线[MA20]
+- 60日均线[MA60]
+- 20日高[H20]、低[L20]
+- 最近事件[催化]
+
+考虑到技术面和基本面，[价格]是好的入场点吗？我应该什么时候入场？
+```
+
+### Template 7: Decision Review (Self-Challenging)
+
+```
+I have decided to buy [STOCK_NAME] at [PRICE] based on:
+- Catalyst: [CATALYST]
+- Business: [THESIS]
+- Technical: [SETUP]
+
+Please challenge my thesis:
+1) What are the top 3 ways my analysis could be wrong?
+2) What would make you avoid this stock?
+3) If this stock drops 20%, would you still believe in the thesis?
+
+我决定以[价格]买入[股票]，基于：
+- 催化[催化逻辑]
+- 基本面[论证]
+- 技术面[设置]
+
+请质疑我的逻辑：
+1) 我的分析可能出错的前3个方面是什么？
+2) 你会因为什么而回避这只股票？
+3) 如果股价下跌20%，你还会相信这个论证吗？
 ```
 
 ## Best Practices
 
-### Model Selection
-- **DeepSeek**: Excellent for Chinese market analysis and A-share specific knowledge
-- **Gemini Deep Research**: Best for comprehensive research with extensive web search
-- **ChatGPT**: Good for general analysis and structured reasoning
+### Model Selection Strategy
+- **Step1 (Sector Selection)**: DeepSeek (best A-share knowledge) → Gemini Deep Research (validation)
+- **Step2 (Supply Chain)**: ChatGPT or Gemini (detailed reasoning) → DeepSeek (A-share specifics)
+- **Step3c (Financial Analysis)**: DeepSeek (reports/fundamentals) → ChatGPT (second opinion on risks)
+- **Step4b (News Classification)**: Gemini Deep Research (web search + classification)
+- **Step5c (Final Decision)**: Use Template 7 with multiple models for self-challenge
 
-### Research Workflow
-1. **Start Broad**: Begin with sector selection to identify macro trends
-2. **Drill Down**: Move to supply chain analysis for specific opportunities
-3. **Verify**: Always validate with financial reports and business fundamentals
-4. **Cross-Check**: Use multiple AI models to avoid bias
-5. **Document**: Keep track of your analysis and reasoning
+### Research Workflow Best Practices
+1. **Start Broad, Verify Narrow**: Begin with sector (macro) → supply chain (meso) → companies (micro)
+2. **Separate Automation from Judgment**: 
+   - Automate: Data collection, extraction, initial classification
+   - Human review: Financial interpretation, relationship validation, final decision
+3. **Document Everything**: Keep notes on what you found, what changed your mind, what surprised you
+4. **Cross-Check Systematically**: 
+   - Financial reports vs news (Step3c vs Step4b)
+   - News timeline vs technical moves (Step4c)
+   - Fundamentals vs technical setup (Step5b vs Step5c)
+5. **Question Your Assumptions**:
+   - Use Template 7 before every major decision
+   - Ask "What would prove me wrong?"
+   - Build in a 20% margin of safety
 
-### Risk Management
-- Never rely solely on AI recommendations
+### Risk Management Rules
+- **Position Sizing**: Never risk more than 2% of portfolio on single thesis
+- **Stop Loss**: Set before entering, not after losing
+- **Catalyst Timing**: Know when catalyst should be realized; if not by then, exit
+- **Thesis Invalidation**: If any major assumption changes, reconsider position
+- **Overheating**: If stock has rallied >30% since your thesis began, reassess entry
+
+### Time Investment Estimates
+- **Step1**: 1-2 hours (sector scanning)
+- **Step2**: 2-3 hours per sector (supply chain research)
+- **Step3a/b**: 30-60 minutes (automatic download & extraction)
+- **Step3c**: 3-5 hours per company (manual deep reading)
+- **Step3.5**: 1-2 hours per supply chain (validation)
+- **Step4a/b**: 1-2 hours per stock (news search & classification)
+- **Step4c**: 30 minutes (conflict analysis)
+- **Step5a**: 15 minutes (automatic data fetch)
+- **Step5b/c**: 1-2 hours (trend analysis + decision)
+- **Total for 5-10 stocks**: 20-40 hours (realistic for quality research)
 - Always verify information with official sources
 - Use AI as a research assistant, not a decision maker
 - Understand that past performance doesn't guarantee future results
@@ -306,7 +717,31 @@ See [examples/](examples/) directory for:
 
 ## Version History
 
+- **v2.0.0** (2026-02-03): Comprehensive workflow restructuring
+  - **Step3 (Fundamentals)**: Split into 3 layers - Download/Extract/Analysis
+    - Step3a: Automated financial report download
+    - Step3b: Automated content extraction with OCR/AI
+    - Step3c: Manual deep-reading + AI assistance for analysis
+  - **Step3.5 (Supply Chain Verification)**: New optional verification step
+    - Cross-validate supply chain relationships with financial reports
+    - Identify bottleneck positions and concentration risks
+  - **Step4 (News & Events)**: Split into 3 layers - Search/Classification/Validation
+    - Step4a: Automated news collection from multiple sources
+    - Step4b: AI-assisted classification + human validation
+    - Step4c: News-technical alignment check to detect conflicts
+  - **Step5 (Technical Analysis)**: Split into 3 layers - Data/Trend/Decision
+    - Step5a: Automated technical data collection and indicator calculation
+    - Step5b: Trend analysis with fundamental & news cross-check
+    - Step5c: Integrated decision-making with risk management
+  - **New prompt templates**: 4 additional templates for Step3.5-5 validation
+  - **New tools development**: Scripts for automation at layers a (data collection)
+  - **Architecture diagram**: Complete workflow visualization added
+
 - **v1.0.0** (2026-02-03): Initial release
+  - Core 5-phase workflow
+  - 5 prompt templates for different research stages
+  - Cross-model validation framework
+  - Risk disclaimers and best practices
   - Core 5-phase workflow
   - 5 prompt templates for different research stages
   - Cross-model validation framework
