@@ -20,7 +20,7 @@
 
 ### 📖 概述
 
-Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agentskills.io/) 的专业技能包，为 GitHub Copilot 提供系统化的代码分析、调试、重构、文件整理、版本对比和技能构建能力。
+Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agentskills.io/) 的专业技能包，为 GitHub Copilot 和 Claude Code 提供系统化的代码分析、调试、重构、文件整理、版本对比和技能构建能力。
 
 > 🔄 **项目演进**: 本项目是 [copilot_workflows](https://github.com/Linearl/copilot_workflows) 的 Agent Skills 标准化重构版本，提供更好的 AI 集成体验。
 
@@ -28,26 +28,29 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 
 | 技能 | 说明 | 触发示例 |
 |------|------|----------|
-| 🔍 [analysis_code](.github/skills/analysis_code/) | 系统化代码分析 | "分析这段代码"、"代码质量评估" |
-| 🐛 [debug_code](.github/skills/debug_code/) | 系统化代码调试 | "帮我调试"、"修复这个错误" |
-| 🔧 [refactor_code](.github/skills/refactor_code/) | 系统化代码重构 | "重构代码"、"架构改进" |
-| 📁 [file_organize](.github/skills/file_organize/) | 系统化文件整理 | "整理文件"、"清理目录" |
-| 📊 [version_compare](.github/skills/version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
-| 🏗️ [skill_builder](.github/skills/skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
+| 🔍 [analysis_code](analysis_code/) | 系统化代码分析 | "分析这段代码"、"代码质量评估" |
+| 🐛 [debug_code](debug_code/) | 系统化代码调试 | "帮我调试"、"修复这个错误" |
+| 🔧 [refactor_code](refactor_code/) | 系统化代码重构 | "重构代码"、"架构改进" |
+| 📁 [file_organize](file_organize/) | 系统化文件整理 | "整理文件"、"清理目录" |
+| 📊 [version_compare](version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
+| 🏗️ [skill_builder](skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
 
 ### 🚀 快速开始
 
 #### 1. 安装
 
-将本仓库克隆到您的项目中，或直接复制 `.github/skills/` 目录：
-
+**方式1：克隆整个仓库**
 ```bash
-# 方式1：作为子模块
-git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
-
-# 方式2：直接复制
-# 复制 .github/skills/ 目录到您的项目
+git clone https://github.com/Linearl/linearleaf_skill_repo.git
 ```
+
+**方式2：作为 Git 子模块**
+```bash
+git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
+```
+
+**方式3：直接复制技能**
+将所需的技能目录（如 `analysis_code/`、`debug_code/` 等）复制到您的项目中。
 
 #### 2. 启用 Agent Skills
 
@@ -124,7 +127,7 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 
 ### 📖 Overview
 
-Linearleaf Agent Skills is a collection of professional skill packages compliant with the [Agent Skills open standard](https://agentskills.io/), providing GitHub Copilot with systematic capabilities for code analysis, debugging, refactoring, file organization, version comparison, and skill building.
+Linearleaf Agent Skills is a collection of professional skill packages compliant with the [Agent Skills open standard](https://agentskills.io/), providing GitHub Copilot and Claude Code with systematic capabilities for code analysis, debugging, refactoring, file organization, version comparison, and skill building.
 
 > 🔄 **Project Evolution**: This project is the Agent Skills standardized version of [copilot_workflows](https://github.com/Linearl/copilot_workflows), offering a better AI integration experience.
 
@@ -132,26 +135,29 @@ Linearleaf Agent Skills is a collection of professional skill packages compliant
 
 | Skill | Description | Trigger Examples |
 |-------|-------------|------------------|
-| 🔍 [analysis_code](.github/skills/analysis_code/) | Systematic code analysis | "analyze this code", "code quality assessment" |
-| 🐛 [debug_code](.github/skills/debug_code/) | Systematic debugging | "help me debug", "fix this error" |
-| 🔧 [refactor_code](.github/skills/refactor_code/) | Systematic refactoring | "refactor code", "improve architecture" |
-| 📁 [file_organize](.github/skills/file_organize/) | Systematic file organization | "organize files", "clean up directory" |
-| 📊 [version_compare](.github/skills/version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
-| 🏗️ [skill_builder](.github/skills/skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
+| 🔍 [analysis_code](analysis_code/) | Systematic code analysis | "analyze this code", "code quality assessment" |
+| 🐛 [debug_code](debug_code/) | Systematic debugging | "help me debug", "fix this error" |
+| 🔧 [refactor_code](refactor_code/) | Systematic refactoring | "refactor code", "improve architecture" |
+| 📁 [file_organize](file_organize/) | Systematic file organization | "organize files", "clean up directory" |
+| 📊 [version_compare](version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
+| 🏗️ [skill_builder](skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
 
 ### 🚀 Quick Start
 
 #### 1. Installation
 
-Clone this repository into your project or copy the `.github/skills/` directory:
-
+**Option 1: Clone the entire repository**
 ```bash
-# Option 1: As submodule
-git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
-
-# Option 2: Direct copy
-# Copy .github/skills/ directory to your project
+git clone https://github.com/Linearl/linearleaf_skill_repo.git
 ```
+
+**Option 2: As Git submodule**
+```bash
+git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
+```
+
+**Option 3: Copy specific skills**
+Copy the skill directories you need (e.g., `analysis_code/`, `debug_code/`) to your project.
 
 #### 2. Enable Agent Skills
 
