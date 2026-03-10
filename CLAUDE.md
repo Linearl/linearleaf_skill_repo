@@ -2,7 +2,7 @@
 
 ## Repository Purpose
 
-This is a **Claude Code Skills Repository** containing custom skills that extend Claude's capabilities for systematic software development workflows. Skills are specialized prompts with supporting documentation that guide Claude to perform expert-level tasks in code analysis, debugging, refactoring, file organization, version comparison, and skill creation.
+This is a **Claude Code Skills Repository** containing custom skills that extend Claude's capabilities for systematic software development workflows. Skills are specialized prompts with supporting documentation that guide Claude to perform expert-level tasks in code analysis, debugging, refactoring, file organization, version comparison, HTML presentation generation, and skill creation.
 
 ## Repository Structure
 
@@ -44,6 +44,11 @@ linearleaf_skill_repo/
 │   ├── README.md                      # User-facing documentation
 │   ├── examples/                      # Analysis examples
 │   └── invest.md                      # Original prompt templates
+├── html-presentation-generator/       # HTML Presentation Generator Skill
+│   ├── SKILL.md                       # Main skill definition
+│   ├── references/                    # Workflow and numbering references
+│   ├── scripts/                       # Validation and merge helper scripts
+│   └── agents/                        # Embedded agent presets for portability
 ├── .github/                           # VS Code Agent Skills testing directory
 │   └── skills/                        # Copies of all skills for testing
 │       ├── analysis_code/
@@ -52,7 +57,8 @@ linearleaf_skill_repo/
 │       ├── refactor_code/
 │       ├── skill_builder/
 │       ├── version_compare/
-│       └── invest_analysis/
+│       ├── invest_analysis/
+│       └── html-presentation-generator/
 ├── CLAUDE.md                          # This file - Claude Code guidance
 ├── README.md                          # Project overview and documentation
 ├── LICENSE                            # MIT License
@@ -73,8 +79,21 @@ linearleaf_skill_repo/
 ### 3. refactor_code - Code Refactoring Skill
 
 ### 7. invest_analysis - Investment Analysis Skill
-**Purpose**: Systematic A-share market investment research
-**When to use**: Sector selection, supply chain analysis, financial report verification, market timing, cross-model validation
+**Purpose**: Systematic A-share market investment research with multi-layer validation
+**When to use**: 
+- Sector selection and catalyst identification
+- Supply chain analysis and commodity cycle positioning
+- Financial report verification with resource moat rating
+- Geopolitical risk assessment
+- Research report cross-validation
+- Multi-perspective reflection and adversarial thinking
+- Cross-model validation to avoid bias
+**Features**:
+- 7-phase comprehensive workflow (Step1-7)
+- 3-3-4 staged position building method
+- Psychological trap warning system
+- Real battle case studies integration
+- 11 structured prompt templates
 **Purpose**: Three-tier planning system for systematic refactoring
 **When to use**: Overall refactoring planning, stage-level execution, priority-based task management
 
@@ -89,6 +108,14 @@ linearleaf_skill_repo/
 ### 6. skill_builder - Skill Builder Meta-Skill
 **Purpose**: IPD-driven skill design and creation
 **When to use**: Creating new Agent Skills, skill design pattern application, quality assurance
+
+### 8. html-presentation-generator - HTML Presentation Generator Skill
+**Purpose**: End-to-end script-to-HTML presentation pipeline with merge and quality validation
+**When to use**:
+- Long source document splitting and storyboard parallelization
+- Part HTML generation and merged deck build
+- Page order validation and quality gate checks
+- Iterative preview and controlled revision loop
 
 ## Working with This Repository
 

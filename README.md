@@ -20,7 +20,7 @@
 
 ### 📖 概述
 
-Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agentskills.io/) 的专业技能包，为 GitHub Copilot 和 Claude Code 提供系统化的代码分析、调试、重构、文件整理、版本对比和技能构建能力。
+Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agentskills.io/) 的专业技能包，为 GitHub Copilot 和 Claude Code 提供系统化的代码分析、调试、重构、文件整理、版本对比、HTML 演示文稿生成和技能构建能力。
 
 > 🔄 **项目演进**: 本项目是 [copilot_workflows](https://github.com/Linearl/copilot_workflows) 的 Agent Skills 标准化重构版本，提供更好的 AI 集成体验。
 
@@ -34,6 +34,7 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 | 📁 [file_organize](file_organize/) | 系统化文件整理 | "整理文件"、"清理目录" |
 | 📊 [version_compare](version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
 | 💰 [invest_analysis](invest_analysis/) | A股投资分析 | "分析这个板块"、"财报验证" |
+| 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML 演示文稿生成流水线 | "根据讲稿生成HTML演示"、"分镜合并并校验页序" |
 | 🏗️ [skill_builder](skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
 
 ### 🚀 快速开始
@@ -109,6 +110,14 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 变更影响评估
 - 更新日志生成
 
+#### 🖥️ html-presentation-generator - HTML 演示文稿生成技能
+
+系统化讲稿到 HTML 演示稿流水线：
+- 长文档拆分与分镜并行产出
+- 分片 HTML 生成与合并构建
+- 页序一致性与质量门禁校验
+- 支持预览迭代与改进闭环
+
 #### 🏗️ skill_builder - 技能构建器
 
 **元技能** - 用于创建新的 Agent Skills：
@@ -119,11 +128,13 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 #### 💰 invest_analysis - 投资分析技能
 
 系统化 A 股投资研究框架：
-- 赛道筛选和热点挖掘
-- 产业链深度分析
-- 财报验证和去伪
-- 择时分析和风险评估
-- 跨模型验证
+- **7步完整流程**: 赛道筛选 → 产业链挖掘 → 周期定位 → 财报验证 → 地缘风险 → 新闻分析 → 技术分析 → 研报验证 → 多视角反思
+- **3-3-4分批建仓法**: 避免踏空的系统化仓位管理
+- **心理陷阱警示**: 恐高、左侧挂单、静态锚定、配置失败
+- **多维度评估**: 资源护城河、周期PE、地缘风险、去全球化重估
+- **跨模型验证**: 利用多个AI模型斗蛊,避免单一模型偏见
+- **实战案例整合**: 白银踏空、铝龙头踏空、铜金资源案例教训
+- **11个专业模板**: 覆盖完整投研流程
 
 ### 🔗 相关链接
 
@@ -137,7 +148,7 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 
 ### 📖 Overview
 
-Linearleaf Agent Skills is a collection of professional skill packages compliant with the [Agent Skills open standard](https://agentskills.io/), providing GitHub Copilot and Claude Code with systematic capabilities for code analysis, debugging, refactoring, file organization, version comparison, and skill building.
+Linearleaf Agent Skills is a collection of professional skill packages compliant with the [Agent Skills open standard](https://agentskills.io/), providing GitHub Copilot and Claude Code with systematic capabilities for code analysis, debugging, refactoring, file organization, version comparison, HTML presentation generation, and skill building.
 
 > 🔄 **Project Evolution**: This project is the Agent Skills standardized version of [copilot_workflows](https://github.com/Linearl/copilot_workflows), offering a better AI integration experience.
 
@@ -151,6 +162,7 @@ Linearleaf Agent Skills is a collection of professional skill packages compliant
 | 📁 [file_organize](file_organize/) | Systematic file organization | "organize files", "clean up directory" |
 | 📊 [version_compare](version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
 | 💰 [invest_analysis](invest_analysis/) | A-share investment analysis | "analyze this sector", "verify financial report" |
+| 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML presentation generation pipeline | "generate HTML slides from script", "merge parts and validate page order" |
 | 🏗️ [skill_builder](skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
 
 ### 🚀 Quick Start
@@ -225,6 +237,14 @@ Systematic version comparison and change analysis:
 - Version difference analysis
 - Change impact assessment
 - Update log generation
+
+#### 🖥️ html-presentation-generator - HTML Presentation Generator
+
+Systematic script-to-HTML presentation pipeline:
+- Split long source content and generate storyboards in parallel
+- Generate part HTML files and merge into final deck
+- Validate page order consistency and quality gates
+- Support iterative preview and controlled improvements
 
 #### 🏗️ skill_builder - Skill Builder
 

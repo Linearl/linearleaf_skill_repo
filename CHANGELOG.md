@@ -5,17 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed skill directory from `html-deck-pipeline-skill` to `html-presentation-generator`
+- Updated the renamed skill's metadata and reference descriptions
+- Updated project documentation to include `html-presentation-generator`
+
+## [1.2.0] - 2026-02-03
+
+### Added
+
+- **invest_analysis v2.1.0** - Major enhancement with real battle lessons
+  - **Step2.5**: Commodity cycle positioning (mandatory for resource stocks)
+  - **Step3.6**: Geopolitical risk assessment  
+  - **Step6**: Research report cross-validation (mandatory for BUY stocks)
+  - **Step7**: Multi-perspective reflection and adversarial thinking
+  - **3-3-4 position building method** replacing traditional "wait for perfect entry"
+  - **Psychological trap warning system** (4 traps from real cases)
+  - **Resource moat rating** and cycle-adjusted PE
+  - 11 comprehensive prompt templates
+  - Real battle case studies (白银踏空, 铝龙头踏空, 铜金资源)
+
 ## [1.1.0] - 2026-02-03
 
 ### Added
 
-- **invest_analysis** - A-share investment analysis skill
+- **invest_analysis v1.0** - A-share investment analysis skill
   - Sector selection with catalyst identification
   - Supply chain deep analysis
   - Financial report verification
   - Timing and sentiment analysis
   - Cross-model validation framework
-  - 5 structured prompt templates
+  - 7 structured prompt templates
 
 ### Changed
 
