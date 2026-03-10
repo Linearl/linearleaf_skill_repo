@@ -162,12 +162,22 @@ class SupplyChainVerifier:
 
                 if isinstance(news_list, list):
                     # 提取与供应链相关的新闻
+                    keywords = [
+                        "合作",
+                        "战略合作",
+                        "供货",
+                        "供应",
+                        "采购",
+                        "订单",
+                        "客户",
+                        "中标",
+                        "签约",
+                        "partnership",
+                        "cooperation",
+                        "supply",
+                    ]
                     partnership_news = [
-                        n
-                        for n in news_list
-                        if "partnership" in str(n).lower()
-                        or "cooperation" in str(n).lower()
-                        or "supply" in str(n).lower()
+                        n for n in news_list if any(k in str(n) for k in keywords)
                     ]
                     self.news_data[company_name] = partnership_news
 
@@ -345,24 +355,61 @@ class SupplyChainVerifier:
 
         logger.info(f"风险地图已生成: {output_file}")
 
-    @staticmethod
-    def _check_mutual_mention(supplier: str, customer: str) -> Dict:
+    def _check_mutual_mention(self, supplier: str, customer: str) -> Dict:
         """
         检查财报中的互相提及
         """
+        supplier_key = self._find_report_key(supplier)
+        customer_key = self._find_report_key(customer)
+
+        supplier_content = (
+            self.analysis_reports.get(supplier_key, {}).get("content", "")
+            if supplier_key
+            else ""
+        )
+        customer_content = (
+            self.analysis_reports.get(customer_key, {}).get("content", "")
+            if customer_key
+            else ""
+        )
+
+        supplier_mentions_customer, supplier_evidence = self._find_mentions(
+            supplier_content, customer
+        )
+        customer_mentions_supplier, customer_evidence = self._find_mentions(
+            customer_content, supplier
+        )
+
+        evidence = supplier_evidence + customer_evidence
+
         return {
-            "in_financial_reports": False,  # TODO: 实现真实检查逻辑
-            "customer_mentioned_supplier": False,
-            "supplier_mentioned_customer": False,
-            "evidence": [],
+            "in_financial_reports": supplier_mentions_customer
+            or customer_mentions_supplier,
+            "customer_mentioned_supplier": customer_mentions_supplier,
+            "supplier_mentioned_customer": supplier_mentions_customer,
+            "evidence": evidence,
         }
 
-    @staticmethod
-    def _check_news_confirmation(supplier: str, customer: str) -> bool:
+    def _check_news_confirmation(self, supplier: str, customer: str) -> bool:
         """
         检查新闻中的确认
         """
-        return False  # TODO: 实现真实检查逻辑
+        supplier_key = self._find_report_key(supplier)
+        customer_key = self._find_report_key(customer)
+
+        news_sources = []
+        if supplier_key and supplier_key in self.news_data:
+            news_sources.extend(self.news_data[supplier_key])
+        if customer_key and customer_key in self.news_data:
+            news_sources.extend(self.news_data[customer_key])
+
+        for item in news_sources:
+            text = f"{item.get('title', '')} {item.get('content_summary', '')}"
+            if self._name_in_text(supplier, text) and self._name_in_text(
+                customer, text
+            ):
+                return True
+        return False
 
     @staticmethod
     def _extract_customers(content: str) -> List[str]:
@@ -384,6 +431,37 @@ class SupplyChainVerifier:
         pattern = r"收入[：:]\s*([^\n]+)"
         matches = re.findall(pattern, content)
         return [m.strip() for m in matches]
+
+    def _find_report_key(self, company_name: str) -> Optional[str]:
+        """根据公司名在分析报告中定位key"""
+        if company_name in self.analysis_reports:
+            return company_name
+        for key in self.analysis_reports.keys():
+            if company_name in key or key in company_name:
+                return key
+        return None
+
+    @staticmethod
+    def _name_variants(name: str) -> List[str]:
+        variants = {name}
+        for suffix in ["股份有限公司", "有限公司", "股份"]:
+            if name.endswith(suffix):
+                variants.add(name.replace(suffix, ""))
+        return list(variants)
+
+    def _name_in_text(self, name: str, text: str) -> bool:
+        return any(v in text for v in self._name_variants(name))
+
+    def _find_mentions(self, content: str, target: str) -> Tuple[bool, List[str]]:
+        if not content:
+            return False, []
+        evidence = []
+        for line in content.splitlines():
+            if self._name_in_text(target, line):
+                evidence.append(line.strip())
+            if len(evidence) >= 3:
+                break
+        return (len(evidence) > 0), evidence
 
     @staticmethod
     def _assess_risk_level(result: Dict) -> str:

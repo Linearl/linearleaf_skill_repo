@@ -4,6 +4,7 @@
 """
 Step3a: Financial Report Download Tool
 从巨潮资讯(CNINFO)自动下载A股上市公司的年报和季报
+说明: 仅支持A股（CNINFO）。港股会自动跳过并提示手动下载。
 
 使用方法:
     python step3a_download_reports.py --input ../step2/02_标的清单.yaml --output ../step3/financials
@@ -13,6 +14,7 @@ Step3a: Financial Report Download Tool
     2. 从巨潮资讯获取每家公司的最新年报和季报
     3. 按公司代码和名称组织到输出目录
     4. 生成下载日志和元数据
+    5. 对港股标的自动跳过（需手动补充）
 """
 
 import os
@@ -21,9 +23,10 @@ import yaml
 import json
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import argparse
+import requests
 
 # 配置日志
 logging.basicConfig(
@@ -61,6 +64,15 @@ class ReportDownloader:
         self.stocks = []
         self.download_log = []
 
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "Accept": "application/json, text/plain, */*",
+                "Referer": "https://www.cninfo.com.cn/new/index",
+            }
+        )
+
         # 确保输出目录存在
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -81,6 +93,21 @@ class ReportDownloader:
             logger.error(f"加载标的清单失败: {e}")
             return False
 
+    def _is_a_share(self, stock: Dict) -> bool:
+        """
+        判断是否为A股标的
+
+        规则:
+        - market 显式标注为 A/CN/A股
+        - 或代码为6位数字
+        """
+        market = str(stock.get("market", "")).strip().upper()
+        if market in {"A", "A股", "CN", "CN-A", "A-SHARE"}:
+            return True
+
+        code = str(stock.get("code", "")).strip()
+        return code.isdigit() and len(code) == 6
+
     def create_stock_directory(self, code: str, name: str) -> Path:
         """
         为每只股票创建目录
@@ -98,7 +125,7 @@ class ReportDownloader:
 
     def download_report(
         self, code: str, name: str, report_type: str = "annual"
-    ) -> Optional[str]:
+    ) -> Optional[Dict[str, str]]:
         """
         下载单个报告
 
@@ -112,35 +139,35 @@ class ReportDownloader:
         """
         stock_dir = self.create_stock_directory(code, name)
 
-        # 这是示例实现，实际应该调用真实API或web爬取
-        # 由于API可能变化，这里提供框架和注释
-
         logger.info(
             f"准备下载 {code}_{name} 的{self._get_report_type_name(report_type)}..."
         )
 
         try:
-            # 实现步骤:
-            # 1. 调用CNINFO API或巨潮网站获取报告列表
-            # 2. 找到最新的指定类型报告
-            # 3. 下载PDF文件
-            # 4. 保存到stock_dir
+            announcements = self._query_cninfo_announcements(code)
+            report = self._select_report(announcements, report_type)
 
-            # 示例：生成虚拟路径（实际开发需替换为真实下载）
-            year = datetime.now().year
-            filename = f"{year}_{report_type}_report.pdf"
+            if not report:
+                logger.warning(f"未找到{code}_{name}的{report_type}报告")
+                return None
+
+            report_date = report.get("announcementTime", "")
+            date_str = (
+                datetime.fromtimestamp(int(report_date) / 1000).strftime("%Y%m%d")
+                if report_date
+                else datetime.now().strftime("%Y%m%d")
+            )
+            filename = f"{date_str}_{report_type}.pdf"
             filepath = stock_dir / filename
 
-            # TODO: 实现真实下载逻辑
-            # 可选方案:
-            # - 使用selenium + chromedriver 爬取巨潮网页
-            # - 调用第三方数据API (如tushare, akshare等)
-            # - 使用巨潮资讯的官方接口(如有)
+            if self.skip_existing and filepath.exists():
+                logger.info(f"已存在，跳过: {filepath}")
+                return {"status": "skipped", "path": str(filepath)}
 
-            # 此处为占位符
-            logger.info(f"[占位符] 将下载到: {filepath}")
-
-            return str(filepath)
+            download_url = f"https://static.cninfo.com.cn/{report['adjunctUrl']}"
+            self._download_file(download_url, filepath)
+            logger.info(f"已下载: {filepath}")
+            return {"status": "success", "path": str(filepath)}
 
         except Exception as e:
             logger.error(f"下载{code}_{name}的{report_type}报告失败: {e}")
@@ -163,17 +190,41 @@ class ReportDownloader:
                 logger.warning(f"跳过无效的股票: {stock}")
                 continue
 
+            if not self._is_a_share(stock):
+                logger.info(f"非A股标的，跳过自动下载: {code}_{name}")
+                results["skipped"].append(
+                    {
+                        "code": code,
+                        "name": name,
+                        "type": "all",
+                        "path": "",
+                        "reason": "non_a_share",
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
+                continue
+
             # 为每种报告类型下载
             for report_type in ["annual", "q3", "q2", "q1"]:
                 result = self.download_report(code, name, report_type)
 
-                if result:
+                if result and result.get("status") == "success":
                     results["success"].append(
                         {
                             "code": code,
                             "name": name,
                             "type": report_type,
-                            "path": result,
+                            "path": result["path"],
+                            "timestamp": datetime.now().isoformat(),
+                        }
+                    )
+                elif result and result.get("status") == "skipped":
+                    results["skipped"].append(
+                        {
+                            "code": code,
+                            "name": name,
+                            "type": report_type,
+                            "path": result["path"],
                             "timestamp": datetime.now().isoformat(),
                         }
                     )
@@ -234,6 +285,15 @@ class ReportDownloader:
                     f.write(f"- {item['code']}_{item['name']}: {item['type']}\n")
                 f.write("\n**建议**: 检查网络连接，或手动从巨潮资讯下载这些报告\n")
 
+            if results["skipped"]:
+                f.write("\n## ⏭️ 已存在跳过的报告\n\n")
+                for item in results["skipped"]:
+                    reason = item.get("reason", "")
+                    reason_text = f" | reason: {reason}" if reason else ""
+                    f.write(
+                        f"- {item['code']}_{item['name']}: {item['type']} ({item['path']}){reason_text}\n"
+                    )
+
         logger.info(f"下载报告已生成: {report_file}")
 
     @staticmethod
@@ -241,6 +301,91 @@ class ReportDownloader:
         """获取报告类型的中文名称"""
         names = {"annual": "年报", "q3": "三季报", "q2": "半年报", "q1": "一季报"}
         return names.get(report_type, report_type)
+
+    @staticmethod
+    def _normalize_code(code: str) -> str:
+        return code.zfill(6)
+
+    @staticmethod
+    def _get_exchange(code: str) -> str:
+        code = code.zfill(6)
+        return "sh" if code.startswith("6") or code.startswith("9") else "sz"
+
+    def _query_cninfo_announcements(self, code: str) -> List[Dict]:
+        """从巨潮资讯获取公告列表"""
+        url = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
+        code = self._normalize_code(code)
+        exchange = self._get_exchange(code)
+        stock_param = f"{code},{exchange}"
+        end_date = datetime.now().strftime("%Y-%m-%d")
+        start_date = (datetime.now() - timedelta(days=730)).strftime("%Y-%m-%d")
+
+        payload = {
+            "pageNum": 1,
+            "pageSize": 50,
+            "tabName": "fulltext",
+            "column": "szse" if exchange == "sz" else "sse",
+            "stock": stock_param,
+            "searchkey": "",
+            "secid": "",
+            "plate": "",
+            "category": "",
+            "trade": "",
+            "seDate": f"{start_date}~{end_date}",
+            "sortName": "announceTime",
+            "sortType": "desc",
+        }
+
+        resp = self.session.post(url, data=payload, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("announcements", []) if isinstance(data, dict) else []
+
+    def _select_report(
+        self, announcements: List[Dict], report_type: str
+    ) -> Optional[Dict]:
+        """根据报告类型选择最新公告"""
+        keywords = {
+            "annual": ["年度报告"],
+            "q1": ["第一季度报告"],
+            "q2": ["半年度报告"],
+            "q3": ["第三季度报告"],
+        }
+        excludes = ["摘要", "英文", "修订", "更正"]
+
+        def match_title(title: str, allow_abstract: bool) -> bool:
+            if not any(k in title for k in keywords.get(report_type, [])):
+                return False
+            if not allow_abstract and any(e in title for e in excludes):
+                return False
+            return True
+
+        candidates = [
+            a
+            for a in announcements
+            if match_title(a.get("announcementTitle", ""), False)
+        ]
+        if not candidates:
+            candidates = [
+                a
+                for a in announcements
+                if match_title(a.get("announcementTitle", ""), True)
+            ]
+
+        if not candidates:
+            return None
+
+        candidates.sort(key=lambda x: x.get("announcementTime", 0), reverse=True)
+        return candidates[0]
+
+    def _download_file(self, url: str, filepath: Path) -> None:
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        with self.session.get(url, stream=True, timeout=30) as resp:
+            resp.raise_for_status()
+            with open(filepath, "wb") as f:
+                for chunk in resp.iter_content(chunk_size=1024 * 128):
+                    if chunk:
+                        f.write(chunk)
 
 
 def main():

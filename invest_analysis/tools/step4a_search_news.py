@@ -3,7 +3,8 @@
 
 """
 Step4a: News Search & Collection Tool
-从多个数据源自动搜索和收集A股上市公司的新闻、公告和事件
+从多个数据源自动搜索和收集A股/港股上市公司的新闻、公告和事件
+说明: 巨潮资讯公告仅适用于A股；港股自动跳过公告抓取。
 
 使用方法:
     python step4a_search_news.py \\
@@ -13,7 +14,7 @@ Step4a: News Search & Collection Tool
 
 功能:
     1. 读取Step2生成的标的清单
-    2. 从巨潮资讯搜索官方公告
+    2. 从巨潮资讯搜索官方公告（仅A股）
     3. 从新闻平台搜索行业和公司新闻
     4. 从事件日历获取重要事件
     5. 汇总并去重
@@ -29,6 +30,12 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set
 import argparse
 from collections import defaultdict
+from urllib.parse import quote
+from email.utils import parsedate_to_datetime
+import xml.etree.ElementTree as ET
+import html
+
+import requests
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -62,6 +69,15 @@ class NewsCollector:
         self.all_news = {}  # {code_name: [news_items]}
         self.dedup_set = set()  # 用于去重
 
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "Accept": "application/json, text/plain, */*",
+                "Referer": "https://www.cninfo.com.cn/new/index",
+            }
+        )
+
         # 确保输出目录存在
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -82,6 +98,21 @@ class NewsCollector:
             logger.error(f"加载标的清单失败: {e}")
             return False
 
+    def _is_a_share(self, stock: Dict) -> bool:
+        """
+        判断是否为A股标的
+
+        规则:
+        - market 显式标注为 A/CN/A股
+        - 或代码为6位数字
+        """
+        market = str(stock.get("market", "")).strip().upper()
+        if market in {"A", "A股", "CN", "CN-A", "A-SHARE"}:
+            return True
+
+        code = str(stock.get("code", "")).strip()
+        return code.isdigit() and len(code) == 6
+
     def search_cninfo_announcements(self, code: str, name: str) -> List[Dict]:
         """
         从巨潮资讯搜索官方公告
@@ -98,25 +129,25 @@ class NewsCollector:
         logger.info(f"搜索{code}_{name}的巨潮公告...")
 
         try:
-            # TODO: 实现真实的CNINFO API调用
-            # 这里需要调用巨潮资讯的API或web爬取
-            # 可选方案:
-            # 1. 使用selenium爬取网页
-            # 2. 调用巨潮资讯开放API
-            # 3. 使用AKShare库的巨潮接口
-
-            # 示例占位符
-            sample_announcement = {
-                "date": (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d"),
-                "source": "cninfo",
-                "source_name": self.SOURCES["cninfo"],
-                "title": f"[示例] {code} 发布关于...的公告",
-                "content_summary": "这是一个示例公告内容摘要",
-                "url": f"https://www.cninfo.com.cn/new/search?code={code}",
-                "category": "announcement",
-            }
-
-            logger.debug(f"[占位符] 将从巨潮搜索 {code} 的公告")
+            data = self._cninfo_query(code)
+            for item in data:
+                ann_time = item.get("announcementTime")
+                date_str = (
+                    datetime.fromtimestamp(int(ann_time) / 1000).strftime("%Y-%m-%d")
+                    if ann_time
+                    else ""
+                )
+                announcements.append(
+                    {
+                        "date": date_str,
+                        "source": "cninfo",
+                        "source_name": self.SOURCES["cninfo"],
+                        "title": item.get("announcementTitle", ""),
+                        "content_summary": item.get("announcementTitle", ""),
+                        "url": f"https://static.cninfo.com.cn/{item.get('adjunctUrl','')}",
+                        "category": "announcement",
+                    }
+                )
 
         except Exception as e:
             logger.warning(f"搜索{code}公告失败: {e}")
@@ -138,25 +169,35 @@ class NewsCollector:
         logger.info(f"搜索关于{name}的新闻...")
 
         try:
-            # TODO: 实现真实的新闻搜索
-            # 可选数据源:
-            # 1. 新浪财经API
-            # 2. 东方财富新闻
-            # 3. 同花顺资讯
-            # 4. 通用新闻API (如 NewsAPI 等)
+            rss_url = f"https://www.bing.com/news/search?q={quote(name)}&format=rss"
+            resp = self.session.get(rss_url, timeout=20)
+            resp.raise_for_status()
 
-            # 示例占位符
-            sample_news = {
-                "date": (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d"),
-                "source": "news",
-                "source_name": "新闻平台",
-                "title": f"[示例] {name} 发布新产品公告",
-                "content_summary": "这是一个示例新闻摘要",
-                "url": "https://example.com/news",
-                "category": "news",
-            }
+            root = ET.fromstring(resp.text)
+            for item in root.findall(".//item"):
+                title = item.findtext("title", default="").strip()
+                link = item.findtext("link", default="").strip()
+                pub_date = item.findtext("pubDate", default="").strip()
+                desc = item.findtext("description", default="").strip()
 
-            logger.debug(f"[占位符] 将从新闻网站搜索关于 {name} 的新闻")
+                date_str = ""
+                if pub_date:
+                    try:
+                        date_str = parsedate_to_datetime(pub_date).strftime("%Y-%m-%d")
+                    except Exception:
+                        date_str = ""
+
+                news_list.append(
+                    {
+                        "date": date_str,
+                        "source": "news",
+                        "source_name": "Bing News",
+                        "title": html.unescape(title),
+                        "content_summary": html.unescape(desc)[:200],
+                        "url": link,
+                        "category": "news",
+                    }
+                )
 
         except Exception as e:
             logger.warning(f"搜索{name}新闻失败: {e}")
@@ -179,26 +220,42 @@ class NewsCollector:
         logger.info(f"搜索{code}_{name}的重要事件...")
 
         try:
-            # TODO: 实现事件日历搜索
-            # 包括:
-            # 1. 财报发布日期
-            # 2. 分红除权日期
-            # 3. 重大会议日期
-            # 4. 产品发布会日期
-
-            # 示例占位符
-            sample_event = {
-                "date": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
-                "source": "events",
-                "source_name": self.SOURCES["events"],
-                "title": f"[示例] {name}将于{datetime.now().strftime('%m月%d日')}发布Q3财报",
-                "content_summary": "公司将发布最新季度财务报告",
-                "url": "https://example.com/event",
-                "category": "event",
-                "event_type": "earnings_report",
+            data = self._cninfo_query(code)
+            keywords = {
+                "earnings": ["业绩预告", "业绩快报", "定期报告", "年度报告"],
+                "dividend": ["分红", "派息", "送股", "转增"],
+                "meeting": ["股东大会", "业绩说明会", "投资者关系"],
+                "contract": ["重大合同", "中标", "签约", "战略合作"],
             }
 
-            logger.debug(f"[占位符] 将搜索 {code} 的重要事件")
+            for item in data:
+                title = item.get("announcementTitle", "")
+                ann_time = item.get("announcementTime")
+                date_str = (
+                    datetime.fromtimestamp(int(ann_time) / 1000).strftime("%Y-%m-%d")
+                    if ann_time
+                    else ""
+                )
+                event_type = None
+                for k, words in keywords.items():
+                    if any(w in title for w in words):
+                        event_type = k
+                        break
+                if not event_type:
+                    continue
+
+                events.append(
+                    {
+                        "date": date_str,
+                        "source": "events",
+                        "source_name": self.SOURCES["events"],
+                        "title": title,
+                        "content_summary": title,
+                        "url": f"https://static.cninfo.com.cn/{item.get('adjunctUrl','')}",
+                        "category": "event",
+                        "event_type": event_type,
+                    }
+                )
 
         except Exception as e:
             logger.warning(f"搜索{code}事件失败: {e}")
@@ -240,7 +297,11 @@ class NewsCollector:
             self.all_news[stock_key] = []
 
             # 从各数据源搜索
-            announcements = self.search_cninfo_announcements(code, name)
+            announcements = []
+            if self._is_a_share(stock):
+                announcements = self.search_cninfo_announcements(code, name)
+            else:
+                logger.info(f"非A股标的，跳过CNINFO公告: {code}_{name}")
             news_list = self.search_news_websites(name)
             events = self.search_events(code, name)
 
@@ -341,6 +402,45 @@ class NewsCollector:
             category = item.get("category", "unknown")
             categories[category] += 1
         return dict(categories)
+
+    @staticmethod
+    def _normalize_code(code: str) -> str:
+        return code.zfill(6)
+
+    @staticmethod
+    def _get_exchange(code: str) -> str:
+        code = code.zfill(6)
+        return "sh" if code.startswith("6") or code.startswith("9") else "sz"
+
+    def _cninfo_query(self, code: str) -> List[Dict]:
+        """查询巨潮资讯公告列表"""
+        url = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
+        code = self._normalize_code(code)
+        exchange = self._get_exchange(code)
+        stock_param = f"{code},{exchange}"
+        end_date = datetime.now().strftime("%Y-%m-%d")
+        start_date = (datetime.now() - timedelta(days=self.days)).strftime("%Y-%m-%d")
+
+        payload = {
+            "pageNum": 1,
+            "pageSize": 30,
+            "tabName": "fulltext",
+            "column": "szse" if exchange == "sz" else "sse",
+            "stock": stock_param,
+            "searchkey": "",
+            "secid": "",
+            "plate": "",
+            "category": "",
+            "trade": "",
+            "seDate": f"{start_date}~{end_date}",
+            "sortName": "announceTime",
+            "sortType": "desc",
+        }
+
+        resp = self.session.post(url, data=payload, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("announcements", []) if isinstance(data, dict) else []
 
 
 def main():

@@ -1,14 +1,18 @@
 # Investment Analysis Tools (投资分析工具集)
 
-本目录包含了 invest_analysis 技能的各个步骤的自动化工具脚本。
+本目录包含了 invest_analysis 技能的各个步骤的自动化工具脚本。自动化目前对 A 股支持更完整，港股部分环节需要手动补充。
 
 ## 🎯 工具概览
+
+**标的清单字段建议**：`name`、`track`、`code`、`market`
+- A股：`market: A`，`code`=6位
+- 港股：`market: HK`，`code`=5位（前导0保留）
 
 ### Step3a: Financial Report Download (财报下载)
 
 **文件**: `step3a_download_reports.py`
 
-**功能**: 从巨潮资讯自动下载 A 股上市公司的年报和季报
+**功能**: 从巨潮资讯自动下载 A 股上市公司的年报和季报（港股需手动）
 
 **使用方法**:
 ```bash
@@ -27,6 +31,35 @@ python step3a_download_reports.py \
 - (可选) 根据实际API实现需要的HTTP库 (requests, selenium, etc.)
 
 **注意**: 当前为框架实现，需要根据实际数据源（巨潮资讯API、Web爬取等）补充具体API调用代码
+
+---
+
+### Step6a: Research Report Download (研报下载) ⭐
+
+**文件**: `step6a_download_research_reports.py`
+
+**功能**: 从巨潮资讯自动搜索和下载各大券商的研究报告（A股上市公司）
+
+**使用方法**:
+```bash
+# 默认6个月
+python step6a_download_research_reports.py
+
+# 自定义周期
+python step6a_download_research_reports.py --days 90
+```
+
+**输出**:
+- `step6/reports/{代码_名称}/` - 下载的PDF研报
+- `step6/reports/research_reports_metadata.json` - 元数据
+- `step6/reports/research_reports_index.yaml` - 结构化索引
+- `step6/reports/step6a_download_report.md` - 下载报告
+
+**依赖**: `pyyaml`、`requests`
+
+**覆盖**: 16家主流券商，A股自动化，港股需手动补充
+
+**文档**: 见 `STEP6A_GUIDE.md`
 
 ---
 
@@ -89,7 +122,7 @@ python step3.5_supply_chain_verify.py \
 
 **文件**: `step4a_search_news.py`
 
-**功能**: 从多个数据源自动搜索和收集 A 股新闻、公告和事件
+**功能**: 从多个数据源自动搜索和收集 A 股/港股新闻、公告和事件（CNINFO公告仅A股）
 
 **使用方法**:
 ```bash
@@ -164,7 +197,7 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate  # Windows
 
 # 安装依赖
-pip install pyyaml
+pip install pyyaml requests
 # 根据需要安装其他依赖
 ```
 
@@ -198,12 +231,7 @@ python step4a_search_news.py \
 
 ### 如何扩展现有工具
 
-每个脚本都有 `TODO` 注释标记需要实现的部分。例如：
-
-```python
-# TODO: 实现真实的CNINFO API调用
-# 这里需要调用巨潮资讯的API或web爬取
-```
+已内置基础数据源（CNINFO公告 + Bing News RSS）。如需更高质量数据源，可自行扩展接入。
 
 ### 添加新的数据源
 
@@ -215,6 +243,27 @@ def search_custom_source(self, code: str) -> List[Dict]:
     # 实现你的搜索逻辑
     pass
 ```
+
+---
+
+## 🧰 API不可用时的替代方案
+
+当CNINFO或新闻源不可访问时，可使用以下手动/半自动流程：
+
+1) **财报下载（Step3a）**
+    - A股：手动在巨潮资讯搜索公司公告 → 下载PDF到 `step3/financials/{代码_名称}/`
+    - 港股：在 HKEXnews 或公司IR页面下载年报/中报/季报 → 放入同目录
+    - 文件命名建议：`YYYYMMDD_annual.pdf` / `YYYYMMDD_q1.pdf`
+
+2) **新闻收集（Step4a）**
+    - A股：交易所公告页/公司投资者关系页面
+    - 港股：HKEXnews公告页 + 公司IR页面
+    - 通过搜索引擎检索关键词（公司名+"公告"/"业绩"/"订单"/"合作"）
+    - 统一整理为 `step4/raw_data/{代码_名称}_news_raw.yaml`
+
+3) **事件日历**
+    - 财报披露日期、股东大会、业绩说明会可来自公司公告或IR页面
+    - 记录在同一YAML文件中，category设为 `event`
 
 ---
 

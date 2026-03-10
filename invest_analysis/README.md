@@ -1,4 +1,4 @@
-# Investment Analysis Skill (A股投资分析技能)
+# Investment Analysis Skill (A股/港股投资分析技能)
 
 <p align="center">
   <strong>🎯 系统化 AI 投研框架 | Systematic AI-Powered Investment Research</strong>
@@ -8,9 +8,9 @@
 
 ## 📖 概述 | Overview
 
-Investment Analysis Skill 是专为 A 股市场设计的系统化投资研究技能，提供从赛道筛选到择时分析的完整工作流程。通过结构化的提示词模板和跨模型验证机制，帮助投资者更高效地进行投资研究。
+Investment Analysis Skill 是专为 A 股与港股市场设计的系统化投资研究技能，提供从赛道筛选到择时分析的完整工作流程。通过结构化的提示词模板和跨模型验证机制，帮助投资者更高效地进行投资研究。
 
-The Investment Analysis Skill is a systematic investment research framework specifically designed for the A-share market, providing a complete workflow from sector selection to timing analysis. Through structured prompt templates and cross-model validation mechanisms, it helps investors conduct investment research more efficiently.
+The Investment Analysis Skill is a systematic investment research framework designed for both A-share and Hong Kong stock markets, providing a complete workflow from sector selection to timing analysis. Through structured prompt templates and cross-model validation mechanisms, it helps investors conduct investment research more efficiently.
 
 ---
 
@@ -65,7 +65,7 @@ Use this skill when you need to:
 
 | 模型 | 适用场景 | 优势 |
 |------|---------|-----|
-| **DeepSeek** | A 股专项分析 | 中文市场理解深入，A 股知识丰富 |
+| **DeepSeek** | A/H 股专项分析 | 中文市场理解深入，A/H 股知识丰富 |
 | **Gemini Deep Research** | 综合研究 | 网络搜索能力强，信息覆盖广 |
 | **ChatGPT** | 通用分析 | 逻辑推理能力强，结构化输出好 |
 
@@ -82,7 +82,7 @@ Use this skill when you need to:
 - `[未来1-2个月]` → 如 "2026年3-4月"
 
 ```text
-我正在进行 A 股短期热点研究。请结合[当前年份+月份]的市场环境，以及[未来 1-2 个月]即将发生的重大事件（如行业大会、政策发布、季节性因素），列出最有可能进行热门炒作的 3-5 个板块。
+我正在进行 A 股/港股短期热点研究。请结合[当前年份+月份]的市场环境，以及[未来 1-2 个月]即将发生的重大事件（如行业大会、政策发布、季节性因素），列出最有可能进行热门炒作的 3-5 个板块。
 
 要求：
 1) 按重要度和确定性排序
@@ -101,7 +101,7 @@ Use this skill when you need to:
 假设我们看好[人形机器人/低空经济/固态电池/商业航天]板块。请像一个专业的行业分析师一样，帮我拆解这个产业的核心供应链：
 
 1) 哪些环节价值量最高？（例如：丝杠、传感器、电池材料）
-2) 针对每个核心环节，A 股目前的绝对龙头分别是谁？
+2) 针对每个核心环节，A 股/港股目前的绝对龙头分别是谁？
 3) 有没有那种"铲子股"（不管谁赢，都需要用它的产品）？
 ```
 
@@ -158,33 +158,57 @@ Use this skill when you need to:
 赛道筛选（Step1）
     ↓
 产业链挖掘（Step2）
-    ↓
+  ↓
+┌──────────────────────────────────────┐
+│ 商品周期定位（Step2.5，资源股必做）  │
+│ └─ 供需基本面+周期四阶段识别         │
+└──────────────────────────────────────┘
+  ↓
 ┌──────────────────────────────────────┐
 │ 财报验证（Step3a/b/c）               │
 │ ├─ Step3a：财报获取 [自动]          │
 │ ├─ Step3b：内容提取 [自动]          │
 │ └─ Step3c：深度分析 [AI+人工] ⭐    │
 └──────────────────────────────────────┘
-    ↓
+  ↓
 ┌──────────────────────────────────────┐
 │ 产业链验证（Step3.5，可选但推荐）    │
 │ └─ 财报+新闻反向验证供应链           │
 └──────────────────────────────────────┘
-    ↓
+  ↓
+┌──────────────────────────────────────┐
+│ 地缘风险评估（Step3.6，资源股必做）  │
+│ └─ 供应链+客户+资产地缘+去全球化重估 │
+└──────────────────────────────────────┘
+  ↓
 ┌──────────────────────────────────────┐
 │ 新闻事件分析（Step4a/b/c）           │
 │ ├─ Step4a：新闻搜索 [自动]          │
 │ ├─ Step4b：分类标注 [AI+人工]       │
 │ └─ Step4c：冲突检查 [混合]          │
 └──────────────────────────────────────┘
-    ↓
+  ↓
 ┌──────────────────────────────────────┐
 │ 技术面与入场（Step5a/b/c）           │
 │ ├─ Step5a：数据计算 [自动]          │
 │ ├─ Step5b：趋势评估 [AI+人工]       │
 │ └─ Step5c：决策执行 [人工] ⭐      │
 └──────────────────────────────────────┘
-    ↓
+  ↓
+┌──────────────────────────────────────┐
+│ 研报交叉验证（Step6a/b/c，BUY股必做）│
+│ ├─ Step6a：研报检索下载 [半自动]    │
+│ ├─ Step6b：研报分析对比 [AI+人工]   │
+│ └─ Step6c：最终推荐更新 [人工] ⭐  │
+└──────────────────────────────────────┘
+  ↓
+┌──────────────────────────────────────┐
+│ 多视角反思（Step7a/b/c，最终决策必做）│
+│ ├─ Step7a：跨模型质疑 [AI+人工]    │
+│ ├─ Step7b：对抗性反思 [人工]       │
+│ └─ Step7c：最终信心校准 [人工] ⭐⭐ │
+└──────────────────────────────────────┘
+  ↓
 跨模型验证（Bonus，关键步骤）
 ```
 
@@ -193,20 +217,30 @@ Use this skill when you need to:
 #### **Step1 - 赛道筛选 (Sector Selection)**
 - **输入**：时间窗口（如 2026年Q1）、即将发生的事件
 - **输出**：3-5个潜力赛道 + 每个赛道的核心催化逻辑 + 代表龙头股
-- **文件**：`step1/01_赛道筛选_YYYYQx_A股潜在爆发行情.md`
+- **文件**：`step1/01_赛道筛选_YYYYQx_A股或港股潜在爆发行情.md`
 - **推荐模型**：DeepSeek + Gemini Deep Research
 
 #### **Step2 - 产业链挖掘 (Supply Chain Analysis)**
 - **输入**：Step1的赛道清单
 - **输出**：每个赛道的供应链分析 + 标的清单YAML
 - **文件**：`step2/02A~02E_产业链挖掘_*.md` + `step2/02_标的清单.yaml`
-- **分析重点**：价值量最高处、A股龙头、"铲子股"、竞争格局
+- **分析重点**：价值量最高处、A股/港股龙头、"铲子股"、竞争格局
+- **标的清单字段**：`name`、`track`、`code`、`market`
+  - A股：`market: A`，`code`=6位
+  - 港股：`market: HK`，`code`=5位（前导0保留）
+
+#### **Step2.5 - 商品周期定位 (Commodity Cycle Positioning, 资源股必做)**
+- **输入**：Step2产业链 + 行业供需数据
+- **输出**：周期阶段判断 + 投资窗口 + 风险触发点
+- **文件**：`step2.5/02.5_商品周期定位_YYYYQx.md`
+- **关键判断**：周期阶段（1-4）、价格/产能/库存共振、避免高位接飞刀
 
 #### **Step3a - 财报获取 (Financial Report Download) [自动化]**
 - **输入**：Step2的标的清单YAML
-- **流程**：自动从巨潮资讯下载年报和季报PDF
+- **流程**：自动从巨潮资讯下载年报和季报PDF（仅A股）
 - **输出**：`step3/financials/{代码_名称}/` 目录中的PDF文件
 - **工具**：`step3/tools/step3a_download_reports.py`
+- **港股说明**：从 HKEXnews 或公司IR页面手动下载年报/中报/季报，放入同一目录结构
 
 #### **Step3b - 财报内容提取 (Content Extraction) [自动化]**
 - **输入**：Step3a下载的PDF文件
@@ -233,11 +267,17 @@ Use this skill when you need to:
   - ✅ 是否存在新兴竞争对手或替代方案？
   - ✅ 有没有"单点风险"（关键公司失败整链崩溃）？
 
+#### **Step3.6 - 地缘风险评估 (Geopolitical Risk, 资源股必做)**
+- **输入**：Step3c结果 + 海外供应/客户/资产信息
+- **输出**：地缘风险评分 + 仓位上限建议
+- **文件**：`step3.6/03.6_地缘风险评估_YYYYQx.md`
+
 #### **Step4a - 新闻搜索 (News Collection) [自动化]**
 - **输入**：标的清单
-- **流程**：自动搜索CNINFO公告、新闻网站、事件日历（过去30-60天）
+- **流程**：自动搜索CNINFO公告（仅A股）、新闻网站、事件日历（过去30-60天）
 - **输出**：`step4/raw_data/` 目录中的原始新闻数据
 - **工具**：`step4/tools/step4a_search_news.py`
+- **港股说明**：公告建议从 HKEXnews 拉取或手工补录到同一YAML
 
 #### **Step4b - 新闻分类 (Classification & Tagging) [AI + 人工]**
 - **输入**：Step4a搜索的原始新闻
@@ -276,10 +316,25 @@ Use this skill when you need to:
 - **输出**：`step5/report/05_汇总_介入策略表.md`
 - **最终建议**：推荐买入/观望/规避 + 入场价格 + 止损位 + 目标价
 
+#### **Step6 - 研报交叉验证 (Research Report Cross-Validation, BUY股必做)**
+- **输入**：Step5c的BUY标的
+- **流程**：检索券商研报 → 对比观点 → 更新推荐与风险触发
+- **输出**：`step6/report/06_最终推荐(研报验证后).md`
+
+#### **Step7 - 多视角反思 (Multi-Perspective Reflection, 最终决策必做)**
+- **输入**：Step6更新后推荐
+- **流程**：跨模型质疑 → 对抗性反思 → 最终信心校准
+- **输出**：`step7/final/07_执行摘要.md` + `07_投资论证(一页纸).md`
+
 #### **跨模型验证 (Cross-Model Validation) - 可选但推荐**
 - **何时使用**：在关键决策点（特别是Step1、Step2、Step5c）
 - **方法**：用DeepSeek/Gemini/ChatGPT分别分析，对比结果
 - **收益**：减少单个模型偏差，提高置信度
+
+### ✅ Checklist使用建议
+- 开始前从 `invest_analysis/templates/checklist.md` 复制到工作目录
+- 每完成一个步骤，更新对应checkbox与关键发现
+- 每个阶段结束进行milestone检查，确保质量达标
 
 ---
 
@@ -297,6 +352,9 @@ project_root/
 │   ├── 02A_产业链挖掘_赛道1_YYYYQx.md
 │   ├── 02B_产业链挖掘_赛道2_YYYYQx.md
 │   └── 02_标的清单.yaml            # ⭐ 关键输入文件（给Step3/4/5使用）
+│
+├── step2.5/                         # Step2.5 输出：商品周期定位（资源股必做）
+│   └── 02.5_商品周期定位_YYYYQx.md
 │
 ├── step3/                          # Step3 输出：财报验证
 │   ├── financials/                 # Step3a 生成：PDF下载目录
@@ -328,6 +386,9 @@ project_root/
 │       ├── 03.5_供应链验证表.md     # 验证结果汇总
 │       └── 03.5_供应链风险地图.md   # 风险识别
 │
+├── step3.6/                        # Step3.6 输出：地缘风险评估（资源股必做）
+│   └── 03.6_地缘风险评估_YYYYQx.md
+│
 ├── step4/                          # Step4 输出：新闻与事件
 │   ├── raw_data/                   # Step4a 生成：原始新闻
 │   │   ├── 000001_平安银行_news_raw.yaml
@@ -357,6 +418,18 @@ project_root/
 │       ├── 05_汇总_技术信号表.md    # Step5b 生成
 │       └── 05_汇总_介入策略表.md    # Step5c 生成 ⭐ 最终推荐
 │
+├── step6/                          # Step6 输出：研报交叉验证（BUY股必做）
+│   ├── analysis/
+│   │   └── 06_*_研报交叉验证.md
+│   └── report/
+│       └── 06_最终推荐(研报验证后).md
+│
+├── step7/                          # Step7 输出：多视角反思与最终决策
+│   └── final/
+│       ├── 07_执行摘要.md
+│       ├── 07_投资论证(一页纸).md
+│       └── 07_最终组合配置.md
+│
 └── tools/                          # [可选] 自动化脚本
     ├── step3a_download_reports.py
     ├── step3b_extract_content.py
@@ -371,11 +444,16 @@ project_root/
 | 文件 | 生成步骤 | 用途 |
 |------|---------|------|
 | `step2/02_标的清单.yaml` | Step2 | ⭐ 关键：Step3/4/5都需要读取这个文件 |
+| `step2.5/02.5_商品周期定位_YYYYQx.md` | Step2.5 | 资源股周期定位与风险窗口 |
 | `step3/report/03_汇总_结论表.md` | Step3c | 基本面评估结果，Step5c需要 |
 | `step3.5/report/03.5_供应链验证表.md` | Step3.5 | 产业链置信度评分，Step5c参考 |
+| `step3.6/03.6_地缘风险评估_YYYYQx.md` | Step3.6 | 资源股地缘风险与仓位上限 |
 | `step4/report/04_汇总_新闻与事件表.md` | Step4c | 催化催物和时间线，Step5c需要 |
 | `step5/raw_data/` | Step5a | 技术数据CSV，Step5b/c需要 |
 | `step5/report/05_汇总_介入策略表.md` | Step5c | **最终推荐**：买入/观望/规避 |
+| `step6/report/06_最终推荐(研报验证后).md` | Step6c | 研报交叉验证后的更新结论 |
+| `step7/final/07_执行摘要.md` | Step7c | 最终执行摘要（最高优先级） |
+| `templates/checklist.md` | 模板 | 阶段性产出追踪与质量检查 |
 
 ---
 
