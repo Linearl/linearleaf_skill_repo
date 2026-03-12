@@ -60,6 +60,18 @@ git worktree add worktree_V1.87 V1.87
 - Doesn't affect main workspace
 - Supports all Git commands
 
+### Sub-agent Parallel Acceleration | Sub-agent 并行加速
+
+- After Stage 1, use `ask_questions` to confirm module priorities and analysis focus.
+- Spawn multiple sub-agents, each dedicated to one module or one analysis perspective.
+- Store each sub-agent output in isolated Stage 2 directories such as `stage2/subagent_01_xxx/`.
+- Merge all sub-agent outputs into Stage 2 summaries and the final version summary report.
+
+- 在 Stage 1 完成后，使用 `ask_questions` 确认模块优先级与分析焦点。
+- 并行创建多个 sub-agent，每个子代理负责一个模块或一个分析视角。
+- 子代理输出写入 Stage 2 下的隔离目录，例如 `stage2/subagent_01_xxx/`。
+- 在最终汇总阶段合并所有子代理结果，并写入版本总报告。
+
 ## Workflow Steps | 工作流步骤
 
 ### Preparation Phase | 准备阶段

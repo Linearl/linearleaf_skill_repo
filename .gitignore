@@ -80,3 +80,6 @@ test/
 
 # workspace: Local analysis workspace (not for submission)
 workspace/
+
+# Local image scratch assets (not for submission)
+image/

@@ -16,6 +16,7 @@ The Version Compare skill provides systematic version comparison and change anal
 - 📝 **Multiple Outputs** | 多种输出: Reports, update logs, upgrade guides
 - ⚠️ **Breaking Change Detection** | 破坏性变更检测: API and config changes
 - 📈 **Code Metrics** | 代码指标: Automated statistics collection
+- ⚡ **Sub-agent Parallel Acceleration** | 子代理并行加速: ask_questions确认优先级后并行深挖，分目录隔离输出
 
 ## Trigger Keywords | 触发关键词
 
@@ -46,8 +47,9 @@ version_compare/
 
 2. **Stage 2 - Module Deep Dive | 核心模块深度对比**
    - Bottom-up: tools → logic → algorithm
-   - User-confirmed module selection
-   - Periodic summaries
+   - ask_questions-guided module selection and priority confirmation
+   - Parallel sub-agent execution with isolated output directories (e.g., `subagent_01_xxx/`)
+   - Periodic summaries and merged findings
 
 3. **Stage 3 - Documentation | 文档变更分析**
    - Brief documentation review

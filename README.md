@@ -77,6 +77,8 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 性能分析
 - 架构审查
 - 技术债务识别
+- ask_questions 引导式检查点（阶段范围与优先级确认）
+- 首轮分析后支持 sub-agent 并行加速（多模块并行深挖）
 
 #### 🐛 debug_code - 调试技能
 
@@ -109,6 +111,8 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 版本差异分析
 - 变更影响评估
 - 更新日志生成
+- ask_questions 引导式检查点（模块优先级确认）
+- sub-agent 并行加速（多模块并行分析与汇总）
 
 #### 🖥️ html-presentation-generator - HTML 演示文稿生成技能
 
@@ -205,6 +209,8 @@ Provides systematic code analysis with overview-detail-summary structure:
 - Performance analysis
 - Architecture review
 - Technical debt identification
+- ask_questions-guided checkpoints for stage scope and priority confirmation
+- Sub-agent parallel acceleration after the first round for multi-module deep dives
 
 #### 🐛 debug_code - Debugging Skill
 
@@ -237,6 +243,8 @@ Systematic version comparison and change analysis:
 - Version difference analysis
 - Change impact assessment
 - Update log generation
+- ask_questions-guided checkpoints for module priority confirmation
+- Sub-agent parallel acceleration for multi-module analysis with merged summary
 
 #### 🖥️ html-presentation-generator - HTML Presentation Generator
 
