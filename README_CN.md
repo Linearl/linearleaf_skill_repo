@@ -31,6 +31,7 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 | 技能 | 说明 | 触发示例 |
 | --- | --- | --- |
 | 🔍 [analysis_code](analysis_code/) | 系统化代码分析 | "分析这段代码"、"代码质量评估" |
+| 🛠️ [code-audit-fix](code-audit-fix/) | 缺陷扫描与分批修复 | "审计并修复代码问题"、"分批扫描缺陷并修复" |
 | 🐛 [debug_code](debug_code/) | 系统化代码调试 | "帮我调试"、"修复这个错误" |
 | 🔧 [refactor_code](refactor_code/) | 系统化代码重构 | "重构代码"、"架构改进" |
 | 📁 [file_organize](file_organize/) | 系统化文件整理 | "整理文件"、"清理目录" |
@@ -81,6 +82,13 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 技术债务识别
 - ask_questions 引导式检查点（阶段范围与优先级确认）
 - 首轮分析后支持 sub-agent 并行加速
+
+### 🛠️ code-audit-fix
+
+- 全项目缺陷扫描与优先级归类
+- 按优先级分批修复流程
+- 修复前后多轮交叉复核
+- 支持 CI 非交互执行与结果契约输出
 
 ### 🐛 debug_code
 

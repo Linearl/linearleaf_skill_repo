@@ -5,6 +5,7 @@
 ## Skills Index
 
 - [analysis_code](analysis_code) — 代码分析与结构化洞察
+- [code-audit-fix](../../code-audit-fix) — 代码缺陷扫描、分批修复与多轮复核
 - [debug_code](debug_code) — 调试与问题定位
 - [file_organize](file_organize) — 文件整理与结构重构
 - [html-presentation-generator](html-presentation-generator) — 讲稿到 HTML 演示文稿生成与合并校验

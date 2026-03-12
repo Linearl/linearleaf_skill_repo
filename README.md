@@ -31,6 +31,7 @@ We are not inventing an entirely new collaboration logic. We are translating pro
 | Skill | Description | Trigger Examples |
 | --- | --- | --- |
 | 🔍 [analysis_code](analysis_code/) | Systematic code analysis | "analyze this code", "code quality assessment" |
+| 🛠️ [code-audit-fix](code-audit-fix/) | Defect scanning and staged batch remediation | "audit and fix code issues", "scan defects and repair in batches" |
 | 🐛 [debug_code](debug_code/) | Systematic debugging | "help me debug", "fix this error" |
 | 🔧 [refactor_code](refactor_code/) | Systematic refactoring | "refactor code", "improve architecture" |
 | 📁 [file_organize](file_organize/) | Systematic file organization | "organize files", "clean up directory" |
@@ -81,6 +82,13 @@ Skills are dynamically loaded based on your request context.
 - Technical debt identification
 - ask_questions-guided checkpoints for stage scope and priority confirmation
 - Sub-agent parallel acceleration after the first round
+
+### 🛠️ code-audit-fix
+
+- Project-wide defect scanning and prioritization
+- Batch-by-priority remediation workflow
+- Multi-round cross-review before and after fixes
+- CI-ready non-interactive execution and result contract
 
 ### 🐛 debug_code
 

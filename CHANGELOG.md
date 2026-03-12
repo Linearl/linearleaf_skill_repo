@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added **code-audit-fix** skill documentation entry for defect scanning, staged batch remediation, multi-round review, and CI-oriented execution.
+
 ### Changed
 
+- Updated skill indexes and readmes to include `code-audit-fix` (`README.md`, `README_CN.md`, `.github/skills/README.md`, `CLAUDE.md`)
 - Renamed skill directory from `html-deck-pipeline-skill` to `html-presentation-generator`
 - Updated the renamed skill's metadata and reference descriptions
 - Updated project documentation to include `html-presentation-generator`

@@ -2,7 +2,7 @@
 
 ## Repository Purpose
 
-This is a **Claude Code Skills Repository** containing custom skills that extend Claude's capabilities for systematic software development workflows. Skills are specialized prompts with supporting documentation that guide Claude to perform expert-level tasks in code analysis, debugging, refactoring, file organization, version comparison, HTML presentation generation, and skill creation.
+This is a **Claude Code Skills Repository** containing custom skills that extend Claude's capabilities for systematic software development workflows. Skills are specialized prompts with supporting documentation that guide Claude to perform expert-level tasks in code analysis, defect auditing and staged remediation, debugging, refactoring, file organization, version comparison, HTML presentation generation, and skill creation.
 
 ## Repository Structure
 
@@ -14,6 +14,12 @@ linearleaf_skill_repo/
 │   ├── examples/                      # Example usage and sample tasks
 │   ├── templates/                     # Analysis report templates
 │   └── tools/                         # Helper scripts and utilities
+├── code-audit-fix/                    # Code Audit and Batch Fix Skill
+│   ├── SKILL.md                       # Main skill definition
+│   ├── config/                        # Execution and result schemas/config
+│   ├── docs/                          # Runbooks and contracts
+│   ├── scripts/                       # Validation scripts
+│   └── templates/                     # Report and decision templates
 ├── debug_code/                        # Debugging Skill
 │   ├── SKILL.md                       # Main skill definition
 │   ├── README.md                      # User-facing documentation
@@ -71,6 +77,10 @@ linearleaf_skill_repo/
 ### 1. analysis_code - Code Analysis Skill
 **Purpose**: Systematic code analysis with overview-detail-summary structure
 **When to use**: Code quality assessment, performance analysis, architecture review, technical debt identification
+
+### 9. code-audit-fix - Code Audit and Batch Fix Skill
+**Purpose**: Systematic defect scanning with staged batch remediation and closure validation
+**When to use**: Project-wide defect audits, priority-based repair loops, multi-round review, and CI/non-interactive repair runs
 
 ### 2. debug_code - Debugging Skill
 **Purpose**: 6-step debugging cycle methodology
