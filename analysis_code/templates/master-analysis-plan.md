@@ -123,9 +123,19 @@
 
 **确认状态**: ⏳ 等待确认 / ✅ 已确认
 
-**用户反馈**: 
+### ask_questions 确认卡片（建议）
+
+- 问题: `是否批准分析计划？`
+- 选项A: `批准`
+- 选项B: `自定义（由用户填写）`
+- 配置建议: `allowFreeformInput=true`
+- 处理规则:
+  - 若选择“批准”，进入阶段二
+  - 若选择“自定义”，根据用户反馈更新计划后再次确认
+
+**用户反馈**:
 [记录用户对计划的调整意见]
 
 ---
 
-*模板版本: 1.0 | 基于 analysis_system/templates/planning-master-analysis-plan.md*
+> 模板版本: 1.0 | 基于 analysis_system/templates/planning-master-analysis-plan.md
