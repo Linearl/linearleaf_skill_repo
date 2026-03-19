@@ -38,6 +38,7 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 | 📊 [version_compare](version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
 | 💰 [invest_analysis](invest_analysis/) | A股投资分析 | "分析这个板块"、"财报验证" |
 | 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML 演示文稿生成流水线 | "根据讲稿生成HTML演示"、"分镜合并并校验页序" |
+| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | 进阶版 HTML deck 流水线（更细粒度控制） | "上下文过长难以单轮生成"、"分镜拆分并行生成后合并校验" |
 | 🏗️ [skill_builder](skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
 
 ## 🚀 快速开始
@@ -122,6 +123,12 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 - 分片 HTML 生成与合并构建
 - 页序一致性与质量门禁校验
 - 预览迭代与改进闭环
+
+### 🎬 html-deck-pipeline-skill
+
+- 面向长上下文讲稿的端到端 HTML deck 流水线
+- 分镜先行、可并行分片生成、合并与门禁校验一体化
+- 风格描述/展示文件成对维护，支持版本递增与舞台比例配置
 
 ### 🏗️ skill_builder
 

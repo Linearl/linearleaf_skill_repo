@@ -8,6 +8,7 @@
 - [code-audit-fix](code-audit-fix) — 代码缺陷扫描、分批修复与多轮复核
 - [debug_code](debug_code) — 调试与问题定位
 - [file_organize](file_organize) — 文件整理与结构重构
+- [html-deck-pipeline-skill](html-deck-pipeline-skill) — 进阶 HTML deck 流水线与分阶段门禁控制
 - [html-presentation-generator](html-presentation-generator) — 讲稿到 HTML 演示文稿生成与合并校验
 - [invest_analysis](invest_analysis) — A股系统化投研流程
 - [refactor_code](refactor_code) — 代码重构与可读性提升

@@ -38,6 +38,7 @@ We are not inventing an entirely new collaboration logic. We are translating pro
 | 📊 [version_compare](version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
 | 💰 [invest_analysis](invest_analysis/) | A-share investment analysis | "analyze this sector", "verify financial report" |
 | 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML presentation generation pipeline | "generate HTML slides from script", "merge parts and validate page order" |
+| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | Advanced HTML deck pipeline with fine-grained stage control | "context too long for one-shot deck", "split storyboard and generate parts in parallel" |
 | 🏗️ [skill_builder](skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
 
 ## 🚀 Quick Start
@@ -122,6 +123,12 @@ Skills are dynamically loaded based on your request context.
 - Generate partial HTML files and merge into final deck
 - Validate page order and quality gates
 - Iterative preview and controlled improvements
+
+### 🎬 html-deck-pipeline-skill
+
+- End-to-end HTML script pipeline for long-context deck generation
+- Storyboard-first workflow with optional parallel part generation and merge validation
+- Fine-grained stage control with style contract/showcase pairing and versioned outputs
 
 ### 🏗️ skill_builder
 

@@ -55,6 +55,12 @@ linearleaf_skill_repo/
 │   ├── references/                    # Workflow and numbering references
 │   ├── scripts/                       # Validation and merge helper scripts
 │   └── agents/                        # Embedded agent presets for portability
+├── html-deck-pipeline-skill/          # Advanced HTML Deck Pipeline Skill
+│   ├── SKILL.md                       # Main skill definition
+│   ├── references/                    # Stage gates and workflow references
+│   ├── templates/                     # Pipeline templates
+│   ├── scripts/                       # Validation and merge helper scripts
+│   └── agents/                        # Embedded agent presets
 ├── .github/                           # VS Code Agent Skills testing directory
 │   └── skills/                        # Copies of all skills for testing
 │       ├── analysis_code/
@@ -64,7 +70,8 @@ linearleaf_skill_repo/
 │       ├── skill_builder/
 │       ├── version_compare/
 │       ├── invest_analysis/
-│       └── html-presentation-generator/
+│       ├── html-presentation-generator/
+│       └── html-deck-pipeline-skill/
 ├── CLAUDE.md                          # This file - Claude Code guidance
 ├── README.md                          # Project overview and documentation
 ├── LICENSE                            # MIT License
@@ -126,6 +133,13 @@ linearleaf_skill_repo/
 - Part HTML generation and merged deck build
 - Page order validation and quality gate checks
 - Iterative preview and controlled revision loop
+
+### 10. html-deck-pipeline-skill - Advanced HTML Deck Pipeline Skill
+**Purpose**: End-to-end HTML deck pipeline with finer stage-level control and style-contract governance
+**When to use**:
+- Long-context deck generation where one-shot output is unstable
+- Storyboard splitting with optional parallel part generation and merge validation
+- Style contract/showcase paired maintenance with versioned outputs and configurable stage ratio
 
 ## Working with This Repository
 

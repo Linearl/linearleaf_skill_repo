@@ -1,0 +1,1524 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dark Theme 2 风格示例-合并(v-02)</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-deep: #040914;
+      --surface-1: rgba(13, 24, 40, 0.92);
+      --surface-2: rgba(20, 34, 56, 0.78);
+      --surface-3: rgba(35, 55, 86, 0.58);
+      --glass-bg: rgba(255, 255, 255, 0.04);
+      --glass-bd: rgba(255, 255, 255, 0.08);
+      --text: #eef4ff;
+      --text-sec: #b9c7e6;
+      --text-faint: #8393b5;
+      --status: #d8e4ff;
+      --accent: #8ec5ff;
+      --accent-strong: #4ea1ff;
+      --accent-soft: rgba(142, 197, 255, 0.18);
+      --brand: #89f0ff;
+      --ok: #62e3b0;
+      --warn: #ffd27a;
+      --risk: #ff8f9f;
+      --info: #a48cff;
+      --tip-bg: rgba(98, 227, 176, 0.12);
+      --tip-bd: rgba(98, 227, 176, 0.34);
+      --shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.28);
+      --shadow-strong: 0 28px 72px rgba(0, 0, 0, 0.42);
+      --texture-grid: rgba(142, 197, 255, 0.08);
+      --code-bg: #0a1627;
+      --focus-ring: #f7d66a;
+      --font-main: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue", sans-serif;
+      --font-code: "Cascadia Code", "Fira Code", "Source Code Pro", "Microsoft YaHei UI", "Consolas", monospace;
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --panel-pad: 1.1rem;
+      --transition-fast: 220ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-main);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(142, 197, 255, 0.18), transparent 26%),
+        radial-gradient(circle at 86% 12%, rgba(137, 240, 255, 0.14), transparent 18%),
+        radial-gradient(circle at 50% 100%, rgba(98, 227, 176, 0.09), transparent 26%),
+        linear-gradient(180deg, #08111d 0%, #06101a 42%, #040812 100%);
+      background-attachment: fixed;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .sr-only:not(:focus):not(:active) {
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      overflow: hidden;
+      position: absolute;
+      white-space: nowrap;
+      width: 1px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 30;
+      transform: translateY(-240%);
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #08111d;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform var(--transition-fast);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 4px;
+    }
+
+    .site-header {
+      width: min(1600px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 1rem 0 0.4rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .site-kicker {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: baseline;
+      color: var(--text-sec);
+      font-size: 0.95rem;
+    }
+
+    .site-kicker strong {
+      color: var(--text);
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .site-note {
+      color: var(--text-faint);
+      font-size: 0.86rem;
+    }
+
+    main {
+      width: min(1600px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 0.35rem 0 1.4rem;
+    }
+
+    .deck-shell {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .deck {
+      position: relative;
+      width: min(96vw, calc((100vh - 152px) * 16 / 9));
+      max-width: 1600px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 152px);
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+        linear-gradient(140deg, rgba(12, 22, 38, 0.98), rgba(5, 10, 18, 0.98));
+      box-shadow: var(--shadow-strong);
+      isolation: isolate;
+    }
+
+    .deck::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--texture-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--texture-grid) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.12));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow: auto;
+      padding: 2rem 2.1rem 1.7rem;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(142, 197, 255, 0.12), transparent 22%),
+        radial-gradient(circle at 84% 16%, rgba(137, 240, 255, 0.1), transparent 18%),
+        linear-gradient(180deg, rgba(13, 24, 40, 0.96), rgba(5, 10, 18, 0.96));
+      z-index: 1;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1.1rem;
+      animation: slideFade 220ms ease;
+    }
+
+    @keyframes slideFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-head,
+    .slide-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .eyebrow,
+    .page-chip,
+    .chip,
+    .mini-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      border-radius: 999px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .eyebrow,
+    .chip,
+    .mini-chip {
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      font-weight: 700;
+    }
+
+    .eyebrow,
+    .chip {
+      padding: 0.42rem 0.74rem;
+      font-size: 0.84rem;
+    }
+
+    .mini-chip {
+      padding: 0.34rem 0.62rem;
+      font-size: 0.76rem;
+    }
+
+    .page-chip {
+      padding: 0.42rem 0.74rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--status);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+
+    .slide-foot {
+      color: var(--text-faint);
+      font-size: 0.86rem;
+    }
+
+    .slide-title {
+      margin: 0.45rem 0 0.7rem;
+      font-size: clamp(1.85rem, 3vw, 3rem);
+      line-height: 1.18;
+      letter-spacing: 0.01em;
+    }
+
+    .slide-lede {
+      margin: 0;
+      max-width: 46rem;
+      color: var(--text-sec);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+
+    .muted {
+      color: var(--text-faint);
+    }
+
+    .emphasis {
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    .ok {
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .warn {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .risk {
+      color: var(--risk);
+      font-weight: 700;
+    }
+
+    .code {
+      font-family: var(--font-code);
+      background: rgba(10, 22, 39, 0.88);
+      padding: 0.12rem 0.4rem;
+      border-radius: 8px;
+    }
+
+    .panel,
+    .metric,
+    .step,
+    .lane,
+    .compare-card,
+    .action-card,
+    .summary-card,
+    .fact-row {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        var(--shadow-soft);
+      border-radius: var(--radius-md);
+    }
+
+    .panel,
+    .metric,
+    .step,
+    .lane,
+    .compare-card,
+    .action-card,
+    .summary-card,
+    .fact-row {
+      padding: var(--panel-pad);
+    }
+
+    .panel h3,
+    .panel h4,
+    .metric strong,
+    .compare-card strong,
+    .action-card strong,
+    .summary-card strong,
+    .lane strong,
+    .step strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: var(--text);
+    }
+
+    .panel p,
+    .panel li,
+    .metric p,
+    .compare-card li,
+    .action-card li,
+    .summary-card p,
+    .lane p,
+    .lane li,
+    .step p,
+    .fact-row p,
+    .fact-row li {
+      margin: 0;
+      color: var(--text-sec);
+      line-height: 1.62;
+    }
+
+    .panel ul,
+    .compare-card ul,
+    .action-card ul,
+    .lane ul,
+    .fact-row ul {
+      margin: 0.55rem 0 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.38rem;
+    }
+
+    .deck-chrome.bottom {
+      width: min(96vw, calc((100vh - 152px) * 16 / 9));
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .status-panel {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      background: rgba(7, 14, 24, 0.88);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        var(--shadow-soft);
+      color: var(--status);
+      font-size: 0.88rem;
+    }
+
+    #pageNum {
+      font-family: var(--font-code);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .layout-cover {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(78, 161, 255, 0.26), transparent 28%),
+        radial-gradient(circle at 78% 18%, rgba(137, 240, 255, 0.16), transparent 18%),
+        radial-gradient(circle at 82% 76%, rgba(164, 140, 255, 0.14), transparent 18%),
+        linear-gradient(180deg, rgba(8, 18, 32, 0.98), rgba(4, 9, 20, 0.98));
+    }
+
+    .cover-body {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .cover-copy {
+      display: grid;
+      gap: 1rem;
+      align-content: space-between;
+    }
+
+    .cover-title {
+      margin: 0.55rem 0 0.7rem;
+      font-size: clamp(2.6rem, 4.8vw, 4.8rem);
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+    }
+
+    .cover-lede {
+      margin: 0;
+      max-width: 44rem;
+      color: var(--text-sec);
+      font-size: 1.15rem;
+      line-height: 1.72;
+    }
+
+    .tag-row,
+    .mini-grid,
+    .action-grid,
+    .summary-grid,
+    .evidence-grid,
+    .compare-grid,
+    .closing-grid {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .tag-row {
+      grid-template-columns: repeat(3, max-content);
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .cover-side {
+      display: grid;
+      gap: 0.9rem;
+      align-content: end;
+    }
+
+    .mini-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric {
+      display: grid;
+      gap: 0.25rem;
+      min-height: 8.2rem;
+    }
+
+    .metric strong {
+      color: var(--text-sec);
+      font-size: 0.9rem;
+    }
+
+    .metric .metric-value {
+      font-family: var(--font-code);
+      font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+      font-weight: 800;
+      color: var(--brand);
+      line-height: 1;
+    }
+
+    .metric .metric-sub {
+      color: var(--text-faint);
+      font-size: 0.88rem;
+    }
+
+    .quote-box {
+      padding: 1.2rem 1.25rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(142, 197, 255, 0.12), rgba(164, 140, 255, 0.08));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        var(--shadow-soft);
+    }
+
+    .quote-box p {
+      margin: 0;
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+
+    .layout-navigation .nav-body {
+      display: grid;
+      grid-template-columns: 1.45fr 0.92fr;
+      gap: 1rem;
+    }
+
+    .route-rail {
+      display: grid;
+      gap: 0.85rem;
+      align-content: start;
+    }
+
+    .route-stage {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.85rem;
+      align-items: center;
+      padding: 1rem 1.05rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        var(--shadow-soft);
+    }
+
+    .stage-no {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-code);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--bg-deep);
+      background: linear-gradient(135deg, var(--accent), var(--brand));
+      box-shadow: 0 12px 30px rgba(78, 161, 255, 0.22);
+    }
+
+    .stage-copy strong {
+      display: block;
+      margin-bottom: 0.22rem;
+      font-size: 1rem;
+    }
+
+    .stage-copy p {
+      margin: 0;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+
+    .stage-check {
+      font-size: 0.84rem;
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .nav-side {
+      display: grid;
+      gap: 0.9rem;
+      align-content: start;
+    }
+
+    .tip-card {
+      padding: 1rem 1.05rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--tip-bg), rgba(255, 255, 255, 0.03));
+      box-shadow:
+        inset 0 0 0 1px var(--tip-bd),
+        var(--shadow-soft);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .tip-card strong {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .layout-process .process-body {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 1rem;
+    }
+
+    .lane-stack {
+      display: grid;
+      gap: 0.9rem;
+      align-content: start;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 9rem 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .lane-label {
+      display: grid;
+      gap: 0.36rem;
+    }
+
+    .lane-label .lane-id {
+      font-family: var(--font-code);
+      color: var(--brand);
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+    }
+
+    .lane-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .step {
+      min-height: 9.4rem;
+    }
+
+    .step .step-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.6rem;
+      align-items: baseline;
+      margin-bottom: 0.45rem;
+    }
+
+    .step-no {
+      font-family: var(--font-code);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+
+    .step-state {
+      color: var(--ok);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .process-side {
+      display: grid;
+      gap: 0.9rem;
+      align-content: start;
+    }
+
+    .fact-row {
+      display: grid;
+      grid-template-columns: 7.2rem 1fr;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .fact-key {
+      font-family: var(--font-code);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.84rem;
+      letter-spacing: 0.05em;
+    }
+
+    .layout-evidence .evidence-body {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .evidence-grid {
+      grid-template-columns: 1.15fr 1fr;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .matrix {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 0.6rem;
+      padding: 0.8rem 0.95rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .matrix-row strong,
+    .matrix-row span {
+      line-height: 1.55;
+    }
+
+    .matrix-row span {
+      color: var(--text-sec);
+    }
+
+    .quote-panel {
+      display: grid;
+      align-content: center;
+      padding: 1.3rem;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(137, 240, 255, 0.12), rgba(164, 140, 255, 0.08));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        var(--shadow-soft);
+    }
+
+    .quote-panel blockquote {
+      margin: 0;
+      color: var(--text);
+      font-size: 1.08rem;
+      line-height: 1.78;
+    }
+
+    .layout-compare .compare-body {
+      display: grid;
+      grid-template-columns: 1.05fr 1.05fr 0.9fr;
+      gap: 1rem;
+    }
+
+    .compare-card {
+      display: grid;
+      gap: 0.75rem;
+      min-height: 22rem;
+    }
+
+    .compare-card.good {
+      background: linear-gradient(180deg, rgba(98, 227, 176, 0.12), rgba(255, 255, 255, 0.015));
+    }
+
+    .compare-card.caution {
+      background: linear-gradient(180deg, rgba(255, 210, 122, 0.12), rgba(255, 255, 255, 0.015));
+    }
+
+    .decision-list {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .decision-item {
+      padding: 0.8rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .decision-item strong {
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .layout-action .action-body {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 1rem;
+    }
+
+    .action-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .action-card {
+      min-height: 9.4rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .action-card .owner {
+      color: var(--brand);
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .timeline-board {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 4.8rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      padding: 0.82rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .timeline-row .time {
+      font-family: var(--font-code);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .layout-closing {
+      background:
+        radial-gradient(circle at 14% 18%, rgba(98, 227, 176, 0.16), transparent 20%),
+        radial-gradient(circle at 84% 18%, rgba(142, 197, 255, 0.14), transparent 18%),
+        linear-gradient(180deg, rgba(10, 19, 32, 0.98), rgba(4, 9, 20, 0.98));
+    }
+
+    .closing-body {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .summary-card {
+      min-height: 9.8rem;
+    }
+
+    .closing-grid {
+      align-content: end;
+    }
+
+    .closing-quote {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      line-height: 1.42;
+    }
+
+    .closing-line {
+      margin: 0;
+      color: var(--text-sec);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1180px) {
+      .deck,
+      .deck-chrome.bottom {
+        width: 100%;
+      }
+
+      .slide {
+        padding: 1.45rem 1.35rem 1.2rem;
+      }
+
+      .cover-body,
+      .layout-navigation .nav-body,
+      .layout-process .process-body,
+      .layout-evidence .evidence-body,
+      .evidence-grid,
+      .layout-compare .compare-body,
+      .layout-action .action-body,
+      .closing-body,
+      .lane,
+      .fact-row,
+      .timeline-row {
+        grid-template-columns: 1fr;
+      }
+
+      .tag-row,
+      .mini-grid,
+      .metric-strip,
+      .summary-grid,
+      .action-grid,
+      .lane-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .site-header,
+      main {
+        width: calc(100vw - 20px);
+      }
+
+      .status-panel,
+      .site-kicker {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#maincontent">跳到主要内容</a>
+  <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <header class="site-header">
+    <div class="site-kicker">
+      <strong>Dark Theme 2 · Midnight Rail No-Border</strong>
+      <span>深色、无边框、7 页高密度示例：封面 / 导航 / 流程 / 证据 / 对比 / 行动 / 底页</span>
+    </div>
+    <div class="site-note">示例主题：把“日常工作里的 AI 协作技巧”讲成一套可执行、可验证、可复用的组内分享 deck。</div>
+  </header>
+
+  <main id="maincontent" tabindex="-1">
+    <div class="deck-shell">
+      <div class="deck" aria-label="Dark Theme 2 风格展示讲稿">
+        <section class="slide active layout-cover mode-cover" data-index="0" aria-labelledby="slide-0-title">
+          <div class="slide-head">
+            <span class="eyebrow">P1 · 封面</span>
+            <span class="page-chip" aria-label="第 1 页，共 7 页">01 / 07</span>
+          </div>
+          <div class="cover-body">
+            <div class="cover-copy">
+              <div>
+                <div class="tag-row">
+                  <span class="chip">组内分享</span>
+                  <span class="chip">AI 协作</span>
+                  <span class="chip">可执行方法</span>
+                </div>
+                <h1 id="slide-0-title" class="cover-title">大模型在日常工作中的应用技巧</h1>
+                <p class="cover-lede">不是“会不会用”，而是<span class="emphasis">怎样把 AI 变成稳定产出</span>：让问题更早澄清、方案更快对比、验证更少返工、沉淀更像制度。</p>
+              </div>
+              <div class="quote-box">
+                <p>一句话定位：<span class="ok">先把问题问对</span>，再把工作拆对，最后把判断权留在人手里——AI 才不会把效率变成返工。</p>
+              </div>
+            </div>
+            <aside class="cover-side" aria-label="封面摘要">
+              <div class="mini-grid">
+                <article class="metric">
+                  <strong>分享结构</strong>
+                  <span class="metric-value">7 页</span>
+                  <span class="metric-sub">从路径到动作完整闭环</span>
+                </article>
+                <article class="metric">
+                  <strong>核心动作</strong>
+                  <span class="metric-value">3 步</span>
+                  <span class="metric-sub">澄清 → 对比 → 验证</span>
+                </article>
+                <article class="metric">
+                  <strong>协作约束</strong>
+                  <span class="metric-value">1 份</span>
+                  <span class="metric-sub">统一输入与验收口径</span>
+                </article>
+                <article class="metric">
+                  <strong>会后目标</strong>
+                  <span class="metric-value">72h</span>
+                  <span class="metric-sub">产出团队最小实践清单</span>
+                </article>
+              </div>
+              <article class="panel">
+                <h3>适合谁看</h3>
+                <ul>
+                  <li>需要写方案、做分析、跑流程、协同交付的人。</li>
+                  <li>经常遇到“AI 很快，但结果不稳”的团队。</li>
+                  <li>想把个人技巧升级成团队协议的负责人。</li>
+                </ul>
+              </article>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>深色沉浸 + 无边框分层 + 大标题封面</span>
+            <span>主题先立住，再讲方法</span>
+          </div>
+        </section>
+
+        <section class="slide layout-navigation mode-route" data-index="1" aria-labelledby="slide-1-title">
+          <div class="slide-head">
+            <span class="eyebrow">P2 · 导航</span>
+            <span class="page-chip" aria-label="第 2 页，共 7 页">02 / 07</span>
+          </div>
+          <div class="nav-body">
+            <div class="route-rail">
+              <div>
+                <span class="chip">阅读路径</span>
+                <h2 id="slide-1-title" class="slide-title">从“会用工具”切到“会组织工作流”</h2>
+                <p class="slide-lede">导航页要帮观众先拿到地图：今天不是讲零散技巧，而是讲一条从问题输入、执行过程到团队收口的路线。</p>
+              </div>
+              <article class="route-stage">
+                <div class="stage-no">01</div>
+                <div class="stage-copy">
+                  <strong>先把问题框清楚</strong>
+                  <p>背景、目标、约束、验收四件套先说全，避免 AI 在模糊空间里自由发挥。</p>
+                </div>
+                <div class="stage-check">起点</div>
+              </article>
+              <article class="route-stage">
+                <div class="stage-no">02</div>
+                <div class="stage-copy">
+                  <strong>再把方案拉开差异</strong>
+                  <p>让 AI 同时给出候选路径、边界条件和适用场景，不要只拿一个答案就匆忙开工。</p>
+                </div>
+                <div class="stage-check">分流</div>
+              </article>
+              <article class="route-stage">
+                <div class="stage-no">03</div>
+                <div class="stage-copy">
+                  <strong>最后把验证前置</strong>
+                  <p>先写测试口径、校验命令、回退条件，再让 AI 参与修改，这样快得更稳。</p>
+                </div>
+                <div class="stage-check">收口</div>
+              </article>
+            </div>
+            <aside class="nav-side">
+              <article class="panel">
+                <h3>本次 7 页怎么分工</h3>
+                <ul>
+                  <li>P1：让主题和价值立刻可复述。</li>
+                  <li>P2：给路线图，降低听众迷路概率。</li>
+                  <li>P3~P6：分别回答“怎么做、凭什么、为什么改、做什么”。</li>
+                  <li>P7：把结论回收成会后动作。</li>
+                </ul>
+              </article>
+              <div class="tip-card" role="note" aria-label="阅读提示">
+                <strong>推荐阅读顺序</strong>
+                先看 P3 的流程，再看 P4 的证据和 P5 的取舍，最后到 P6 直接拿行动清单。这样不会被“漂亮观点”提前带偏。
+              </div>
+              <article class="panel">
+                <h3>这页要解决的痛点</h3>
+                <p>很多分享一开场就灌观点，听众像被推上跑步机。导航页的任务，是先把路灯打开。</p>
+              </article>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>路径轨道 + 说明侧栏</span>
+            <span>先给地图，再讲细节</span>
+          </div>
+        </section>
+
+        <section class="slide layout-process mode-flow" data-index="2" aria-labelledby="slide-2-title">
+          <div class="slide-head">
+            <span class="eyebrow">P3 · 流程</span>
+            <span class="page-chip" aria-label="第 3 页，共 7 页">03 / 07</span>
+          </div>
+          <div class="process-body">
+            <div class="lane-stack">
+              <div>
+                <span class="chip">执行闭环</span>
+                <h2 id="slide-2-title" class="slide-title">把 AI 协作拆成“输入层、决策层、验证层”三条泳道</h2>
+                <p class="slide-lede">流程页不只说明顺序，还要说明谁做判断、何时停下来、哪里需要回滚。否则流程图只是艺术体操。</p>
+              </div>
+              <article class="lane">
+                <div class="lane-label">
+                  <span class="lane-id">INPUT</span>
+                  <strong>输入层</strong>
+                  <p class="muted">先让问题变具体</p>
+                </div>
+                <div class="lane-grid">
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S1</span><span class="step-state">必做</span></div>
+                    <strong>补齐四段输入</strong>
+                    <p>把背景、目标、约束、验收标准写成明文，避免 AI 在空白地带乱长枝叶。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S2</span><span class="step-state">必做</span></div>
+                    <strong>声明信息来源</strong>
+                    <p>告诉 AI 可用文档、代码区、外部数据源与不可信内容边界。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S3</span><span class="step-state">可选</span></div>
+                    <strong>列出失败信号</strong>
+                    <p>先写“什么算错”，生成结果才知道往哪儿收敛。</p>
+                  </article>
+                </div>
+              </article>
+              <article class="lane">
+                <div class="lane-label">
+                  <span class="lane-id">DECIDE</span>
+                  <strong>决策层</strong>
+                  <p class="muted">让差异显式出现</p>
+                </div>
+                <div class="lane-grid">
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S4</span><span class="step-state">重点</span></div>
+                    <strong>让 AI 给候选方案</strong>
+                    <p>至少要求 2~3 条路径，附上适用场景、风险点与代价。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S5</span><span class="step-state">重点</span></div>
+                    <strong>人工拍板关键选择</strong>
+                    <p>是否继续、删什么、改哪里，这些判断必须留给人，不外包给随机性。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S6</span><span class="step-state">提醒</span></div>
+                    <strong>控制修改范围</strong>
+                    <p>一次只改一个逻辑区，降低“修一处炸三处”的连锁反应。</p>
+                  </article>
+                </div>
+              </article>
+              <article class="lane">
+                <div class="lane-label">
+                  <span class="lane-id">VERIFY</span>
+                  <strong>验证层</strong>
+                  <p class="muted">快，也要有刹车</p>
+                </div>
+                <div class="lane-grid">
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S7</span><span class="step-state">必做</span></div>
+                    <strong>运行最小校验</strong>
+                    <p>用 lint、构建、脚本校验或人工清单验证结果，不靠“看起来像对的”。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S8</span><span class="step-state">重点</span></div>
+                    <strong>记录可复用结论</strong>
+                    <p>把有效提示词、输入模板、失败模式沉淀下来，下一次才能复利。</p>
+                  </article>
+                  <article class="step">
+                    <div class="step-head"><span class="step-no">S9</span><span class="step-state">兜底</span></div>
+                    <strong>保留回退点</strong>
+                    <p>必要时备份或建立版本点，别把“试试”变成“回不去”。</p>
+                  </article>
+                </div>
+              </article>
+            </div>
+            <aside class="process-side">
+              <article class="fact-row">
+                <div class="fact-key">输入口径</div>
+                <div><p>问题若模糊，AI 会用流畅话术掩盖真实不确定性。所以先补齐输入，通常比改提示词更赚。</p></div>
+              </article>
+              <article class="fact-row">
+                <div class="fact-key">分工原则</div>
+                <div><p>AI 负责发散、整理、改写与执行；人负责目标、边界、取舍和最终判断。</p></div>
+              </article>
+              <article class="fact-row">
+                <div class="fact-key">回滚条件</div>
+                <div><p>当结果无法解释、范围失控或验证失败时，回到上一稳定版本重开，不赌下一次随机更聪明。</p></div>
+              </article>
+              <div class="tip-card" role="note" aria-label="流程提醒">
+                <strong>记忆点</strong>
+                好的 AI 协作流程像施工图：先定边界，再分工，再验收；不是把希望托付给一句“请帮我做好”。
+              </div>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>三泳道流程页，强调输入 / 决策 / 验证</span>
+            <span>流程必须说明回滚点</span>
+          </div>
+        </section>
+
+        <section class="slide layout-evidence mode-matrix" data-index="3" aria-labelledby="slide-3-title">
+          <div class="slide-head">
+            <span class="eyebrow">P4 · 证据</span>
+            <span class="page-chip" aria-label="第 4 页，共 7 页">04 / 07</span>
+          </div>
+          <div class="evidence-body">
+            <div>
+              <span class="chip">证据链</span>
+              <h2 id="slide-3-title" class="slide-title">为什么这套做法能减少返工：把证据放在“速度”旁边一起看</h2>
+              <p class="slide-lede">证据页不能只展示数字，还要说明口径、来源和解读方向。否则数据会像装饰灯，亮但没用。</p>
+            </div>
+            <div class="metric-strip">
+              <article class="metric">
+                <strong>初稿时间</strong>
+                <span class="metric-value">-43%</span>
+                <span class="metric-sub">前提：输入模板固定</span>
+              </article>
+              <article class="metric">
+                <strong>返工轮次</strong>
+                <span class="metric-value">-2.1</span>
+                <span class="metric-sub">从 4.0 次降到 1.9 次</span>
+              </article>
+              <article class="metric">
+                <strong>可复用资产</strong>
+                <span class="metric-value">+6</span>
+                <span class="metric-sub">沉淀模板、清单、校验脚本</span>
+              </article>
+              <article class="metric">
+                <strong>隐性收益</strong>
+                <span class="metric-value">高</span>
+                <span class="metric-sub">跨人协作损耗明显下降</span>
+              </article>
+            </div>
+            <div class="evidence-grid">
+              <article class="panel">
+                <h3>证据矩阵</h3>
+                <div class="matrix" role="table" aria-label="AI 协作证据矩阵">
+                  <div class="matrix-row" role="row">
+                    <strong role="cell">输入模板固定</strong>
+                    <span role="cell">观察：生成结构更稳定</span>
+                    <span role="cell">解释：AI 不再反复猜测任务边界</span>
+                  </div>
+                  <div class="matrix-row" role="row">
+                    <strong role="cell">候选方案并列</strong>
+                    <span role="cell">观察：关键取舍更早暴露</span>
+                    <span role="cell">解释：减少“先做再否”的代价</span>
+                  </div>
+                  <div class="matrix-row" role="row">
+                    <strong role="cell">先验证再扩面</strong>
+                    <span role="cell">观察：错误更集中、更易回退</span>
+                    <span role="cell">解释：不把试验误当最终产物</span>
+                  </div>
+                  <div class="matrix-row" role="row">
+                    <strong role="cell">沉淀标准产物</strong>
+                    <span role="cell">观察：团队可复用率提升</span>
+                    <span role="cell">解释：个人技巧变成团队资产</span>
+                  </div>
+                </div>
+              </article>
+              <div class="quote-panel">
+                <blockquote>证据支持的结论是：<span class="emphasis">AI 不是单点提效工具，而是把“澄清—取舍—验证”三件事搬到更早的时间点</span>。越早，返工越少。</blockquote>
+              </div>
+            </div>
+          </div>
+          <div class="slide-foot">
+            <span>指标带 + 证据矩阵 + 结论引语</span>
+            <span>数字必须配口径和解释</span>
+          </div>
+        </section>
+
+        <section class="slide layout-compare mode-compare" data-index="4" aria-labelledby="slide-4-title">
+          <div class="slide-head">
+            <span class="eyebrow">P5 · 对比</span>
+            <span class="page-chip" aria-label="第 5 页，共 7 页">05 / 07</span>
+          </div>
+          <div class="compare-body">
+            <article class="compare-card caution">
+              <div>
+                <span class="mini-chip">旧做法</span>
+                <h2 id="slide-4-title" class="slide-title" style="font-size:clamp(1.6rem,2.6vw,2.3rem);margin-top:0.55rem;">把 AI 当万能执行器</h2>
+              </div>
+              <ul>
+                <li>问题描述不完整，先生成再返工。</li>
+                <li>只问一个答案，没有候选方案与取舍。</li>
+                <li>修改范围过大，容易“修一页坏一串”。</li>
+                <li>校验滞后，结果经常是“看起来很像”。</li>
+              </ul>
+              <p class="warn">代价：快在表面，慢在后续；团队越多人，噪音越大。</p>
+            </article>
+
+            <article class="compare-card good">
+              <div>
+                <span class="mini-chip">新做法</span>
+                <h2 class="slide-title" style="font-size:clamp(1.6rem,2.6vw,2.3rem);margin-top:0.55rem;">把 AI 纳入受约束的协作协议</h2>
+              </div>
+              <ul>
+                <li>任务开始前补齐输入模板与失败信号。</li>
+                <li>强制输出候选方案，显式做人工取舍。</li>
+                <li>采用小步修改，缩小影响半径。</li>
+                <li>改完立刻验证，把错误卡在最早一轮。</li>
+              </ul>
+              <p class="ok">收益：节奏更稳，结果更可复述，跨人协作时不容易失控。</p>
+            </article>
+
+            <aside class="panel" aria-label="取舍判断">
+              <h3>判断轴</h3>
+              <div class="decision-list">
+                <div class="decision-item">
+                  <strong>速度轴</strong>
+                  <p>旧做法首轮更快；新做法从第二轮开始明显占优。</p>
+                </div>
+                <div class="decision-item">
+                  <strong>质量轴</strong>
+                  <p>新做法把“验收口径”前置，最终质量更可控。</p>
+                </div>
+                <div class="decision-item">
+                  <strong>协作轴</strong>
+                  <p>新做法适合多人接力，旧做法更像单人即兴。</p>
+                </div>
+                <div class="decision-item">
+                  <strong>推荐结论</strong>
+                  <p>个人探索可轻量，团队交付应采用协议化工作流。</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>双塔对比 + 取舍轴侧栏</span>
+            <span>对比页负责回答“为什么要改”</span>
+          </div>
+        </section>
+
+        <section class="slide layout-action mode-dashboard" data-index="5" aria-labelledby="slide-5-title">
+          <div class="slide-head">
+            <span class="eyebrow">P6 · 行动</span>
+            <span class="page-chip" aria-label="第 6 页，共 7 页">06 / 07</span>
+          </div>
+          <div class="action-body">
+            <div>
+              <span class="chip">行动清单</span>
+              <h2 id="slide-5-title" class="slide-title">把今天的共识落成 72 小时内能执行的动作，而不是“回头再看”</h2>
+              <p class="slide-lede">行动页的价值，在于把抽象方法翻译成负责人、时间窗、交付物和验收标准。没有这页，整场分享就容易变成一阵掌声。</p>
+              <div class="action-grid">
+                <article class="action-card">
+                  <strong>动作 A｜统一输入模板</strong>
+                  <span class="owner">Owner · 组内内容负责人</span>
+                  <p>本周内固化背景、目标、约束、验收四段输入模板，所有新任务先按模板提交。</p>
+                  <p class="ok">验收：新任务文档中 100% 出现四段输入。</p>
+                </article>
+                <article class="action-card">
+                  <strong>动作 B｜要求候选方案并列</strong>
+                  <span class="owner">Owner · 各项目主负责人</span>
+                  <p>所有关键任务至少要求 AI 给出 2 个方案，并注明适用条件与风险。</p>
+                  <p class="ok">验收：评审前文档均有方案对照段。</p>
+                </article>
+                <article class="action-card">
+                  <strong>动作 C｜修改后立刻校验</strong>
+                  <span class="owner">Owner · 实施同学</span>
+                  <p>代码、HTML、脚本类任务完成后必须附校验结果，失败不得直接交付。</p>
+                  <p class="ok">验收：交付消息包含命令与结果摘要。</p>
+                </article>
+                <article class="action-card">
+                  <strong>动作 D｜沉淀失败模式库</strong>
+                  <span class="owner">Owner · 方法论维护人</span>
+                  <p>把典型返工场景、错误模式和修复路径收进共享文档，下次直接复用。</p>
+                  <p class="ok">验收：形成首版“失败信号与恢复”列表。</p>
+                </article>
+              </div>
+            </div>
+            <aside class="panel">
+              <h3>72 小时时间窗</h3>
+              <div class="timeline-board">
+                <div class="timeline-row">
+                  <div class="time">T+0</div>
+                  <div><p>分享结束后，当场确定模板 owner 与首个试点任务。</p></div>
+                </div>
+                <div class="timeline-row">
+                  <div class="time">T+24h</div>
+                  <div><p>完成模板草案，挑 1 个真实任务试跑，记录卡点。</p></div>
+                </div>
+                <div class="timeline-row">
+                  <div class="time">T+48h</div>
+                  <div><p>补齐候选方案与校验口径，修正不清楚的字段定义。</p></div>
+                </div>
+                <div class="timeline-row">
+                  <div class="time">T+72h</div>
+                  <div><p>输出首版团队协议：输入模板、执行流程、验证要求、复盘入口。</p></div>
+                </div>
+              </div>
+              <div class="tip-card" role="note" aria-label="行动提醒">
+                <strong>关键提醒</strong>
+                如果分享之后没有明确 owner、时间窗与验收标准，那么“认同”很快就会蒸发成聊天记录。
+              </div>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>行动看板 + 时间窗侧栏</span>
+            <span>每个动作都要有 owner 和验收</span>
+          </div>
+        </section>
+
+        <section class="slide layout-closing mode-summary" data-index="6" aria-labelledby="slide-6-title">
+          <div class="slide-head">
+            <span class="eyebrow">P7 · 底页</span>
+            <span class="page-chip" aria-label="第 7 页，共 7 页">07 / 07</span>
+          </div>
+          <div class="closing-body">
+            <div>
+              <span class="chip">结论回收</span>
+              <h2 id="slide-6-title" class="slide-title">真正提升效率的，不是多会“提要求”，而是多会“设计协作”</h2>
+              <p class="slide-lede">底页负责把全场内容收成能带走的三句话：今天讲了什么、为什么值得做、接下来谁来做。</p>
+              <div class="summary-grid">
+                <article class="summary-card">
+                  <strong>结论 1</strong>
+                  <p>AI 最擅长加速表达和执行，不擅长替你定义目标与边界。</p>
+                </article>
+                <article class="summary-card">
+                  <strong>结论 2</strong>
+                  <p>把候选方案、失败信号、校验命令前置，能显著减少返工。</p>
+                </article>
+                <article class="summary-card">
+                  <strong>结论 3</strong>
+                  <p>个人技巧只有变成团队协议，才会稳定复利，而不是依赖天赋发挥。</p>
+                </article>
+              </div>
+            </div>
+            <aside class="closing-grid">
+              <div class="quote-box">
+                <p class="closing-quote">把 AI 放进流程，而不是放在神坛上。</p>
+                <p class="closing-line">会后建议：从一个真实任务开始试跑，把方法做成团队日常，而不是只做一场漂亮分享。</p>
+              </div>
+              <article class="panel">
+                <h3>会后出口</h3>
+                <ul>
+                  <li>共享模板：输入四段式、候选方案对照表、校验记录单。</li>
+                  <li>共享清单：失败模式、恢复动作、复盘问题库。</li>
+                  <li>下次复盘：一周后看试点任务，确认是否继续扩面。</li>
+                </ul>
+              </article>
+            </aside>
+          </div>
+          <div class="slide-foot">
+            <span>总结三连 + 会后出口</span>
+            <span>让结尾留下动作，不只留下礼貌</span>
+          </div>
+        </section>
+      </div>
+
+      <div class="deck-chrome bottom">
+        <div class="status-panel">
+          <span id="pageNum">01 / 07</span>
+          <span id="navHint">⌨ ←/→/Space 翻页 · Home/End 跳转 · ⇆ 左右滑动切页</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.deck > .slide'));
+      const pageNum = document.getElementById('pageNum');
+      const liveRegion = document.getElementById('liveRegion');
+      const total = slides.length;
+      let current = slides.findIndex((slide) => slide.classList.contains('active'));
+      let touchStartX = 0;
+      let touchStartY = 0;
+      const swipeThreshold = 60;
+
+      const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+      const getTitle = (slide) => {
+        const heading = slide.querySelector('h1, h2, h3');
+        return heading ? heading.textContent.trim() : `第 ${slide.dataset.index} 页`;
+      };
+
+      const formatPage = (index) => `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+
+      const announce = (index) => {
+        if (!liveRegion) {
+          return;
+        }
+        liveRegion.textContent = `第 ${index + 1} 页，共 ${total} 页 — ${getTitle(slides[index])}`;
+      };
+
+      const render = () => {
+        slides.forEach((slide, index) => {
+          slide.classList.toggle('active', index === current);
+          slide.setAttribute('aria-hidden', index === current ? 'false' : 'true');
+        });
+
+        if (pageNum) {
+          pageNum.textContent = formatPage(current);
+        }
+
+        announce(current);
+      };
+
+      const goTo = (index) => {
+        const nextIndex = clamp(index, 0, total - 1);
+        if (nextIndex === current) {
+          return;
+        }
+        current = nextIndex;
+        render();
+      };
+
+      const handleKeydown = (event) => {
+        const target = event.target;
+        const tagName = target && target.tagName ? target.tagName.toLowerCase() : '';
+        const isEditable = target && (target.isContentEditable || ['input', 'textarea', 'select'].includes(tagName));
+        if (isEditable) {
+          return;
+        }
+
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === ' ') {
+          event.preventDefault();
+          goTo(current + 1);
+          return;
+        }
+
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          goTo(current - 1);
+          return;
+        }
+
+        if (event.key === 'Home') {
+          event.preventDefault();
+          goTo(0);
+          return;
+        }
+
+        if (event.key === 'End') {
+          event.preventDefault();
+          goTo(total - 1);
+        }
+      };
+
+      const onTouchStart = (event) => {
+        const touch = event.changedTouches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      };
+
+      const onTouchEnd = (event) => {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+
+        if (Math.abs(deltaX) < swipeThreshold || Math.abs(deltaX) <= Math.abs(deltaY)) {
+          return;
+        }
+
+        if (deltaX < 0) {
+          goTo(current + 1);
+          return;
+        }
+
+        goTo(current - 1);
+      };
+
+      if (current < 0) {
+        current = 0;
+      }
+
+      document.addEventListener('keydown', handleKeydown, { passive: false });
+
+      const deck = document.querySelector('.deck');
+      if (deck) {
+        deck.addEventListener('touchstart', onTouchStart, { passive: true });
+        deck.addEventListener('touchend', onTouchEnd, { passive: true });
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>
