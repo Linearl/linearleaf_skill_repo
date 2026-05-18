@@ -1,0 +1,110 @@
+[
+  {
+    "name": "SESSIONID",
+    "value": "2GQqQdEKpG6K3NzyXeisraXX0QTvjJUmrWf3iFM5Xr8",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "JOID",
+    "value": "V1gUBE-4RIVtUWKDJpPD0gxubyA49xPaWjwQsRXLNvYxADvRTvRbMQZVZoQjqRrd8LxGBFsrZPQ-i6zW1S-6LUk=",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "osd",
+    "value": "W1odBki0RoxvVm6BL5HE3g5nbSc09RrYXTASuBfMOvQ4AjzdTP1ZNgpXb4YkpRjU8rtKBlIpY_g8gq7R2S2zL04=",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "_xsrf",
+    "value": "FnQXPtWeIxGGKHRmtQuuAXr4obVivsGO",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "_zap",
+    "value": "8fc1690c-1e9f-4c66-aa34-04dfdba64863",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "d_c0",
+    "value": "7bZTNDUPpxqPTtNx10t8VtHEVpe2rRLlndU=|1750667765",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "__snaker__id",
+    "value": "d4cqm0JQDaQDNqqM",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "q_c1",
+    "value": "12df36b824df4092a08a01c97a80def7|1750670645000|1750670645000",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "edu_user_uuid",
+    "value": "edu-v1|40d9adc4-67f3-40ef-9733-2b247669d8c7",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "Hm_lvt_98beee57fd2ef70ccdd5ca52b9740c49",
+    "value": "1772511202,1772593974,1772761361,1772978383",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "HMACCOUNT",
+    "value": "6A40C07DB783386A",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "SESSIONID",
+    "value": "JVY4lw35rwrZRXWi1HeYwfckES03rwuZhU9dzyW8kI7",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "JOID",
+    "value": "VFwdBkuH1hNWASKYUq1RTjEzLjtGz4xHZ2tXp2rzo20BVnzNNwHotTwFLJlaJSYyTeCZcA_CJTpYP2MDnEWZnhk=",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "osd",
+    "value": "VFgRB02H0h9XByKcXqxXTjU_Lz1Gy4BGYWtTq2v1o2kNV3rNMw3pszwBIJhcJSI-TOaZdAPDIzpcM2IFnEGVnx8=",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "__zse_ck",
+    "value": "005_HFFxCK/lWwWgm/CDseWF35B9WYnDL=ac8lTGMX=LA9mnB/LhLwxBSlzACccxUKikU5I0HOtvlPxd92/9rTQ0swAzh5VHDWmyQ/noLlv4YHKwSkAs9S3J2tQ0jzqxJzhn-3DsssshlBrDyzLpZVsbZbMBTmdT2HhCScO++yWkJ3bZ9Q+qTVjJVR19NjI3P6kIWziizzJXTsTiyvBaIvyOwhcpdXM0/iYjjlUuIzvyq+Dtna7rt6RBdb0cvO6LfUPK4",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "BEC",
+    "value": "6ff32b60f55255af78892ba1e551063a",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "Hm_lpvt_98beee57fd2ef70ccdd5ca52b9740c49",
+    "value": "1773213770",
+    "domain": ".zhihu.com",
+    "path": "/"
+  },
+  {
+    "name": "z_c0",
+    "value": "2|1:0|10:1773195315|4:z_c0|92:Mi4xYWRxeUFBQUFBQUR0dGxNME5RLW5HaVlBQUFCZ0FsVk40cTJUYWdDcm9NNmtmbjhubmdQRl9rZWdsZnNMSlF2bkx3|fc6f2332b3607be9cc92a33edc9ce66f860a270997c002c6f479495d2c713bdc",
+    "domain": ".zhihu.com",
+    "path": "/"
+  }
+]

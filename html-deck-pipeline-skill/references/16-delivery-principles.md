@@ -1,3 +1,6 @@
+---
+description: 交付原则（Delivery Principles）：结构稳定、风格复用、版本追踪的优先级体系
+---
 # 交付原则（Delivery Principles）
 
 - 先保证结构稳定，再追求视觉丰富

@@ -38,7 +38,7 @@ We are not inventing an entirely new collaboration logic. We are translating pro
 | 📊 [version_compare](version_compare/) | Systematic version comparison | "compare versions", "change analysis" |
 | 💰 [invest_analysis](invest_analysis/) | A-share investment analysis | "analyze this sector", "verify financial report" |
 | 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML presentation generation pipeline | "generate HTML slides from script", "merge parts and validate page order" |
-| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | Advanced HTML deck pipeline with fine-grained stage control | "context too long for one-shot deck", "split storyboard and generate parts in parallel" |
+| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | End-to-end HTML deck with website skeleton, WYSIWYG editor, 4-theme system | "long deck with style control", "website skeleton with editor", "page-per-file with preview" |
 | 🏗️ [skill_builder](skill_builder/) | **Meta-skill** - Create new skills | "create skill", "design skill" |
 
 ## 🚀 Quick Start
@@ -126,9 +126,14 @@ Skills are dynamically loaded based on your request context.
 
 ### 🎬 html-deck-pipeline-skill
 
-- End-to-end HTML script pipeline for long-context deck generation
-- Storyboard-first workflow with optional parallel part generation and merge validation
-- Fine-grained stage control with style contract/showcase pairing and versioned outputs
+- End-to-end HTML deck pipeline with website skeleton output
+- CSS 3-layer architecture (tokens → fontsize → base → components)
+- 4 themes × 3 fontsize schemes, config-driven switching
+- WYSIWYG style editor (drag-reorder, multi-select align, text editing, undo/redo)
+- One-click HTML export + PPTX export (with Playwright fallback)
+- Local preview server with hot-reload (`--watch` mode)
+- Storyboard-first workflow with per-page file generation
+- 6-stage pipeline with quality gates (inquire → architect → storyboard → generate → verify → archive)
 
 ### 🏗️ skill_builder
 

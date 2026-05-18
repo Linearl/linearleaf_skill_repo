@@ -1,6 +1,9 @@
+---
+description: 文件编号与命名规则：版本号管理、slides/ 目录结构、slides-config.json 格式
+---
 # 编号与命名规则
 
-适用范围：`html-deck-pipeline-skill` 全流程。
+适用范围：`html-deck-pipeline-skill-v2` 全流程。
 
 ## 目标
 
@@ -34,22 +37,30 @@
 - 格式：`{part_no:02d}-{part_name}-分镜稿.md`
 - 示例：`01-开头-分镜稿.md`
 
-### 4) HTML 分片命名（强制）
+### 4) HTML 幻灯片命名（强制）
 
-- 格式：`{part_no:02d}-{part_name}.html`
-- 示例：`01-开头.html`
+- 存放路径：`slides/<part_id>/<NN-description>.html`
+- `<part_id>` 对应 `slides-config.json` 中的章节键（如 `ch01`）
+- `<NN>` 为两位数字前缀，`<description>` 为英文 slug
+- 示例：`slides/ch01/01-cover.html`、`slides/ch02/02-architecture.html`
 
-### 4.1) 页内右上角编号规则（新增）
+### 4.1) slides-config.json 配置
 
-- 分片 HTML 允许使用章节内局部编号（如 `01 / 04`）。
-- 合并稿必须重写为全局编号（如 `01 / 37` ... `37 / 37`）。
-- 合并后若仍存在局部编号，视为门禁失败并回退修正。
+- 幻灯片清单不通过文件名推断，由 `slides-config.json` 显式定义
+- 每项包含 `part`（章节键）、`file`（文件名）、`title`（显示标题）
+- deck.js 启动时通过 fetch 读取此配置
+
+### 4.2) 页内右上角编号规则
+
+- 每页 HTML 内的 `page-chip` 使用章节内局部编号（如 `01 / 03`）。
+- deck.js 自动处理全局编号映射。
 
 ### 5) 沟通记录命名（强制真实日期）
 
-- 原始记录：`A-raw-round{round_no:02d}-{yyyymmdd}.md`
-- 总结记录：`A-summary-round{round_no:02d}-{yyyymmdd}.md`
-- 冻结快照：`A-freeze-input-snapshot-{yyyymmdd}.md`
+- 原始记录：`{stage}-raw-round{round_no:02d}-{yyyymmdd}.md`
+- 总结记录：`{stage}-summary-round{round_no:02d}-{yyyymmdd}.md`
+- 冻结快照：`{stage}-freeze-input-snapshot-{yyyymmdd}.md`
+- `{stage}` 为阶段标识：`A`（问）、`B`（架）、`C`（镜）、`D`（页）、`E`（验）、`F`（归）
 
 示例：
 

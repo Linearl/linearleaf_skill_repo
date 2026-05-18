@@ -17,7 +17,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-
 TEMPLATES_SUBDIR = "templates/init_topic"
 
 
@@ -50,6 +49,7 @@ class TopicPaths:
     storyboard_dir: Path
     html_root: Path
     html_dir: Path
+    style_dir: Path
     test_dir: Path
     template_dir: Path
 
@@ -99,6 +99,7 @@ def build_paths(config: TopicConfig) -> TopicPaths:
         storyboard_dir=topic_root / "10-storyboards" / config.version,
         html_root=topic_root / "20-html",
         html_dir=topic_root / "20-html" / config.version,
+        style_dir=topic_root / "20-html" / config.version / "style",
         test_dir=topic_root / "90-tests",
         template_dir=skill_root / TEMPLATES_SUBDIR,
     )
@@ -182,8 +183,37 @@ def copy_if_missing_or_placeholder(src: Path, dst: Path, *, dry_run: bool) -> bo
     return True
 
 
+def create_slides_config(paths: TopicPaths, config: TopicConfig) -> None:
+    """创建 slides-config.json 模板。"""
+
+    config_path = paths.html_dir / "slides-config.json"
+    if config_path.exists():
+        return
+
+    import json
+
+    part_entries = {}
+    for i, name in enumerate(config.part_names, start=1):
+        part_id = f"ch{i:02d}"
+        part_entries[part_id] = name
+
+    template = {
+        "title": config.topic_title,
+        "parts": part_entries,
+        "partOrder": list(part_entries.keys()),
+        "slides": [],
+    }
+    if config.dry_run:
+        print(f"  [DRY-RUN] 将创建: {config_path}")
+        return
+    config_path.write_text(
+        json.dumps(template, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"  [CREATE] {config_path}")
+
+
 def copy_previous_version_assets(config: TopicConfig, paths: TopicPaths) -> None:
-    """复制上一版本分镜和 HTML 作为迭代基线。"""
+    """复制上一版本分镜和 HTML (slides/) 作为迭代基线。"""
 
     if not config.copy_previous:
         return
@@ -216,17 +246,30 @@ def copy_previous_version_assets(config: TopicConfig, paths: TopicPaths) -> None
             )
 
     if prev_html_dir.exists():
-        for file_path in sorted(prev_html_dir.glob("[0-9][0-9]-*.html")):
-            copy_if_missing(
-                file_path, paths.html_dir / file_path.name, dry_run=config.dry_run
-            )
+        # Copy slides/ directory
+        prev_slides = prev_html_dir / "slides"
+        if prev_slides.exists():
+            target_slides = paths.html_dir / "slides"
+            for part_dir in sorted(prev_slides.iterdir()):
+                if not part_dir.is_dir():
+                    continue
+                for file_path in sorted(part_dir.glob("*.html")):
+                    dst = target_slides / part_dir.name / file_path.name
+                    copy_if_missing(file_path, dst, dry_run=config.dry_run)
 
-        for index, part_name in enumerate(config.part_names, start=1):
-            legacy_name: str = f"{part_name}.html"
-            target_name: str = f"{index:02d}-{part_name}.html"
-            copy_if_missing_or_placeholder(
-                prev_html_dir / legacy_name,
-                paths.html_dir / target_name,
+        # Copy optional per-part style/ directory
+        prev_style_dir = prev_html_dir / "style"
+        if prev_style_dir.exists():
+            for file_path in sorted(prev_style_dir.glob("*.css")):
+                dst = paths.style_dir / file_path.name
+                copy_if_missing(file_path, dst, dry_run=config.dry_run)
+
+        # Copy config
+        prev_config = prev_html_dir / "slides-config.json"
+        if prev_config.exists():
+            copy_if_missing(
+                prev_config,
+                paths.html_dir / "slides-config.json",
                 dry_run=config.dry_run,
             )
 
@@ -266,7 +309,7 @@ def create_style_contract(paths: TopicPaths, config: TopicConfig) -> None:
         copy_if_missing(src_contract, dst_contract, dry_run=config.dry_run)
         return
 
-    placeholder_tpl: str = read_template(paths, "style_contract_placeholder.md.tpl")
+    placeholder_tpl: str = read_template(paths, "style_contract_placeholder.md")
     content: str = render_template(placeholder_tpl, {"style_id": config.style_id})
     write_file_if_missing(dst_contract, content, dry_run=config.dry_run)
 
@@ -286,26 +329,20 @@ def create_stage_a_records(paths: TopicPaths, config: TopicConfig) -> None:
         "part_names_cn": "、".join(config.part_names),
     }
 
-    raw_content: str = render_template(
-        read_template(paths, "comms_raw.md.tpl"), context
-    )
-    summary_content: str = render_template(
-        read_template(paths, "comms_summary.md.tpl"), context
+    comms_content: str = render_template(
+        read_template(paths, "comms_round.md"), context
     )
     freeze_content: str = render_template(
-        read_template(paths, "freeze_snapshot.md.tpl"), context
+        read_template(paths, "freeze_snapshot.md"), context
     )
     test_content: str = render_template(
-        read_template(paths, "test_record.md.tpl"),
+        read_template(paths, "test_record.md"),
         {"topic_code": config.topic_code},
     )
 
-    canonical_names = {
-        f"A-raw-round01-{config.record_date}.md",
-        f"A-summary-round01-{config.record_date}.md",
-    }
+    canonical_name = f"A-round01-{config.record_date}.md"
     for stale_file in sorted(paths.comms_dir.glob("A-*-round*-*.md")):
-        if stale_file.name in canonical_names:
+        if stale_file.name == canonical_name:
             continue
         if config.dry_run:
             print(f"  [DRY-RUN] 将删除旧命名沟通记录: {stale_file}")
@@ -314,13 +351,8 @@ def create_stage_a_records(paths: TopicPaths, config: TopicConfig) -> None:
         print(f"  [DELETE] 旧命名沟通记录: {stale_file}")
 
     write_file_if_missing(
-        paths.comms_dir / f"A-raw-round01-{config.record_date}.md",
-        raw_content,
-        dry_run=config.dry_run,
-    )
-    write_file_if_missing(
-        paths.comms_dir / f"A-summary-round01-{config.record_date}.md",
-        summary_content,
+        paths.comms_dir / canonical_name,
+        comms_content,
         dry_run=config.dry_run,
     )
     write_file_if_missing(
@@ -347,6 +379,8 @@ def init_topic(config: TopicConfig) -> None:
         paths.input_dir,
         paths.storyboard_dir,
         paths.html_dir,
+        paths.style_dir,
+        paths.html_dir / "slides",
         paths.test_dir,
         paths.comms_dir,
     ]:
@@ -355,6 +389,7 @@ def init_topic(config: TopicConfig) -> None:
     copy_previous_version_assets(config, paths)
     cleanup_legacy_part_files(paths, config)
     create_style_contract(paths, config)
+    create_slides_config(paths, config)
     create_stage_a_records(paths, config)
 
 

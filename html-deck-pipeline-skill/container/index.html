@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HTML Deck</title>
+  <link rel="stylesheet" href="css/theme/dark-theme-2/tokens.css" />
+  <link rel="stylesheet" href="css/fontsize/standard.css" />
+  <link rel="stylesheet" href="css/common/base.css" />
+  <link rel="stylesheet" href="css/common/components.css" />
+  <link rel="stylesheet" href="css/common/editor.css" />
+  <link rel="stylesheet" href="style/editor-overrides.css" />
+</head>
+<body>
+  <a href="#deck" class="skip-link">跳转到幻灯片</a>
+
+  <main id="deck-shell" class="part-ch01" aria-label="HTML 讲稿">
+    <nav id="part-nav" aria-label="章节导航"></nav>
+
+    <div class="deck" id="deck" role="region" aria-label="幻灯片">
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-faint);">
+        <p>加载中…</p>
+      </div>
+    </div>
+
+    <div id="deck-progress"><div class="bar" style="width:0%"></div></div>
+    <div id="kbd-hint">
+      <kbd>&larr;</kbd> <kbd>&rarr;</kbd> 切换页面 &nbsp;|&nbsp;
+      <kbd>&uarr;</kbd> <kbd>&darr;</kbd> 亦可 &nbsp;|&nbsp;
+      点击上方章节标签跳转 &nbsp;|&nbsp;
+      <button id="editor-toggle-btn" title="切换编辑模式 (Ctrl+E)">编辑样式</button>
+      <label for="theme-select" class="sr-only">主题</label>
+      <select id="theme-select" title="切换主题"></select>
+      <label for="fontsize-select" class="sr-only">字号</label>
+      <select id="fontsize-select" title="切换字号"></select>
+      <button id="export-btn" title="导出为单文件 HTML">导出 HTML</button>
+      <button id="pptx-btn" title="导出为 PPTX 文件">导出 PPTX</button>
+    </div>
+  </main>
+
+  <script src="js/logger.js"></script>
+  <script src="js/deck.js"></script>
+  <script src="js/editor-state.js"></script>
+  <script src="js/editor-state.js"></script>
+  <script src="js/editor-undo.js"></script>
+  <script src="js/editor.js"></script>
+</body>
+</html>

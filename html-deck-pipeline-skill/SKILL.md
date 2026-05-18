@@ -1,12 +1,8 @@
 ---
 name: html-deck-pipeline-skill
-description: 端到端 HTML 讲稿流水线技能，适用于“上下文过长”“分镜拆分”“并行生成”“合并校验”“风格控制”“样式展示”等场景，尤其适合一次性目标超过10页、难以由单轮对话稳定生成的 HTML 演示任务。强调分镜先行、风格契约定义、风格描述文件与 HTML 风格展示文件成对维护、舞台比例可配置（默认 16:9，可选 4:3 / 16:10 / adaptive）、版本递增与样式多样性，帮助把长文档稳定拆成可并行、可校验、可迭代的展示稿流程。
+description: 端到端 HTML 讲稿流水线技能，适用于”上下文过长””分镜拆分””并行生成””风格控制”等超过 10 页的 HTML 演示任务。采用网站骨架输出模式（CSS 三层架构 + hash 路由 + 自适应缩放），支持一键导出 HTML 和 PPTX。强调分镜先行、风格契约、舞台比例可配置（16:9/4:3/16:10/adaptive）、版本递增与样式多样性。
 ---
-## 技能定位
-
-HTML deck 流水线，可拆分、可并行、可回退、风格可控，解决从长文档一次性生成复杂html时的上下文溢出问题 。
-
-本技能包含文件结构（📁 目录树）：
+## 目录结构
 
 ```text
 html-deck-pipeline-skill/
@@ -16,43 +12,46 @@ html-deck-pipeline-skill/
 │  └─ <style-id>/
 │     ├─ style-contract-<style-id>.md
 │     └─ style-showcase-<style-id>.html
-├─ references/
-│  ├─ 02-numbering-rules.md
-│  ├─ 01-template-pages-standard.md
-│  ├─ 03-storyboard-spec.md
-│  ├─ 04-stage-a-question-card.md
-│  ├─ 05-interaction-accessibility-baseline.md
-│  ├─ 06-style-contract-authoring-guide.md
-│  ├─ 07-quality-gate-patterns.md
-│  ├─ 08-style-contract-creation-mode.md
-│  ├─ 09-trigger-matrix.md
-│  ├─ 10-style-diversity-rules.md
-│  ├─ 11-scope-sizing-and-splitting.md
-│  ├─ 12-parallel-html-generation-playbook.md
-│  ├─ 13-run-checklist.md
-│  ├─ 14-failure-signals-and-recovery.md
-│  ├─ 15-acceptance-criteria.md
-│  ├─ 16-delivery-principles.md
-│  ├─ 17-style-namespacing-rules.md
-│  └─ 18-d3-review-question-card.md
+├─ references/                 # 流程规范与参考文档（详见目录内）
 ├─ templates/
-│  └─ init_topic/
-│  └─ stage-b/
-│     └─ B-framework-vXX.md.tpl
-├─ agents/
-└─ scripts/
+│  ├─ init_topic/
+│  ├─ stage-b/
+│  │  └─ B-framework-vXX.md
+├─ internal-skill/
+│  ├─ scrapling-web-fetch/       # 网页抓取与分析（内置）
+│  ├─ html-deck-to-pptx/         # PPTX 导出保底方案（Playwright 截图）
+│  ├─ web-style-extraction/      # 网页风格提取辅助技能
+│  └─ measure-utilization/       # 页面空间利用率检测
+├─ container/
+│  ├─ index.html
+│  ├─ slides-config.json
+│  ├─ serve.py
+│  ├─ js/
+│  │  └─ deck.js
+│  └─ css/
+│     ├─ config.yaml                # 主题与字号配置
+│     ├─ common/                    # 共享 base.css + components.css
+│     ├─ fontsize/                  # 字号配置（standard/high-contrast/large）
+│     └─ theme/                     # 主题 tokens（dark-theme/dark-theme-2/light-theme/qclaw-theme）
+├─ scripts/
 ```
 
 当前阶段聚焦创建与优化，不包含安装、测试、打包或发布。
 
 说明：凡由 `scripts/` 覆盖的任务均为必须脚本执行项；除非脚本报错，不读取脚本源码。
 
-## 网页资源获取优先策略
+## 流水线概览
 
-- 当阶段 A/B/C/D 需要补充官网、文档站、文章、列表页、详情页或其他网页资源时，优先读取并遵循 `c:\Users\yinji\OneDrive\workspace\temp\.github\skills\scrapling-web-fetch\SKILL.md`。
-- 默认优先使用该技能完成“网页抓取 → 内容清洗 → 结构化提取 → 证据落盘”，以减少反复人工审批与逐页确认次数。
-- 命中以下任一信号时，必须切换到该技能而不是退化为手工网页审批：批量抓取、列表页递归详情页、401/403、登录限制、Cloudflare、动态渲染、滚动加载、证据链采集。
-- 若只是单个公开静态页面且无需批量抓取，可沿用内置网页读取；一旦出现阻断或需要过程资产，立即回到 `scrapling-web-fetch` 流程。
+六阶段流水线，不可越级、不可跳过、每阶段独立门禁：
+
+| 阶段 | 名称 | 核心产出 |
+|---|---|---|
+| A：问 | 需求问询与对齐 | 目标、受众、页数范围、风格资产、冻结快照 |
+| B：架 | 结构规划与版本初始化 | 总分总结构、版本号、框架文档、目录就绪 |
+| C：镜 | 分镜与风格应用 | 全部页面分镜稿（含完整文案、Emoji、样式标注） |
+| D：页 | HTML 页面生成与预览 | 分页 HTML、网站骨架构建、本地预览、自查改进 |
+| E：验 | 验收与发布 | 导出单文件 HTML/PPTX、用户验收、版本冻结 |
+| F：归 | 归档与经验总结 | 版本归档、改动清单、经验沉淀 |
 
 ## 何时启用
 
@@ -60,58 +59,46 @@ html-deck-pipeline-skill/
 
 ## 强制约束
 
+> **工具名兼容说明**：本技能中所有 `ask_questions` 均指代 Claude Code 中的 `AskUserQuestion` 工具。若目标执行平台的用户交互工具名称不同，请自动映射为平台实际可用的工具名。
+
 - 必须严格按阶段顺序执行：`A → B → C → D → E → F`；禁止跳过、越级或先做后补。
-- 每阶段都必须先通过本阶段门禁，再进入下一阶段；门禁未过时必须回退修正。
-- “先写分镜再补问询”“先生成 HTML 再补分镜”“先合并再补校验”均属于失败信号。
-- 必须先做分镜，再生成 HTML；禁止跳过分镜直接批量写最终页。
-- 所有版本必须递增管理，例如 `v-01`、`v-02`、`v-03`；禁止覆盖旧版。
-- 分镜稿、HTML 分片、合并稿必须使用同一版本号。
+- 必须先做分镜，再生成 HTML；禁止跳过分镜直接批量写最终页。”先写分镜再补问询””先生成 HTML 再补分镜”均属于失败信号。
+- 所有版本必须递增管理（如 `v-01`、`v-02`），禁止覆盖旧版。分镜稿、HTML 页面、网站骨架必须使用同一版本号。
 - 用户提出修改意见后，必须先更新下一版分镜，再生成下一版 HTML；禁止只改 HTML 不改分镜。
-- 分镜稿命名必须带两位数字前缀：`{part_no:02d}-{part_name}-分镜稿.md`。
-- HTML 分片命名必须带两位数字前缀：`{part_no:02d}-{part_name}.html`。
-
-## 阶段门禁总则
-
-- **A 阶段门禁**：完成问询、总结确认、未明确项判定、真实日期落盘、冻结快照，并用 `ask_questions` 获得“可进入阶段 B”确认后，才允许进入 B。
-- **B 阶段门禁**：完成总分总结构冻结、版本冻结、分片策略冻结，并用 `ask_questions` 获得“可进入阶段 C”确认后，才允许进入 C。
-- **C 阶段门禁**：所有分镜稿完成并通过分镜门禁，并用 `ask_questions` 获得“可进入阶段 D”确认后，才允许进入 D。
-- **D 阶段门禁**：HTML 分片全部完成并通过 D.2 自查后，必须在 D.3 完成用户分片评审与分镜同步确认，才允许进入 E。
-- **E 阶段门禁**：preview 合并稿与正式合并稿门禁均通过，并用 `ask_questions` 获得“本轮收口 / 进入阶段 F 归档总结”确认后，才允许结束本轮或进入 F。
-- **F 阶段门禁**：F 阶段仅执行 F.1 归档总结；完成经验教训沉淀并通过 `ask_questions` 由用户确认是否回传到技能目录后，才允许本轮结束。
-
-任一阶段若出现“门禁未过但继续推进”，应立即判定为流程失败，并回退到上一个已通过阶段。
+- HTML 修改后必须同步回写分镜稿的”页面完整文案”；分镜文案与 HTML 观众可见文案必须严格一致。分镜稿中的演讲备注、元标注不得进入 HTML。详见 `references/03-storyboard-spec.md` §2.2.0。
+- 分镜稿命名：`{part_no:02d}-{part_name}-分镜稿.md`。HTML 页面存放：`slides/<part_id>/<NN-description>.html`，页面清单由 `slides-config.json` 定义。
+- 任一阶段若出现”门禁未过但继续推进”，判定为流程失败，回退到上一个已通过阶段。
 
 ## 风格契约创建模式（按需）
 
-默认流程优先复用已有 `style-id`，不进入“新建风格契约”流程。
+默认流程优先复用已有 `style-id`，不进入”新建风格契约”流程。
 
-仅当用户显式要求“新建/重写风格契约”时，才加载：
+仅当用户显式要求”新建/重写风格契约”时，才加载：
 
 - `references/08-style-contract-creation-mode.md`
 - `references/06-style-contract-authoring-guide.md`
+- `references/01-template-pages-standard.md`（style-showcase 模板页规范）
+
+若用户要求”参考某个网站的风格”或”从网页中提取设计元素”，同时加载：
+
+- `internal-skill/web-style-extraction/SKILL.md`（网页风格提取辅助技能）
+- `internal-skill/scrapling-web-fetch/SKILL.md`（网页抓取）
 
 ## 样式多样性要求
 
 样式多样性门槛与页面模式清单详见：`references/10-style-diversity-rules.md`。
 
-## references 引用治理原则
+## 全局交互约定
 
-> 各 references 文件遵循"**引用优先、不复写阈值**"原则，即每个领域只在一个文件中维护权威值（SSOT），其余文件通过引用获取。
+以下约定适用于所有阶段，各阶段不再逐条重复：
 
-| SSOT 文件 | 权威领域 | 引用方 |
-|-----------|----------|--------|
-| `07-quality-gate-patterns.md` | 全阶段门禁规则与阈值 | 13, 14, 15 |
-| `10-style-diversity-rules.md` | 多样性规则与页面模式清单 | 07 §2.0, 15 #7 |
-| `05-interaction-accessibility-baseline.md` | 无障碍与交互基线 | 01 §4 |
-| `06-style-contract-authoring-guide.md` | 风格契约编写规则 | 01 §6, 08 |
-| `03-storyboard-spec.md` | 分镜写作规范与元素库 | 01 §5 |
-| `04-stage-a-question-card.md` | 阶段 A 问询模板 | 13 阶段 A |
+- 🗂️ **交互落盘**：每轮结构化交互必须落盘到 `{work_dir}/00-input/comms/`。文件名格式：`{stage_letter}-round{round_no:02d}-{yyyymmdd}.md`（单文件包含本轮交互上下文与 AI 结构化总结）。禁止保留 `YYYYMMDD` 占位文件名。
+- ⏸️ **门禁停顿**：每阶段完成后，必须使用 `ask_questions` 暂停，等待用户确认后方可进入下一阶段。未确认前禁止推进。
+- 🔁 **阶段收口**：各阶段收口统一使用 `ask_questions` 确认进入下一阶段；交互记录按上述规则落盘。
 
 ## 标准流程（分阶段编号）
 
-> 流程要求把执行步骤组织为"阶段 + 子步骤"，并固定编号格式：`A.1 / A.2 / ...`。
-
-### 阶段 A：需求收集与对齐（强制交互）
+### 阶段 A：需求问询与对齐（强制交互）
 
 #### ⚠️ 阶段 A 注意事项（强制）
 
@@ -119,8 +106,6 @@ html-deck-pipeline-skill/
 - 📐 必须冻结 `ratio_mode`（默认 `16:9`，可选 `4:3` / `16:10` / `adaptive`），后续阶段不得中途切换。
 - 🎨 必须完成风格资产决策：默认选用已有 `style-id`；仅当用户显式要求时进入风格契约创建模式（见 `references/08-style-contract-creation-mode.md`）。
 - 🚫 阶段 A 未完成前，禁止初始化目录、写分镜、写 HTML。
-- 🗂️ 交互记录必须落盘到输入资产目录（建议：`{work_dir}/00-input/comms/`）；问询结束后必须使用真实日期文件名，禁止保留 `YYYYMMDD` 占位命名。
-- ⏸️ 阶段 A 门禁通过后必须使用 `ask_questions` 暂停并等待确认；未确认前禁止推进。
 
 #### 🧩 A.0.1 冻结清单（最小必填）
 
@@ -155,14 +140,11 @@ html-deck-pipeline-skill/
 - 首轮问询必须显式确认是否启用 sub-agent 并行加速；默认选项为“不启用”（原因：sub-agent 需要重新加载大量上下文，实际效率未必高于单线程）。
 - 首轮问询必须采集“屏幕分辨率（考虑系统缩放后）”信息；至少拿到物理分辨率 + 缩放比例，或浏览器/投屏后的实际可视区尺寸。
 - 首轮问询必须显式确认“中间章节组织模式”：`总分总（导航-主体-总结/行动）` 或 `总分（导航-主体）`；默认 `总分总`。
-- 标准问询卡片见 `references/04-stage-a-question-card.md`。
-- 固定 checklist 与二轮追问条件以 `references/04-stage-a-question-card.md` 为准。
+- 固定 checklist 与二轮追问条件详见 `references/04-stage-a-question-card.md`。
 
-#### A.1.1 屏幕一致性建议（固定写入）
+#### A.1.1 屏幕一致性建议
 
-- 建议 1：默认按“缩放后有效视口”而不是物理分辨率设计。关键标题、图表与提示框尽量放在舞台中部约 `88%` 安全区内，避免贴边导致不同缩放下被裁切或显得拥挤。
-- 建议 2：当投屏环境未知，或系统缩放达到 `125%` / `150%` 时，优先降低单页信息密度（建议 `2~3` 个信息块）并增大标题/正文最小字号；宁可拆页，也不要压缩到边缘。
-- 建议 3：在阶段 D 合并完成后，至少快检一次 `100% / 125% / 150%` 缩放下的首屏与章节页，重点看底部状态栏、长标题换行与表格是否溢出。
+屏幕适配的三条具体建议详见 `references/05-interaction-accessibility-baseline.md` §屏幕适配。
 
 #### A.2 输出理解并等待用户确认（强制附加交互）
 
@@ -184,7 +166,7 @@ html-deck-pipeline-skill/
 
 #### A.4 分支执行：二轮询问或初始化并冻结
 
-- 进入 A.4 前，必须先读取：`references/02-numbering-rules.md`。
+- 编号与目录结构详见 `references/02-numbering-rules.md`。
 - 若**有未明确项**：发起第二轮问询（仅追问未明确项），然后回到 A.2 再次“总结 + 确认”。
 - 若**无未明确项且用户明确同意进入下一阶段**：执行以下收尾动作并冻结需求：
 
@@ -207,31 +189,25 @@ python scripts/init_topic_folder.py \
   - `{work_dir}/10-storyboards/v-XX/`
   - `{work_dir}/20-html/v-XX/`
   - `{work_dir}/90-tests/`
-- 落盘沟通记录（原始 + 总结）
-  - 原始记录：`{stage_letter}-raw-round{round_no:02d}-{yyyymmdd}.md`
-  - 总结记录：`{stage_letter}-summary-round{round_no:02d}-{yyyymmdd}.md`
-  - 阶段 A 固定使用：`A-raw...` / `A-summary...`；后续阶段同理使用 `B-` / `C-` / `D-` 前缀。
-  - 禁止保留 `YYYYMMDD` 占位文件名；问询结束后必须改为真实日期文件名。
+- 落盘沟通记录：按全局交互约定格式，每轮一个 `{stage_letter}-round{round_no:02d}-{yyyymmdd}.md`。
 - 输出并冻结“本轮执行输入快照”（含风格资产路径、工作目录路径、结构冻结结果、`ratio_mode`）
 - 阶段 A 未完成上述收尾，不进入阶段 B。
 
 #### A.5 阶段收口确认（强制）
 
-- 阶段 A 门禁全部通过后，必须使用 `ask_questions` 明确询问“是否进入阶段 B”。
-- 用户未明确确认前，只能继续补充 A 阶段材料，不得开始 B 阶段的结构规划与模板落盘。
+按全局交互约定执行，确认”可进入阶段 B”。未确认前只能继续补充 A 阶段材料，不得开始 B 阶段工作。
 
 ### 阶段 B：结构规划与版本初始化
 
 #### ⚠️ 阶段 B 注意事项（强制）
 
-- 🗂️ 每轮结构化交互必须落盘到输入资产目录，并使用 `B-` 前缀命名。
-- ⏸️ 阶段 B 门禁通过后必须使用 `ask_questions` 暂停并等待确认；未确认前禁止推进。
+- 📐 阶段 B 必须冻结版本号、总分总结构和章节拆分方案，冻结后不得跨阶段修改。
 
 #### 🧾 B.0.1 版本号与命名规则（强制）
 
-- 阶段 B 必须冻结当前版本号（如 `v-01`），并明确本轮是否允许仅小改或必须升版。
-- 分镜稿、HTML 分片、合并稿必须使用同一版本号；若跨文件出现版本号不一致，判定 B 门禁失败。
-- 命名必须遵循编号规则：分镜 `NN-*-分镜稿.md`、HTML 分片 `NN-*.html`、合并稿按项目既定命名执行。
+- 阶段 B 必须冻结当前版本号（如 `v-01`）。
+- 分镜稿、HTML 页面、网站骨架必须使用同一版本号；若跨文件出现版本号不一致，判定 B 门禁失败。
+- 命名必须遵循编号规则：分镜 `{part_no:02d}-{part_name}-分镜稿.md`、HTML 页面 `slides/<part_id>/<NN-description>.html`、网站骨架目录 `v-XX/`。
 
 #### 📁 B.0.2 目录初始化完成清单（强制）
 
@@ -245,8 +221,8 @@ python scripts/init_topic_folder.py \
 
 #### B.1 总分总框架硬约束
 
-- 进入 B.1 前，必须先读取：`references/11-scope-sizing-and-splitting.md`。
-- 演示总体结构必须采用“总分总”。
+- 大章节拆分补充规则与规模经验值详见 `references/11-scope-sizing-and-splitting.md`。
+- 演示总体结构必须采用”总分总”。
 - 开头章节与结尾章节是必需项，且必须独立存在。
 - 中间章节的组织方式（例如按模块、按阶段、按问题域）必须在阶段 A 沟通并冻结。
 - 若中间章节组织方式未明确，不得进入分镜生成。
@@ -254,24 +230,23 @@ python scripts/init_topic_folder.py \
 
 #### B.2 拆分方案产出与确认（含大章节补充规则）
 
-- 进入 B.2 前，必须先读取：`references/11-scope-sizing-and-splitting.md`。
 - 必须先产出拆分方案与页数估算，并使用 `ask_questions` 与用户确认。
-- 在 `ask_questions` 之前，必须先输出“细化到页码级别的规划大纲”（至少包含：页码、所属分片、页面类型、该页核心信息），确保用户有足够信息做决策。
+- 在 `ask_questions` 之前，必须先输出”细化到页码级别的规划大纲”（至少包含：页码、所属章节、页面类型、该页核心信息），确保用户有足够信息做决策。
 - 用户不认可时必须重拆并再次确认。
 - 大章节拆分补充规则、规模经验值与提问模板详见：`references/11-scope-sizing-and-splitting.md`。
 
 #### B.3 框架文档落盘（强制）
 
 - 在 B.2 获得用户确认后，必须通过“复制模板 → 编辑填充 → 落盘”完成框架文档。
-- 模板路径（固定）：`templates/stage-b/B-framework-vXX.md.tpl`
+- 模板路径（固定）：`templates/stage-b/B-framework-vXX.md`
 - 建议路径：`{work_dir}/10-storyboards/v-XX/B-framework-v-XX.md`。
 - 框架文档最低包含：
   - 总分总章节清单
-  - 分片边界与页数估算
-  - 页码级规划大纲（按分片列出）
-  - 并行策略与合并顺序
+  - 章节边界与页数估算
+  - 页码级规划大纲（按章节列出）
+  - 并行策略与页面组织顺序
   - 用户确认记录摘要（本轮确认结论）
-- 复制模板后必须按本轮实际参数替换占位符（主题、版本、style-id、分片映射等）。
+- 复制模板后必须按本轮实际参数替换占位符（主题、版本、style-id、part 映射等）。
 - 不允许跳过模板直接手写框架文档。
 - 阶段 B 的交互记录必须落盘为 `B-raw...` / `B-summary...`，并作为阶段 C 输入资产。
 - 未完成框架文档落盘，不得进入阶段 C。
@@ -283,196 +258,180 @@ python scripts/init_topic_folder.py \
 
 #### B.5 阶段收口确认（强制）
 
-- 阶段 B 门禁通过后，必须使用 `ask_questions` 暂停，并等待用户确认是否进入阶段 C。
-- 未获得确认前，不得开始分镜编写或并行分镜任务派发。
+按全局交互约定执行，确认"可进入阶段 C"。
 
-### 阶段 C：分镜与风格应用（双门禁）
+### 阶段 C：分镜编写
+
+阶段 C 聚焦于**内容和结构**，不负责视觉风格决策——视觉由主题 CSS 自动渲染。分镜稿描述”页面上有什么、以什么结构组织”。
 
 #### ⚠️ 阶段 C 注意事项（强制）
 
-- 🎨 阶段 C 不负责新建风格契约，只负责读取并应用阶段 A 冻结的风格资产。
-- 🗂️ 每轮结构化交互必须落盘到输入资产目录，并使用 `C-` 前缀命名。
-- ⏸️ 阶段 C 门禁通过后必须使用 `ask_questions` 暂停并等待确认；未确认前禁止推进。
+- 📄 阶段 C 产出分镜稿（内容 + 结构），不产出 HTML。
+- 🎨 视觉风格由主题 CSS 自动处理，分镜稿无需描述颜色、字体、阴影等 CSS 细节。
 
-#### C.1 读取风格描述文件（不重建）
+#### C.1 读取风格资产
 
 - 进入 C.1 前，必须先读取：`references/03-storyboard-spec.md` 与 `references/07-quality-gate-patterns.md`。
-- 阶段 C 必须读取阶段 A 冻结的风格描述文件。
-- 阶段 C 必须冻结并引用两类风格资产路径：
-  - 风格描述文件（`style-contract-<style-id>.md`）
-  - 风格展示文件（`style-showcase-<style-id>.html`）
-- 阶段 C 输出中必须显式记录上述两个文件路径；缺任一文件即回退阶段 A 补齐。
-- 阶段 C 不强制执行风格展示文件的读取对齐，该动作在阶段 D.1（HTML 生成前）强制执行。
-- 阶段 C 不重新创建风格描述文件，避免风格资产碎片化。
-- 若风格描述文件不存在或不完整，回退阶段 A 补齐。
+- 阶段 C 应参考风格描述文件（`style-contract-<style-id>.md`）和风格展示文件（`style-showcase-<style-id>.html`），了解可用组件类名与布局模式。
+- 阶段 C 不负责新建或修改风格契约。
 
-#### C.2 分镜先行（注入风格资产）
+#### C.2 分镜编写
 
-- 每一段先产出分镜稿，结构与字段规范详见 `references/03-storyboard-spec.md`。
-- 分镜至少包含：页面目标、页面完整文案、演讲备注。
-- 页面完整文案必须达到“可直接转成高信息量页面”的密度，禁止只写 1~2 行口号式占位。
-- 每页分镜需显式标注“页面模式类型”（如：导航页/对比页/流程页/矩阵页/行动页），用于后续样式多样性校验。
-- 每页分镜需显式标注“背景呈现策略”（纯色/渐变/纹理/图形层/图片层）。
-- 分镜需细化到“界面元素布局”层面：至少明确表格/卡片/流程/提示框等模块的布局位置与信息分工。
-- “页面模式类型 / 背景呈现策略 / 界面元素布局 / 示例锚点”仅用于分镜生产与校验，不得作为观众可见文案进入最终 HTML。
-- 对比页至少给出 **3~4 组对比项**（如“反例/正例”“旧版/新版”“方案A/B/C”），不得只给单组对比。
-- 方法页/流程页至少包含：结论标题 + 结构化内容块（步骤流/卡片组/表格之一）+ 提示框或边界说明。
-- 行动页至少包含：触发条件、关键动作、验收信号；推荐补充口播版三步法。
-- 章节导航页与章节总结页均应保留，不得省略；每页建议包含 2~4 个信息块，避免页面信息过薄。
-- 方法页、流程页、对比页应该包含 1~3 个“具体示例/模板片段”，避免只有抽象原则。
-- 分镜稿必须提取并落地风格描述文件中的关键规则（例如：页面语气、版式倾向、emoji/符号美化规则）。
-- Emoji/符号美化必须在阶段 C 分镜稿中直接写入并冻结，禁止拖到 HTML 生成阶段再补提示。
-- 步骤呈现优先使用语义 emoji（如 `🎯 / 🔍 / 🛠️ / 🧪 / ✅`），不强制使用 `1️⃣ 2️⃣ 3️⃣` 这类 emoji 数字序号。
-- 分镜稿应显式标注所使用的风格描述文件路径或 `style-id`。
-- 如果用户同意，可使用 sub-agent 并行加速分镜生产，但同一轮最多启用 **3 个** sub-agent。
-- 未完成分镜，不进入 HTML 生成。
+- 分镜稿结构与字段规范详见 `references/03-storyboard-spec.md`。
+- 分镜至少包含：**页面目标、页面完整文案、演讲备注**。
+- 页面完整文案必须达到”可直接转成 HTML”的密度，禁止只写 1~2 行口号式占位。
+- 每页分镜需标注”页面模式类型”（导航页/对比页/流程页/矩阵页/行动页），用于样式多样性校验。
+- 分镜需描述”界面元素布局”：明确表格/卡片/流程/提示框等模块的组织关系和信息分工。
+- 对比页至少给出 3~4 组对比项；方法页/流程页至少包含结论标题 + 结构化内容块 + 提示框。
+- 行动页至少包含：触发条件、关键动作、验收信号。
+- 章节导航页与章节总结页均应保留，每页建议 2~4 个信息块。
+- Emoji/符号美化在分镜稿中直接写入并冻结，不在 HTML 阶段再补。
+- 分镜稿**不需要**描述：CSS 颜色值、字体大小 rem 值、阴影参数、圆角像素、渐变方向——这些由主题 CSS 自动处理。
+- 分镜稿应标注所使用的 `style-id`。
 
-#### C.3 风格应用校验
+#### C.3 分镜质量门禁
 
-- 检查分镜是否已正确继承风格资产。
-- 检查风格规则是否足以支撑多种页面模式。
-- 检查分镜是否显式继承了风格展示文件中的背景层与组件风格线索，而非退化为“纯色底 + 单一版式”。
 - 执行分镜质量门禁检查，详见 `references/07-quality-gate-patterns.md` §1。
 - 执行样式多样性检查，详见 `references/10-style-diversity-rules.md`。
-- 分镜门禁校验必须执行脚本（除非脚本报错，不得跳过）：
+- 分镜门禁校验必须执行脚本：
 
 ```powershell
 python scripts/validate_storyboards_generic.py \
-  --storyboards-dir "<storyboards_dir>" \
-  --version "v-XX"
+  --storyboards-dir “<storyboards_dir>” \
+  --version “v-XX”
 ```
 
-- `source-coverage-strike.md` 必须由 AI 生成，不得依赖脚本自动产出。
-- AI 生成 `source-coverage-strike.md` 后，必须先执行“要点覆盖率自评估”，至少输出：
-  - 覆盖率估值（默认门禁阈值 70%）；
-  - 高优先级未覆盖要点清单；
-  - 建议补充项与对应分镜页位。
-- AI 自评估完成后，必须使用 `ask_questions` 暂停，等待人工审核确认是否存在遗漏与是否需要补充。
-- 人工审核确认“无需补充”或“补充完成并通过复核”前，不得进入阶段 D。
-- 若覆盖率低于门禁阈值（默认 70%）或人工指出关键遗漏，必须回退 C.2 修订分镜后重做覆盖评估。
-
-- 只有风格应用通过后，才允许继续。
+- `source-coverage-strike.md` 由 AI 生成，并输出覆盖率自评估（默认门禁阈值 70%）。
+- 人工审核确认通过后，才允许进入阶段 D。
 
 #### C.4 阶段收口确认（强制）
 
-- 阶段 C 的分镜门禁通过后，必须使用 `ask_questions` 总结分镜状态，并等待用户确认是否进入阶段 D。
-- 阶段 C 的交互记录必须落盘为 `C-raw...` / `C-summary...`，并作为阶段 D 输入资产。
-- 用户若要求调整，必须先回到分镜稿修订，不得跳过确认直接生成 HTML。
+按全局交互约定执行，总结分镜状态，确认"可进入阶段 D"。
 
-### 阶段 D：并行生成 HTML 分片
+### 阶段 D：HTML 页面生成
+
+阶段 D 将分镜稿转化为实际的 HTML 页面，构建网站骨架并启动本地预览，确保 AI 和用户能即时查看渲染效果。
 
 #### ⚠️ 阶段 D 注意事项（强制）
 
-- 🗂️ 每轮结构化交互必须落盘到输入资产目录，并使用 `D-` 前缀命名。
-- ⏸️ 阶段 D 门禁通过后必须使用 `ask_questions` 暂停并等待确认；未确认前禁止推进。
+- 📄 **一页一文件**：每个 HTML 文件只包含一个 `<section class=”slide”>`。
+- 📁 **按章节存放**：`slides/<part_id>/<NN-description>.html`。
+- 🎨 CSS 由主题自动处理，页面 HTML 不嵌入 `<style>` 块。
 
-#### D.1 生成 HTML 分片
+#### D.1 生成 HTML 页面
 
-- 进入 D.1 前，必须先读取：`references/12-parallel-html-generation-playbook.md`、`references/05-interaction-accessibility-baseline.md` 与 `references/17-style-namespacing-rules.md`。
-- 按分镜分段生成 HTML 分片，文件名必须为：`{part_no:02d}-{part_name}.html`。
-- 所有分片必须共用统一舞台比例、基础容器和版本号。
-- 页面内容只保留观众可见信息，不把讲者提示塞进正文。
-- 禁止在最终 HTML 中出现以下可见标签文本：`页面模式类型`、`背景呈现策略`、`界面元素布局`、`示例锚点`、`执行约束`、`中间章节组织模式`、`演讲备注`、`过渡句`。
-- 禁止在最终 HTML 中保留仅供生产流程使用的元属性（如 `data-layout`）；最终页面仅保留播放必需属性（如 `data-index`）。
-- HTML 生成必须读取并执行与分镜一致的同一份风格描述文件，不得临时改用其他风格。
+- 进入 D.1 前，必须先读取：`references/19-website-skeleton-spec.md` §8（slide 模板格式）。
+- 按分镜逐页生成 HTML 文件，输出到 `slides/<part_id>/<NN-description>.html`。模板格式见 `templates/init_topic/slide_section.html`。
+- 每个文件只包含一个 `<section class=”slide”>` 根元素，不含 `<html>`/`<body>`/`<style>`。
+- 页面使用 `components.css` 中已有的组件 class（`.panel`、`.card`、`.chip`、`table`、`.quote-box` 等）。
+- 页面内容仅保留观众可见信息，演讲备注不进入 HTML。
+- 每生成一页 HTML，同步更新 `slides-config.json` 的 `slides` 数组（config 中每项含 `part`、`file`、`title`；`parts` 和 `partOrder` 在阶段 B 已冻结，D 阶段不修改）。模板格式见 `templates/init_topic/slides-config.json`。
+- 禁止在 HTML 中出现以下标签文本：`页面模式类型`、`背景呈现策略`、`界面元素布局`、`示例锚点`、`执行约束`、`中间章节组织模式`、`演讲备注`、`过渡句`。
+- 禁止在 HTML 中保留仅供生产流程使用的元属性（如 `data-layout`）；最终页面仅保留播放必需属性（如 `data-index`）。
 - 若使用 sub-agent 并行生成，派发指令中必须包含并要求优先读取：
   - `style-contract-<style-id>.md`
   - `style-showcase-<style-id>.html`
-- sub-agent 产出前必须先回传“已读取文件清单”，未回传不得进入合并环节。
-- 可使用 sub-agent 并行生成 HTML 分片，但同一轮最多启用 **3 个** sub-agent；若分片超过 3 个，剩余分片可待此前的sub-agent完成工作后再进行。
-- 键盘/触屏交互与无障碍基线详见 `references/05-interaction-accessibility-baseline.md`。
+- sub-agent 产出前必须先回传”已读取文件清单”，未回传不得进入构建环节。
+- 可使用 sub-agent 并行生成 HTML 页面，但建议一轮最多启用 **3 个** sub-agent。
 - 并行作业提示词与失败回退流程详见：`references/12-parallel-html-generation-playbook.md`。
+- 键盘/触屏交互与无障碍基线详见 `references/05-interaction-accessibility-baseline.md`。
 
-#### D.2 自查与改进环节（强制）
+#### D.2 构建网站骨架并本地预览（强制）
 
-- 在 D.1 分片生成完成后，必须执行一次“分片自查回路”。
-- D.2 自查重点至少包含：
+- 所有页面 HTML 生成完成后，启动预览以便 AI 和用户查看渲染效果：
+  1. **确认 slides/ 就绪**：所有页面 HTML 已按 `slides/<part>/<NN-desc>.html` 放好。
+  2. **确认 slides-config.json 完整**：title、parts 映射、partOrder、slides 清单均已填入。
+  3. **运行启动脚本**：`python container/serve.py <target_dir> --theme <theme_name>`，脚本从 container/ 直接提供骨架文件，同时将 `slides-config.json` 和 `slides/` 路由到目标目录——无需复制任何文件。
+- 构建完成后必须执行以下验证：
+  - 浏览器打开后首张 slide 正常加载；
+  - 键盘导航（ArrowKeys）可正常翻页；
+  - 章节导航按钮可正确跳转；
+  - Hash 路由正常（`#ch0X/XX-slug`）；
+  - `applyAutoScale()` 正常触发，无纵向滚动条；
+  - “导出 HTML” 和 “导出 PPTX” 按钮可见且可点击；
+  - 主题下拉切换正常。
+- 验证失败必须回退修正，不得带病进入 D.3。
+
+#### D.3 自查与改进环节（强制）
+
+- 在 D.2 骨架预览正常运行后，必须执行一次”页面自查回路”。
+- D.3 自查重点至少包含：
   - 样式是否美观（视觉层次、对齐、留白、可读性）；
-  - 信息密度是否合理（避免“信息过薄”或“单页过载”）；
+  - 信息密度是否合理（避免”信息过薄”或”单页过载”）；
+  - 空白区域是否超标——运行利用率检测脚本量化评估（详见 `internal-skill/measure-utilization/SKILL.md`）：
+    ```bash
+    python scripts/measure_utilization.py http://localhost:8080 [--threshold 30]
+    ```
+    脚本通过 Playwright 对每页 slide 执行 40×40 网格采样，检测有效内容（文本/背景/边框/图片等）的占比；利用率低于阈值（默认 30%）的页面将被标记为稀疏（sparse），需调整字号/密度/卡片排布。结果同时支持 `--json` 输出落盘到 `90-tests/<version>/`。
   - 布局多样性是否达标（避免连续同骨架、主导骨架占比过高）；
   - 背景样式是否统一（全稿背景样式类型不超过 3 种，且章节内保持一致）。
-- 自查必须输出“问题清单（按优先级排序）+ 拟修改方案”。
+- slide 片段不含 `<style>`/`<script>` 标签；components.css 仅含跨章节共享规则。
+- 自查必须输出”问题清单（按优先级排序）+ 拟修改方案”。
 - **查出问题后，在修改前必须使用 `ask_questions` 获取用户确认**（确认是否修改、先改哪些项、接受的取舍边界）。
-- 未获得用户确认前，不得开始修改分片。
+- 未获得用户确认前，不得开始修改页面。
 - 用户确认后，按确认范围执行修改并复查。
 - 自查回路至少执行 1 轮，最多 3 轮；超过 3 轮仍失败，必须暂停并向用户报告阻塞点与备选方案。
-- 自查结果必须落盘到 `90-tests/<version>/`（建议复用 `html-gate-report.json` 并保留最后一次通过记录）。
+- 自查结果建议落盘到 `90-tests/<version>/`。
 
-#### D.3 阶段收口确认（强制）
+#### D.4 用户反馈与修改
 
-- 阶段 D 的 HTML 分片完成并通过 D.2 自查后，必须使用 `ask_questions` 明确提示用户先查看分片 HTML，并收集用户修改意见。
-- 用户在 D.3 可直接提出对分片 HTML 的修改要求；AI 必须先更新对应分片 HTML，再进入下一步确认。
-- 当用户提出“增加信息密度”时，允许并建议从原稿中提取相关信息补入分片 HTML，但必须保持与主题边界和风格约束一致。
-- 分镜稿不要求实时更新；D.3 获得用户批准后，需按“本轮实际变更”一次性批量回写对应分镜稿（同版本、同分片编号），确保“分镜-HTML”一致。
-- D.3 提问建议优先复用：`references/18-d3-review-question-card.md`。
-- 完成上述处理后，必须再次使用 `ask_questions` 确认是否进入阶段 E（合并与发布校验）。
-- 阶段 D 的交互记录必须落盘为 `D-raw...` / `D-summary...`，并归档到输入资产目录。
-- 未确认前，不得提前执行合并、发布或下一阶段动作。
+- 自查通过后，使用 `ask_questions` 提示用户在浏览器中查看完整 deck 效果，收集修改意见。
+- 用户在 D.4 可直接提出对页面 HTML 的修改要求；AI 必须先更新对应页面 HTML，再进入下一步确认。
+- 当用户提出”增加信息密度”时，允许并建议从原稿中提取相关信息补入 HTML，但必须保持与主题边界和风格约束一致。
+- 如果用户反馈涉及某章节需要主题 CSS 之外的额外样式，按需在 `v-XX/style/<part_id>.css` 中添加章节样式（使用 `.part-<part_id>` 命名空间，优先使用已有组件和 token 变量）。模板格式见 `templates/init_topic/style_part.css`。
+- D.4 提问建议优先复用：`references/18-d4-review-question-card.md`。
+- HTML 修改后必须同步回写对应分镜稿的文案（同版本、同页面编号），确保”分镜-HTML”一致。
 
-### 阶段 E：合并与发布校验
+#### D.5 阶段收口确认（强制）
+
+按全局交互约定执行，确认”可进入阶段 E”。收口仅做确认，不在此环节进行额外修改。
+
+### 阶段 E：构建验收与发布
+
+阶段 E 聚焦于导出静态文件、用户最终验收与版本冻结。网站骨架已在阶段 D.2 构建并启动，阶段 E 不再重复构建。
 
 #### ⚠️ 阶段 E 注意事项（强制）
 
-- 🗂️ 每轮结构化交互必须落盘到输入资产目录，并使用 `E-` 前缀命名。
-- ⏸️ 阶段 E 门禁通过后必须使用 `ask_questions` 暂停并等待确认；未确认前禁止推进。
+- 📦 阶段 E 每次执行即代表一次定版，必须同时产出 HTML 和 PPTX 两个文件。
 
-#### E.1 合并前样式预检（强制）
+#### E.1 导出与定版（强制）
 
-- 合并前必须检查通用类冲突风险（如 `.card/.table/.tip/.grid-*`），并确认分片样式已具备命名空间（如 `part-s01~part-s05`）。
-- 若合并中使用分片容器包裹，容器必须使用 `display: contents`，避免破坏 `.slide{height:100%}` 导致舞台尺寸不一致。
-- 必须先在分片阶段修正表格对齐，不得把“表头居中、内容左对齐”的混搭问题留到合并后处理。
+- 网站骨架已在阶段 D.2 构建并验证，E.1 每次执行即代表一次定版，必须同时产出 HTML 和 PPTX 两个文件。
+- **导出 HTML**（单文件静态）：
+  - 点击”导出 HTML”按钮或调用 `exportToSingleHTML()` 函数；
+  - 生成的文件包含：所有 slide 内联、所有 CSS 内联（tokens + base + components）、最小化键盘导航 JS；
+  - 导出文件可脱离服务器直接用 `file://` 协议打开且功能正常（翻页、进度条、自适应缩放均可用）；
+  - 导出文件名格式：`{主题}-{版本}.html`，落盘到 `20-html/v-XX/`。
+- **导出 PPTX**：
+  - 优先使用浏览器端导出：点击”导出 PPTX”按钮或调用 `exportToPPTX()` 函数；
+  - **保底方案**：若浏览器端导出失败（如跨域限制、内存不足），使用内置 `internal-skill/html-deck-to-pptx/` 的 Playwright 截图方案——逐页截图后组装 PPTX，详见该子技能的 SKILL.md。
+  - 导出文件名格式：`{主题}-{版本}.pptx`，落盘到 `20-html/v-XX/`。
+- 导出后必须实际打开 HTML 和 PPTX 文件，验证：
+  - 所有页面可正常显示；
+  - 键盘翻页正常（HTML）；
+  - 无缺失样式或 404 资源请求；
+  - 文件体积合理（HTML 通常 < 200KB）。
+- 验证失败必须回退到阶段 D 修正，不得跳过。
+- **定版后回灌分镜稿（强制）**：HTML 和 PPTX 导出验证通过后，必须以本轮 HTML 的实际最终文案为准，一次性批量回写 `10-storyboards/v-XX/` 下的对应分镜稿，确保分镜稿文案与定版 HTML 严格一致。
 
-#### E.2 合并与结构校验
+#### E.2 Preview → Formal 发布（强制）
 
-- 进入 E.2 前，必须先读取：`references/07-quality-gate-patterns.md`。
-- 检查页序、`part` 顺序、章节首尾、导航页位置。
-- 合并时必须先以 `part1` 的最新 `<style>` 覆盖模板首个 `<style>`，确保分片侧样式更新能进入合并稿。
-- 合并时必须对 `part2..partN` 的分片样式做作用域注入，避免跨分片样式互相覆盖。
-- 检查合并稿右上角编号是否为全局编号（示例：`01 / 37` ... `37 / 37`），不得保留分片内局部编号（如 `01 / 04`）。
-- 检查分镜版本、HTML 版本、风格版本是否一致。
-- 检查样式是否出现单一模板重复刷页的问题。
-- 检查单页信息密度与总体信息量，防止“页数增加但信息下降”。
-- 检查背景层是否明显单一；若同一章节大面积纯色背景重复，应判定为样式退化并回退到分镜修订。
-- 若已冻结“配色锚点页 + 例外页（如封面/结语）”策略，必须校验非例外页配色与锚点一致。
-- 校验每张表格内 `th/td` 对齐是否一致（除非有明确设计说明）。
-- 检查合并稿 `<title>` 是否符合 `{主题}-合并({版本})`。
-- 合并后必须执行“元标签泄露检索”；命中以下任一关键词即判定门禁失败并回退修正：
-  - `页面模式类型|背景呈现策略|界面元素布局|示例锚点|执行约束|中间章节组织模式|演讲备注|过渡句|data-layout`
-- 执行 HTML 质量门禁检查，详见 `references/07-quality-gate-patterns.md` §2。
-- 合并与页序核验必须执行脚本（除非脚本报错，不得手工替代）：
+- E.1 门禁通过后，产物位于 `20-html/v-XX/` 目录（含 HTML、PPTX 及全部 slides 源文件）。
+- 将导出的 HTML 和 PPTX 文件提供给用户进行最终验收。
+- 用户验收通过后，将 `20-html/v-XX/` 目录整体作为正式版本冻结。
+- 正式版本冻结后，建议至少快检 `100% / 125% / 150%` 三种缩放下的首屏与章节页。
 
-```powershell
-python scripts/run_merge_generic.py \
-  --parts "<part1.html>" "<part2.html>" ... \
-  --output "<merged.html>"
+**版本升级（定版后新需求）**：定版冻结后若用户提出新想法或修改需求，视为新版本启动：
 
-# 说明：合并脚本会自动重写页码编号（支持 .number / .num）为全局编号。
+1. 确定新版本号（如 `v-03` → `v-04`）。
+2. 复制 `20-html/v-{旧版本}/` 全部内容到 `20-html/v-{新版本}/`。
+3. 复制 `10-storyboards/v-{旧版本}/` 全部内容到 `10-storyboards/v-{新版本}/`。
+4. 启动新版本骨架预览：`python container/serve.py <新版本target_dir> --theme <theme_name>`。
+5. 回到阶段 **D.4**（用户反馈与修改）开始新版本迭代——无需重新执行 D.1~D.3（HTML 已从旧版本复制、骨架已验证、自查已通过）。
 
-python scripts/extract_slide_titles.py \
-  --input "<merged.html>" \
-  --format table
+#### E.3 阶段收口确认（强制）
 
-python scripts/validate_html_deck_generic.py \
-  --input "<merged.html>" \
-  --min-average-blocks 2.0 \
-  --max-consecutive-same-layout 2 \
-  --max-dominant-layout-ratio 0.45 \
-  --benchmark-html "<benchmark_merged.html>" \
-  --benchmark-density-ratio 1.00 \
-  --benchmark-info-ratio 1.00
-```
-
-#### E.3 Preview → Formal 发布（强制）
-
-- E.2 门禁通过后，先把产物作为 **preview 合并稿** 交由用户验收；未验收通过不得覆盖正式合并稿。
-- 用户确认后，才允许执行“preview 覆盖正式合并稿”（如 `01-00-方案C-合并.html`）。
-- 正式合并稿覆盖后，必须再跑一次 HTML 门禁；二次门禁失败则回退到 preview 并修复。
-
-#### E.4 阶段收口确认（强制）
-
-- 阶段 E 的合并与 HTML 门禁通过后，必须使用 `ask_questions` 暂停，并等待用户确认“本轮收口”或“进入阶段 F 归档总结”。
-- 阶段 E 的交互记录必须落盘为 `E-raw...` / `E-summary...`，并归档到输入资产目录。
-- 未确认前，不得私自启动下一版本复制、重构或风格重写。
+按全局交互约定执行，确认”本轮收口”或”进入阶段 F 归档总结”。未确认前不得私自启动重构或风格重写。
 
 ### 阶段 F：归档与经验总结
 
@@ -492,3 +451,4 @@ python scripts/validate_html_deck_generic.py \
 - 成功判据：`references/15-acceptance-criteria.md`
 - 交付原则：`references/16-delivery-principles.md`
 - 样式命名规范：`references/17-style-namespacing-rules.md`
+- 网站骨架规范：`references/19-website-skeleton-spec.md`

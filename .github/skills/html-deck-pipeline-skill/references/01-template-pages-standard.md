@@ -1,6 +1,9 @@
-# 📘 示例模板页统一规范（v1）
+---
+description: style-showcase 模板页统一规范：7 类强制模板页型、可访问性最低要求、验收清单
+---
+# 示例模板页统一规范
 
-> 适用范围：`.github/skills/html-deck-pipeline-skill/examples/**/style-showcase-*.html`
+> 适用范围：`22-html技能开发/html-deck-pipeline-skill-v2/examples/**/style-showcase-*.html`
 >
 > 目标：统一未来所有示例文件的最小模板页集合，避免示例过于简单、难以复用。
 
@@ -77,20 +80,16 @@
 
 ## 4) 可访问性与语义最低要求（MUST）
 
-> **SSOT**：完整无障碍基线见 `05-interaction-accessibility-baseline.md`。以下为最低摘要。
-
-- 提供 `Skip to main` 链接（详见 `05` §4.1）。
-- 使用语义地标（详见 `05` §4.5）。
-- 键盘可达、焦点可见（详见 `05` §2）。
+- 提供 `Skip to main`（跳到主要内容）链接。
+- 使用语义地标（至少 `main`，建议 `header/nav/main/footer`）。
+- 键盘操作可达，且焦点可见。
 - 隐藏内容不可进入 tab 顺序。
-- 状态播报使用 `aria-live="polite"`（详见 `05` §4.2）。
-- 颜色不作为唯一信息手段（详见 `05` §4.3）。
+- 若存在页面状态播报，使用 `aria-live="polite"`。
+- 不仅用颜色传达信息（需有文本辅助）。
 
 ---
 
 ## 5) 页面元素特性最低要求（MUST）
-
-> 元素详细定义与变体说明见 `03-storyboard-spec.md` §3.4 元素库。
 
 为约束后续 HTML 生成质量，每套示例（7 页）至少应出现以下元素：
 
@@ -99,12 +98,12 @@
 - 提示框（Tip Box，建议带风险/边界提示）
 - 对比块（Compare）
 
-> 说明：元素可根据风格做视觉变体，但语义功能需保留（详见 `03` §3.4）。
+> 说明：元素可根据风格做视觉变体，但语义功能需保留。
 
 ---
 
 ## 6) 与风格描述文件的联动要求（MUST）
-> 风格契约编写详细规则见 `06-style-contract-authoring-guide.md`。
+
 每个风格目录中的 `style-contract-*.md` 必须提供“逐页说明”，并与示例 HTML 一一对应：
 
 - 对应页面编号（P1..Pn）
@@ -119,8 +118,6 @@
 ---
 
 ## 7) 快速验收清单（Checklist）
-
-> 自动门禁以 `07-quality-gate-patterns.md` 为准。
 
 - [ ] 是否包含 7 类强制模板页
 - [ ] 是否包含封面页与底页
@@ -143,4 +140,4 @@
 
 - 当前版本：`v1`
 - 生效日期：`2026-03-16`
-- 维护位置：`.github/skills/html-deck-pipeline-skill/references/`
+- 维护位置：`22-html技能开发/html-deck-pipeline-skill-v2/references/`

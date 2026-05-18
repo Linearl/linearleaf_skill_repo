@@ -1,6 +1,7 @@
+---
+description: Style-Contract 编写指南：设计令牌定义、配色/字体/间距/组件约束的规范化编写
+---
 # Style-Contract 编写指南
-
-> 本文档是"元指南"——定义什么构成一个好的 style-contract，以及如何从零创建一个新风格。
 
 ## 1. 什么是 Style-Contract
 

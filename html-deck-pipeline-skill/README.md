@@ -1,83 +1,173 @@
-# html-deck-pipeline-skill 说明
+# HTML Deck Pipeline Skill
 
-## 目标
+端到端 HTML 讲稿生产流水线 —— 从需求问询到定版归档，输出可独立部署的网站骨架，内置 WYSIWYG 样式编辑器。
 
-`html-deck-pipeline-skill` 用于稳定执行长篇 HTML 讲稿生产流程，核心目标是：
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-- 严格按阶段执行，不跳步
-- 分镜与 HTML 全量编号，便于并行与合并
-- 阶段 A 沟通记录使用真实日期命名
-- 减少“合并后只剩一页”和“样式单一”两类高频故障
+## 核心能力
 
-## 当前目录
+| 维度 | 说明 |
+| ---- | ---- |
+| **六阶段流水线** | A（问询）→ B（架构）→ C（分镜）→ D（生成）→ E（验收）→ F（归档），门禁停顿，不可越级 |
+| **网站骨架输出** | CSS 三层架构 + Hash 路由 + 自适应缩放 + 一键导出 HTML/PPTX |
+| **四主题 × 三字号** | 暗色 / 暗色2 / 亮色 / 青律 × 标准 / 高对比 / 大字号，独立切换 |
+| **WYSIWYG 编辑器** | 样式编辑、文本编辑、拖拽重排、多选对齐/分布、撤销/重做、持久化保存 |
+| **配置驱动** | 主题/字号从 `config.yaml` 读取，新增选项无需改代码 |
 
-- `SKILL.md`：主流程与强约束（A→B→C→D→E→F）
-- `README.md`：本说明
-- `examples/<style-id>/`：可复用风格资产（`style-contract` + `style-showcase`）
-- `references/`：规则与门禁文档
-  - `02-numbering-rules.md`：编号与命名规则
-  - `04-stage-a-question-card.md`：阶段 A 固定问询卡片
-  - `08-style-contract-creation-mode.md`：按需风格契约创建模式
-  - `17-style-namespacing-rules.md`：阶段 D 样式命名空间规范
-  - `18-d3-review-question-card.md`：阶段 D.3 分片评审提问卡
-- `templates/init_topic/`：初始化脚本模板文件
-- `scripts/`：初始化/校验/合并等工具脚本
-- `agents/`：内置 agent 文件
+## 快速开始
 
-## 关键规则
+### 启动预览服务器
 
-1. **阶段顺序强制**：必须 `A → B → C → D → E → F`，不得跳过或越级。
-2. **分镜先行强制**：必须先改分镜，再改 HTML。
-3. **编号命名强制**：
-   - 分镜：`{part_no:02d}-{part_name}-分镜稿.md`
-   - HTML：`{part_no:02d}-{part_name}.html`
-4. **真实日期强制**：阶段 A 记录必须使用真实日期文件名，不得保留 `YYYYMMDD` 占位。
-5. **版本同步强制**：分镜/HTML/合并稿版本号必须一致（如 `v-02`）。
-6. **舞台比例策略冻结**：阶段 A 冻结 `ratio_mode`（默认 `16:9`，可选 `4:3` / `16:10` / `adaptive`），后续阶段按冻结结果执行。
+```bash
+# 安装依赖
+pip install pyyaml
 
-## 本轮收口补充要求（已落地）
+# 启动服务
+python container/serve.py <target_dir> --theme dark-theme-2 --port 8080
+```
 
-- **阶段停顿强制**：阶段 A / B / C / D / E 门禁通过后，必须立即使用 `ask_questions` 暂停，等待用户确认后才能进入下一阶段或收口。
-- **网页抓取优先级**：涉及官网、文档站、文章列表、详情页、动态站点或证据链收集时，优先内嵌 `scrapling-web-fetch`，不要退化为零散手工网页审批。
-- **舞台交互基线**：不渲染进度条，翻页仅保留键盘与触摸手势；禁止渲染 `prevBtn` / `nextBtn`。
-- **Emoji/符号一致性**：分镜与 HTML 均需显式落地统一的 Emoji/符号规则，至少覆盖标题眉标、标签、步骤图标、提示符号中的两类；步骤图标优先 `🎯/🔍/🛠️/🧪/✅`，不强制 `1️⃣/2️⃣/3️⃣`。
-- **屏幕环境补采集**：阶段 A 首轮问询必须采集分辨率 / 缩放 / 投屏可视区；一旦采集到数据，固定回写三条适配建议：按缩放后有效视口设计、在高缩放环境降低单页密度、阶段 E 快检 `100% / 125% / 150%`。
-- **D.1 命名规范强制读取**：阶段 D 生成分片前必须读取 `references/17-style-namespacing-rules.md`，避免分片间样式冲突。
-- **D.3 分片评审强制**：阶段 D 收口时必须提示用户先查看分片 HTML；若用户要求修改分片，用户批准后需一次性批量回写对应分镜稿。
+浏览器打开 `http://localhost:8080` 即可预览幻灯片。
 
-## 风格策略（默认与按需）
+### 启动热重载模式
 
-- 默认：优先复用已有 `style-id` 资产。
-- 按需：仅在用户明确要求“新建/重写风格契约”时，进入 `references/08-style-contract-creation-mode.md`。
-- 阶段 C 只读取并应用已冻结风格资产，不负责新建风格契约。
+```bash
+python container/serve.py <target_dir> --theme dark-theme-2 --watch
+```
 
-## 已修复的两类核心问题
+文件修改后浏览器自动刷新。
 
-### 1) 合并稿只剩一页
+### 导出
 
-已在 `scripts/run_merge_generic.py` 重构合并逻辑：
+- **导出 HTML**：点击页面底部「导出 HTML」按钮，生成单文件静态 HTML
+- **导出 PPTX**：点击「导出 PPTX」按钮；若浏览器端失败，自动回落 Playwright 截图方案
 
-- 按容器解析并提取每个分片中的直接子 slide
-- 统一重写索引、`active` 状态与页码
-- 避免错误匹配导致仅保留一个节点
+## 目录结构
 
-### 2) 样式过于单一
+```text
+html-deck-pipeline-skill/
+├─ SKILL.md                         # 主流程文档（完整流程说明）
+├─ README.md                        # 项目说明（本文件）
+├─ LICENSE                          # MIT 许可证
+├─ CHANGELOG.md                     # 更新日志
+├─ examples/<style-id>/             # 风格资产（style-contract + style-showcase）
+├─ references/                      # 规范与门禁参考文档（20 篇）
+├─ templates/                       # 初始化模板（init_topic、stage-b）
+├─ internal-skill/                  # 内置辅助技能
+│  ├─ scrapling-web-fetch/          # 网页抓取
+│  ├─ web-style-extraction/         # 风格提取
+│  ├─ html-deck-to-pptx/            # PPTX 导出保底方案
+│  └─ measure-utilization/          # 页面利用率检测
+├─ container/                       # 网站骨架容器
+│  ├─ index.html                    # 预览外壳
+│  ├─ serve.py                      # 本地开发服务器（含 --watch 热重载）
+│  ├─ config.json                   # 全局配置（日志/编辑器/组件）
+│  ├─ js/
+│  │  ├─ deck.js                    # 幻灯片引擎（路由/导航/缩放/导出）
+│  │  ├─ editor-state.js            # 编辑器共享状态
+│  │  ├─ editor-undo.js             # 撤销/重做管理器
+│  │  ├─ editor.js                  # WYSIWYG 样式编辑器
+│  │  └─ logger.js                  # 调试日志系统
+│  ├─ css/
+│  │  ├─ config.yaml                # 主题与字号配置
+│  │  ├─ common/                    # base.css + components.css + editor.css
+│  │  ├─ fontsize/                  # 字号方案（standard / high-contrast / large）
+│  │  └─ theme/                     # 主题 tokens（dark-theme / dark-theme-2 / light-theme / qclaw-theme）
+│  └─ tests/                        # 自动化测试
+└─ scripts/                         # 工具脚本
+   ├─ init_topic_folder.py          # 初始化工作目录
+   ├─ validate_storyboards_generic.py  # 分镜质量校验
+   ├─ validate_tokens.py            # 主题 Token 完整性 + 对比度校验
+   └─ measure_utilization.py        # 页面利用率检测
+```
 
-通过流程门禁控制而非“口头建议”：
+## CSS 架构
 
-- 阶段 A 冻结风格资产来源
-- 阶段 C 强制按风格资产生成分镜约束
-- 阶段 D 生成分片时保持风格一致，阶段 E 合并校验中检查版式重复风险
+```
+加载顺序：tokens.css → fontsize.css → base.css → components.css
+              ↑              ↑            ↑             ↑
+         css/theme/     css/fontsize/  css/common/  css/common/
+        (主题配色)      (字号变量)     (舞台布局)   (组件样式)
+```
 
-## 推荐工作流
+- **tokens.css** — 每个主题一套 CSS 自定义属性（`--bg`、`--text`、`--accent`…），30+ token
+- **fontsize.css** — 五级字号变量（`--text-xs` ~ `--text-xl`），3 套方案
+- **base.css** — 舞台几何、导航、控件样式
+- **components.css** — 面板、卡片、表格、标签等 20+ 共享组件
 
-1. 阶段 A：完成问询、确认、冻结与真实日期落盘
-2. 阶段 B：结构规划与版本初始化
-3. 阶段 C：按冻结风格生成编号分镜
-4. 阶段 D：并行生成编号 HTML 分片
-5. 阶段 E：合并与发布校验（含 preview→formal）
-6. 阶段 F：归档与经验总结（并由用户决定是否回传技能目录）
+切换主题仅交换 1 个文件（tokens.css）；切换字号仅交换 1 个文件（fontsize.css）。
 
----
+## 如何新增主题/字号
 
-说明：本技能按可维护、可复盘、可脚本化原则设计。若后续扩展规则，请优先更新 `SKILL.md` 与 `references/`，再改脚本实现。
+编辑 `container/css/config.yaml`：
+
+```yaml
+themes:
+  - id: new-theme
+    label: 新主题
+  - id: dark-theme-2
+    label: 暗色2
+    default: true
+
+fontsizes:
+  - id: standard
+    label: 标准
+    default: true
+  - id: xlarge
+    label: 超大
+```
+
+然后在对应目录下创建 CSS 文件即可，无需修改 JS/HTML。
+
+## WYSIWYG 编辑器功能
+
+| 功能 | 操作 | 快捷键 |
+| ---- | ---- | ------ |
+| 样式编辑 | 点击选中 → 面板修改 CSS | — |
+| 文本编辑 | 双击文字 → contentEditable + 富文本工具栏 | Esc 取消, Enter 确认 |
+| 拖拽重排 | 拖动卡片/面板交换位置 | — |
+| 添加组件 | 面板底部组件调色板（8 种组件） | — |
+| 多选对齐 | Shift+点击 → 对齐工具栏 | — |
+| 水平/垂直分布 | 多选后点击分布按钮 | — |
+| 容器布局切换 | 选中容器 → 切换列数/排列方向 | — |
+| 删除元素 | 选中 → 删除按钮 | — |
+| 复制元素 | 选中 → 复制按钮 | — |
+| 撤销/重做 | 按钮或快捷键 | Ctrl+Z / Ctrl+Y |
+| 保存 | 保存按钮 / 退出时确认 | POST /save |
+
+## 六阶段流水线
+
+| 阶段 | 名称 | 核心产出 | 门禁 |
+| ---- | ---- | -------- | ---- |
+| A | 问询与对齐 | 需求冻结快照、风格决策、工作目录 | 用户确认 |
+| B | 结构规划 | 总分总结构、版本号、框架文档 | 用户确认 |
+| C | 分镜编写 | 全量分镜稿（文案/备注/样式标注） | 质量门禁 + 样式多样性 |
+| D | 页面生成 | HTML 页面 + 网站骨架 + 本地预览 | 自查回路 |
+| E | 验收发布 | 单文件 HTML + PPTX 定版 | 双向验证 |
+| F | 归档总结 | 版本归档、经验沉淀 | 用户确认 |
+
+关键约束：阶段顺序强制、分镜先行、版本同步、一页一文件、定版双输出。
+
+## 开发
+
+### 运行测试
+
+```bash
+# 单元测试
+node container/tests/test-editor-unit.js
+
+# E2E 测试（需 Playwright）
+pip install playwright && playwright install chromium
+python container/tests/test-editor-e2e.py --target-dir <target_dir>
+```
+
+### 验证主题 Token
+
+```bash
+python scripts/validate_tokens.py [--theme dark-theme-2] [--json]
+```
+
+检查所有主题是否定义了完整的 30+ 设计令牌，并验证 WCAG 对比度。
+
+## 许可
+
+[MIT License](LICENSE)

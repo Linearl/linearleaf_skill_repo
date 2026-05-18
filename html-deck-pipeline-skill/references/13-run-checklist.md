@@ -1,6 +1,7 @@
+---
+description: 执行清单（Run Checklist）：六阶段逐项勾选清单，与主流程正文解耦
+---
 # 执行清单（Run Checklist）
-
-用于运行阶段的勾选，不与主流程正文耦合。
 
 ## 通用
 
@@ -9,8 +10,6 @@
 - [ ] 交互记录文件名均带阶段字母前缀（`A-` / `B-` / `C-` / `D-` / `E-` / `F-`）
 
 ## 阶段 A
-
-> 完整问询模板见 `04-stage-a-question-card.md`。
 
 - [ ] 完成首轮 `ask_questions`
 - [ ] 完成结构化问询（含工作目录）
@@ -53,29 +52,29 @@
 
 ## 阶段 D
 
-- [ ] 进入 D.1 前已读取 `references/17-style-namespacing-rules.md`
-- [ ] HTML 分片生成完成
-- [ ] D.2 自查发现需修改时，已通过 `ask_questions` 确认修改范围再动手
-- [ ] 并行前提示已给到 sub-agent
-- [ ] sub-agent 已回传“已读取 style-contract + style-showcase”清单
-- [ ] 样式美观、信息密度、布局多样性通过分片自查
-- [ ] 背景样式类型不超过 3 种且章节内保持一致
-- [ ] 已提示用户查看分片 HTML，并收集修改意见
-- [ ] D.3 获批后，若分片 HTML 有修改，已一次性批量回写对应分镜稿（同版本、同分片编号）
-- [ ] 阶段收口时用 `ask_questions` 获得“可进入阶段 E（合并与发布校验）”确认
+- [ ] 进入 D.1 前已读取 `references/19-website-skeleton-spec.md` §8（slide 模板格式）
+- [ ] HTML 页面已按 `slides/<part_id>/<NN-description>.html` 生成
+- [ ] `slides-config.json` 随页面生成同步维护
+- [ ] D.2 已运行 `python container/serve.py <target_dir> --theme <theme_name>` 启动服务
+- [ ] 网站骨架验证通过：翻页、章节导航、hash 路由、自适应缩放
+- [ ] 导出 HTML 和导出 PPTX 按钮可见且可点击
+- [ ] 主题切换功能正常
+- [ ] D.3 已运行 `python scripts/measure_utilization.py http://localhost:8080` 量化空白区域
+- [ ] D.3 自查发现需修改时，已通过 `ask_questions` 确认修改范围再动手
+- [ ] 样式美观、信息密度、布局多样性通过自查
+- [ ] D.4 已提示用户在浏览器中查看完整 deck，并收集修改意见
+- [ ] D.4 如需章节额外样式，已按 `.part-<part_id>` 命名空间放入 `v-XX/style/<part_id>.css`
+- [ ] D.4 获批后，若 HTML 有修改，已一次性批量回写对应分镜稿
+- [ ] 阶段收口时用 `ask_questions` 获得”可进入阶段 E”确认
 
 ## 阶段 E
 
-- [ ] 合并前样式预检完成（类冲突/命名空间/表格对齐）
-- [ ] 合并与页序校验通过
-- [ ] HTML 门禁通过
-- [ ] 合并稿 `<title>` 符合 `{主题}-合并(v-XX)`
-- [ ] 信息密度与标杆对齐通过 `07` §2.10 全部 5 项门禁
-- [ ] 样式多样性通过 `07` §2.0 门禁（详细规则见 `10`）
-- [ ] 确认不存在 `#progress` 或同义进度条元素
-- [ ] 确认不存在 `prevBtn` / `nextBtn`
-- [ ] 已完成 preview 验收并覆盖正式合并稿（含二次门禁）
-- [ ] 阶段收口时用 `ask_questions` 获得“本轮收口 / 进入阶段 F（归档总结）”确认
+- [ ] E.1 已同时导出 HTML 和 PPTX，文件落盘到 `20-html/v-XX/`
+- [ ] 导出文件已实际打开验证（翻页、样式、无 404）
+- [ ] E.1 已完成定版后回灌分镜稿（HTML 文案 → `10-storyboards/v-XX/`）
+- [ ] 用户验收通过，正式版本已冻结
+- [ ] 如需版本升级，已复制 `20-html/v-{旧}/` 和 `10-storyboards/v-{旧}/` 到新版本目录
+- [ ] 阶段收口时用 `ask_questions` 获得”本轮收口 / 进入阶段 F”确认
 
 ## 阶段 F
 

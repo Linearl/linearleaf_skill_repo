@@ -1,0 +1,225 @@
+/* ===== Reset ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-main);
+  color: var(--text);
+  background: var(--bg-gradient-body);
+  background-attachment: fixed;
+}
+
+/* ===== Accessibility ===== */
+.sr-only:not(:focus):not(:active) {
+  clip: rect(0 0 0 0); clip-path: inset(50%); height: 1px;
+  overflow: hidden; position: absolute; white-space: nowrap; width: 1px;
+}
+
+.skip-link {
+  position: absolute; top: 1rem; left: 1rem; z-index: 30;
+  transform: translateY(-240%); padding: 0.75rem 1rem;
+  border-radius: 999px; background: #ffffff; color: #08111d;
+  font-weight: 700; text-decoration: none; transition: transform var(--transition-fast);
+}
+.skip-link:focus { transform: translateY(0); }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+
+/* ===== Shell ===== */
+#deck-shell {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  padding: 0.25rem 0.75rem 0.35rem;
+}
+
+.deck {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+  aspect-ratio: 16 / 9;
+  max-height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--bg-gradient-deck);
+  box-shadow: var(--shadow-strong);
+  isolation: isolate;
+}
+
+.deck::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--texture-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--texture-grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.12));
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== Slide chrome ===== */
+.slide {
+  position: absolute; inset: 0;
+  display: none;
+  overflow: auto;
+  padding: 1.6rem 2rem 1.4rem;
+  background: var(--bg-gradient-slide);
+  z-index: 1;
+}
+
+.slide.active {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  animation: slideFade 220ms ease;
+}
+
+@keyframes slideFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.slide-header,
+.slide-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  flex-shrink: 0;
+}
+
+.slide-body {
+  flex: 1; min-height: 0;
+  display: grid; gap: 0.75rem;
+}
+
+.slide-foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  color: var(--text-faint); font-size: var(--text-sm); flex-shrink: 0;
+}
+
+.slide-title {
+  margin: 0 0 0.5rem;
+  font-size: var(--text-xl);
+  color: var(--text);
+}
+
+.slide-lede {
+  margin: 0; max-width: 44rem;
+  color: var(--text-sec); font-size: var(--text-md); line-height: 1.7;
+}
+
+.footnote { color: var(--text-faint); font-size: var(--text-sm); margin: 0; }
+
+.divider { border: none; border-top: 1px solid var(--border-subtle); margin: 0; }
+
+/* ===== Progress bar ===== */
+#deck-progress {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0.25rem auto 0;
+  height: 3px;
+  background: var(--surface-hover);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#deck-progress .bar {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 3px;
+  transition: width 300ms ease;
+}
+
+/* ===== Part nav ===== */
+#part-nav {
+  display: flex; gap: 0.4rem; justify-content: center;
+  margin: 0.3rem 0 0.15rem;
+}
+#part-nav button {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--surface-glass);
+  color: var(--text-sec);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+#part-nav button:hover { background: var(--surface-hover); color: var(--text); }
+#part-nav button.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-strong); }
+
+/* ===== Keyboard hint ===== */
+#kbd-hint {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  margin-top: 0.15rem;
+  opacity: 0.7;
+}
+#kbd-hint kbd {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+}
+
+#export-btn {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--ok);
+  border-radius: 999px;
+  background: rgba(98,227,176,0.12);
+  color: var(--ok);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+#export-btn:hover {
+  background: rgba(98,227,176,0.22);
+  color: var(--text);
+}
+
+#theme-select, #fontsize-select {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-main);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+#theme-select option, #fontsize-select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+#pptx-btn {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: rgba(255,210,122,0.12);
+  color: var(--warn);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+#pptx-btn:hover {
+  background: rgba(255,210,122,0.22);
+  color: var(--text);
+}
+#pptx-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

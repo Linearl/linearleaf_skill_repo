@@ -1,3 +1,6 @@
+---
+description: 启用触发矩阵：判断何时启用 html-deck-pipeline-skill 的信号与条件
+---
 # 启用触发矩阵（Trigger Matrix）
 
 用于判断何时应优先启用 `html-deck-pipeline-skill`。

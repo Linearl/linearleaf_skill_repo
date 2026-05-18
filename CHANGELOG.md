@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed skill directory from `html-deck-pipeline-skill` to `html-presentation-generator`
 - Updated the renamed skill's metadata and reference descriptions
 - Updated project documentation to include `html-presentation-generator`
+- **Major update: html-deck-pipeline-skill v2.0** — website skeleton output mode replacing file-merge mode
+  - New `container/` — website skeleton (index.html + serve.py with hot-reload + modular CSS/JS)
+  - New WYSIWYG editor (style editing, text editing, drag-reorder, undo/redo, multi-select align)
+  - CSS 3-layer architecture (tokens → fontsize → base → components), config-driven via config.yaml
+  - 4 themes × 3 fontsize schemes with independent switching
+  - One-click HTML export + PPTX export (with Playwright screenshot fallback)
+  - New `internal-skill/` replaces `agents/` with 4 embedded sub-skills
+  - References expanded from 18 to 20 documents (19-website-skeleton-spec, 20-container-engine-spec)
+  - Scripts updated: removed run_merge_generic/validate_html_deck/extract_slide_titles; added validate_tokens/measure_utilization
+  - Templates restructured: dropped .tpl suffix, added slides-config.json, slide_section.html, style_part.css
+  - Added LICENSE, CHANGELOG.md, CONTRIBUTING.md, .gitignore to skill directory
 
 ## [1.2.0] - 2026-02-03
 

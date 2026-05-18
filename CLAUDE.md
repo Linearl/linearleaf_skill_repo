@@ -56,11 +56,16 @@ linearleaf_skill_repo/
 │   ├── scripts/                       # Validation and merge helper scripts
 │   └── agents/                        # Embedded agent presets for portability
 ├── html-deck-pipeline-skill/          # Advanced HTML Deck Pipeline Skill
-│   ├── SKILL.md                       # Main skill definition
-│   ├── references/                    # Stage gates and workflow references
-│   ├── templates/                     # Pipeline templates
-│   ├── scripts/                       # Validation and merge helper scripts
-│   └── agents/                        # Embedded agent presets
+│   ├── SKILL.md                       # Main skill definition (6-stage pipeline)
+│   ├── README.md                      # User-facing documentation with quick start
+│   ├── LICENSE                        # MIT License
+│   ├── CHANGELOG.md                   # Version history
+│   ├── CONTRIBUTING.md                # Contribution guide
+│   ├── references/                    # Workflow specs and quality gates (20 docs)
+│   ├── templates/                     # Init and stage templates
+│   ├── scripts/                       # Validation and utility scripts
+│   ├── internal-skill/                # Embedded sub-skills (web fetch, PPTX export, etc.)
+│   └── container/                     # Website skeleton (index.html, serve.py, CSS/JS)
 ├── .github/                           # VS Code Agent Skills testing directory
 │   └── skills/                        # Copies of all skills for testing
 │       ├── analysis_code/
@@ -135,11 +140,12 @@ linearleaf_skill_repo/
 - Iterative preview and controlled revision loop
 
 ### 10. html-deck-pipeline-skill - Advanced HTML Deck Pipeline Skill
-**Purpose**: End-to-end HTML deck pipeline with finer stage-level control and style-contract governance
+**Purpose**: End-to-end HTML deck pipeline outputting a self-contained website skeleton with CSS 3-layer architecture, hash routing, and adaptive scaling. Supports 4 themes x 3 font sizes, WYSIWYG editor, one-click HTML/PPTX export.
 **When to use**:
 - Long-context deck generation where one-shot output is unstable
-- Storyboard splitting with optional parallel part generation and merge validation
+- Storyboard splitting with per-page HTML generation and local preview
 - Style contract/showcase paired maintenance with versioned outputs and configurable stage ratio
+- Decks requiring visual editing (drag-reorder, multi-select align, text editing, undo/redo)
 
 ## Working with This Repository
 

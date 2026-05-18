@@ -1,6 +1,9 @@
+---
+description: 质量门禁模式：分镜门禁（C.3）和自查门禁（D.3）的可机器检查规则
+---
 # 质量门禁模式
 
-> 本文档定义可机器检查的质量门禁规则，分为**分镜门禁**（阶段 C.3 适用）和 **HTML 门禁**（阶段 D.2 适用）。
+> 本文档定义质量门禁规则，分为**分镜门禁**（C.3）和**自查门禁**（D.3）。
 > 校验脚本 `scripts/validate_storyboards_generic.py` 可自动执行分镜门禁部分。
 
 ## 1. 分镜门禁（Storyboard Gates — C.3）
@@ -30,7 +33,7 @@
 | 附录A：元素库 | `附录A` | 分镜须声明可用的视觉元素 |
 | 附录B：排版约束 | `附录B` | 分镜须声明排版约束 |
 
-### 1.3 Frontmatter 必需字段
+### 1.3 Frontmatter 必需字段（V2 新增）
 
 每个分镜稿文件必须以 YAML Frontmatter 开头，包含以下字段：
 
@@ -51,8 +54,6 @@ owner: "partN"            # 分片标识（如 part1、part2）
 - `style-id` 须对应 `examples/` 下已存在的风格目录
 
 ### 1.4 Emoji/符号一致性门禁（新增）
-
-> **分工说明**：本节为 Emoji/符号的"机器检查门禁"（正则、ERROR 判定）；完整设计指南（元素库、映射表、按页面类型覆盖建议）见 `03-storyboard-spec.md` §2.2.1。
 
 每个分镜稿必须显式声明 Emoji/符号规则，并在全文内保持同语义符号统一。
 
@@ -151,157 +152,50 @@ Emoji 规则：已声明。
 
 - 须包含总结回顾或行动号召
 
-## 2. HTML 门禁（HTML Gates — D.2）
+## 2. 自查门禁（D.3）
 
-### 2.0 样式多样性门禁
+D.3 自查在浏览器中查看完整 deck 后执行，重点检查以下方面：
 
-> **SSOT**：多样性规则、阈值定义、推荐页面模式清单与验证建议的唯一来源为 `10-style-diversity-rules.md`。
+### 2.1 样式美观
 
-脚本检查参数与阈值：见 `10-style-diversity-rules.md` §最低门槛 + §校验建议。  
-对应脚本 `validate_html_deck_generic.py` 的参数名映射：
+- 视觉层次分明（标题/正文/辅助文字有清晰对比）
+- 对齐一致，留白合理，无拥挤或空洞感
 
-| 参数 | 来源 |
-|------|------|
-| `--min-page-modes` | 10 §最低门槛 第1条 |
-| `--max-consecutive-same-layout` | 10 §最低门槛 第3-4条 |
-| `--max-dominant-layout-ratio` | 10 §校验建议 末条 |
+### 2.2 信息密度
 
-人工检查项（详见 `10-style-diversity-rules.md`）：
+- 避免”信息过薄”（单页仅 1~2 行）或”单页过载”（超过 6~7 个信息块）
 
-- 合并稿至少出现：1 个对比页、1 个流程页、1 个行动页。
-- 若暂未自动化，在测试记录中写明逐页核验结果。
+### 2.3 空白区域
 
-### 2.1 页面索引连续性
-
-```html
-<section class="slide" data-index="0"> ... </section>
-<section class="slide" data-index="1"> ... </section>
-<!-- data-index 从 0 开始，连续递增，无间隔 -->
-```
-
-正则检查：提取所有 `data-index="(\d+)"` 值，验证：
-
-- 起始值为 0
-- 无重复
-- 无间隔（即 0, 1, 2, ..., N-1）
-
-### 2.2 Active 唯一性
-
-- 整个文档中有且仅有**一个** `<section>` 带有 `class="slide active"`
-- 通常为 `data-index="0"` 的首页
-
-正则：`class="slide\s+active"` 或 `class="active\s+slide"` 匹配数须为 1。
-
-### 2.3 舞台比例策略一致性
-
-HTML 中须与阶段 A 冻结的 `ratio_mode` 一致：默认 `16:9`，可选 `4:3` / `16:10` / `adaptive`。
-
-- 若 `ratio_mode` 为 `16:9` / `4:3` / `16:10`，须出现对应固定比例定义；
-- 若 `ratio_mode` 为 `adaptive`，须提供自适应高度实现并保留可访问性与安全区约束。
-
-### 2.4 页码显示
-
-文档中须包含页码显示元素，格式为 `N / M`（当前页 / 总页数）。
-
-合并稿附加要求：
-
-- 右上角页码必须按合并后的全局页序连续显示（例如 37 页稿件应覆盖 `01 / 37` 到 `37 / 37`）。
-- 不得保留分片局部编号（例如开头分片 `01 / 04`）到最终合并稿。
-
-### 2.5 禁止进度条（新增）
-
-- HTML 中不得出现 `id="progress"`、`.progress-panel`、`.progress-fill` 或同义进度条元素。
-- 如需状态信息，仅允许页码与操作提示等文本状态栏。
-
-### 2.6 禁止翻页按钮（新增）
-
-- HTML 中不得出现 `id="prevBtn"`、`id="nextBtn"` 或对应“上一页 / 下一页”按钮。
-- 允许保留键盘与触摸事件处理，但必须删除按钮 DOM 与按钮点击监听。
-
-### 2.7 无障碍必需元素
-
-| 元素 | 要求 | 检查方式 |
-| ---- | ---- | ---- |
-| Skip to main | `<a href="#maincontent">` 存在 | 字符串搜索 |
-| Live Region | `aria-live="polite"` 存在 | 字符串搜索 |
-| 页面标题 | `<title>` 非空 | 正则 `<title>.+</title>` |
-| 语言声明 | `<html lang="zh-CN">` | 字符串搜索 |
-
-### 2.8 合并稿额外检查
-
-当多个分片合并为一个 HTML 文件时，额外检查：
-
-- 合并后 `data-index` 仍然连续（0 到 N-1）
-- 合并后 `active` 仅在首页
-- 页码总数 M 与实际 `<section class="slide">` 数量一致
-- 合并后页面顺序与分镜稿目录中的页面顺序一致
-- 合并后导航控件与脚本依赖的关键元素必须仍然存在，避免脚本在首屏即抛错导致“只有一页可见”
-- 合并后不存在 `id="progress"`、`.progress-panel`、`.progress-fill`
-- 合并后不存在 `prevBtn` / `nextBtn`
-
-### 2.8.1 元信息泄露禁词（新增）
-
-最终 HTML 的观众可见文本中，禁止出现以下流程元信息：
-
-- `页面模式类型`
-- `背景呈现策略`
-- `界面元素布局`
-- `示例锚点`
-- `执行约束`
-- `中间章节组织模式`
-- `演讲备注`
-- `过渡句`
-
-命中任一项应判定为门禁失败并回退修正。
-
-### 2.9 标题格式一致性（新增）
-
-合并稿 `<title>` 必须符合：
-
-```text
-{主题}-合并(v-XX)
-```
-
-推荐正则：`^.+-合并\(v-\d{2}\)$`
-
-说明：
-
-- 主题部分应与输出文件主题一致；
-- 版本号应来自当前版本目录（如 `v-02`）；
-- 不允许出现“方案A/方案B”与文件主题不一致的残留标题。
-
-### 2.10 信息密度与标杆对齐（新增）
-
-为避免“页数增加但单页密度与总体信息量下降”，合并稿必须通过以下门禁：
-
-1. 平衡档密度阈值：平均每页信息块数 `>= 2.0`。
-2. 重复骨架阈值：最大连续同骨架页数 `<= 2`。
-3. 模板集中度阈值：单一骨架占比 `<= 0.45`。
-4. 标杆密度对齐：当前平均信息块/页与标杆比值 `>= 1.00`。
-5. 标杆信息量对齐：当前总体文本信息量与标杆比值 `>= 1.00`。
-
-推荐脚本：
+运行利用率检测脚本量化评估：
 
 ```bash
-python scripts/validate_html_deck_generic.py \
-  --input <merged.html> \
-  --min-average-blocks 2.0 \
-  --max-consecutive-same-layout 2 \
-  --max-dominant-layout-ratio 0.45 \
-  --benchmark-html <benchmark_merged.html> \
-  --benchmark-density-ratio 1.00 \
-  --benchmark-info-ratio 1.00
+python scripts/measure_utilization.py http://localhost:8080 [--threshold 30]
 ```
 
-脚本诊断输出（用于快速定位骨架重复来源）：
+利用率低于阈值（默认 30%）的页面标记为稀疏，需调整。
 
-- 控制台会输出 `Top 骨架频次`（默认前 3 名）。
-- 控制台会输出 `连续重复区间(长度≥3)`，格式为 `index start-end` + `signature`。
-- `--report-json` 结果会包含：
-  - `layout_frequencies`：各骨架签名频次；
-  - `repeated_layout_runs`：连续重复区间列表（`start/end/length/signature`）。
+### 2.4 布局多样性
 
-使用建议：先按 `repeated_layout_runs` 优先改长区间，再处理主导骨架签名，可最快降低 `max_consecutive_same_layout` 与 `dominant_layout_ratio`。
+- 全套 deck 至少出现 **5 类页面模式**
+- 任一章节内，**连续 2 页以上不得复用同一骨架版式**
+- 主导骨架占比 `<= 45%`
+
+### 2.5 背景样式统一
+
+- 全稿背景样式类型不超过 3 种，且章节内保持一致
+
+### 2.6 slide 片段规范
+
+- slide 片段不含 `<style>`/`<script>` 标签
+- components.css 仅含跨章节共享规则
+
+### 2.7 元信息禁词
+
+最终 HTML 的观众可见文本中禁止出现：
+
+- `页面模式类型`、`背景呈现策略`、`界面元素布局`、`示例锚点`
+- `执行约束`、`中间章节组织模式`、`演讲备注`、`过渡句`
 
 ## 3. 通用禁用文本（分镜 + HTML 均适用）
 
@@ -314,16 +208,14 @@ python scripts/validate_html_deck_generic.py \
 
 ## 4. 脚本使用说明
 
-分镜门禁可通过 `scripts/validate_storyboards_generic.py` 自动执行：
+分镜门禁通过 `scripts/validate_storyboards_generic.py` 自动执行：
 
 ```bash
 python scripts/validate_storyboards_generic.py \
   --workspace-root /path/to/workspace \
-  --topic-folder "主题目录名" \
-  --version "v-01" \
-  --glob "*.md"
+  --topic-folder “主题目录名” \
+  --version “v-01” \
+  --glob “*.md”
 ```
 
-HTML 门禁中的 `data-index` 连续性、`active` 唯一性等可通过 `scripts/extract_slide_titles.py` 辅助检查。
-
-完整的合并+校验流程使用 `scripts/run_merge_generic.py`。
+自查门禁中的空白区域通过 `scripts/measure_utilization.py` 量化评估（需 deck 服务已启动）。

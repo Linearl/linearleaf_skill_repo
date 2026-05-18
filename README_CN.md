@@ -38,7 +38,7 @@ Linearleaf Agent Skills 是一套符合 [Agent Skills 开放标准](https://agen
 | 📊 [version_compare](version_compare/) | 系统化版本对比 | "版本对比"、"变更分析" |
 | 💰 [invest_analysis](invest_analysis/) | A股投资分析 | "分析这个板块"、"财报验证" |
 | 🖥️ [html-presentation-generator](html-presentation-generator/) | HTML 演示文稿生成流水线 | "根据讲稿生成HTML演示"、"分镜合并并校验页序" |
-| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | 进阶版 HTML deck 流水线（更细粒度控制） | "上下文过长难以单轮生成"、"分镜拆分并行生成后合并校验" |
+| 🎬 [html-deck-pipeline-skill](html-deck-pipeline-skill/) | 端到端 HTML deck 流水线，输出网站骨架，内置编辑器，4主题系统 | "长文稿deck风格控制"、"网站骨架+可视化编辑器"、"按页分割+本地预览" |
 | 🏗️ [skill_builder](skill_builder/) | **元技能** - 创建新技能 | "创建技能"、"设计技能" |
 
 ## 🚀 快速开始
@@ -126,9 +126,14 @@ git submodule add https://github.com/Linearl/linearleaf_skill_repo.git .skills
 
 ### 🎬 html-deck-pipeline-skill
 
-- 面向长上下文讲稿的端到端 HTML deck 流水线
-- 分镜先行、可并行分片生成、合并与门禁校验一体化
-- 风格描述/展示文件成对维护，支持版本递增与舞台比例配置
+- 端到端 HTML deck 流水线，输出独立可部署的网站骨架
+- CSS 三层架构（tokens → fontsize → base → components），配置驱动
+- 4 主题 × 3 字号方案独立切换，新增选项无需改代码
+- WYSIWYG 可视化样式编辑器（拖拽重排、多选对齐、文本编辑、撤销/重做）
+- 一键导出 HTML + PPTX（Playwright 截图保底方案）
+- 本地预览服务器 + 热重载（`--watch` 模式）
+- 分镜先行，按页分割，每页独立文件
+- 六阶段流水线含质量门禁（问询 → 架构 → 分镜 → 生成 → 验收 → 归档）
 
 ### 🏗️ skill_builder
 

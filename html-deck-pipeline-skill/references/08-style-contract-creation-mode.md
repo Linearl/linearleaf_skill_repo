@@ -1,3 +1,6 @@
+---
+description: 风格契约创建模式：按需触发的新建/重写风格契约流程与一致性门禁
+---
 # 风格契约创建模式（按需触发）
 
 > 触发条件：仅当用户**显式要求**“新建风格契约/重写风格契约”时启用。
@@ -32,12 +35,9 @@
 - 风格描述文件与展示文件成对存在，缺一不可。
 - 不允许只改展示文件不改契约，或只改契约不改展示文件。
 
-## 边界声明
-
-本文件定义"何时触发"与"创建步骤"；具体编写规则（字段、格式、约束）见 `06-style-contract-authoring-guide.md`。
-
 ## 参考
 
+- 模板页规范：`references/01-template-pages-standard.md`
 - 详细编写规则：`references/06-style-contract-authoring-guide.md`
 - 问询卡片：`references/04-stage-a-question-card.md`
 - 质量门禁：`references/07-quality-gate-patterns.md`
