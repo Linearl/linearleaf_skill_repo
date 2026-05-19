@@ -580,26 +580,54 @@ ${slidesHtml}
       await ensurePptxLibs();
 
       const savedIdx = currentIdx;
-      const slideEls = [];
       const slideImages = [];
+
+      // Resolve the theme's base background color for alpha compositing
+      const rootCS = getComputedStyle(document.documentElement);
+      const themeBg = rootCS.getPropertyValue('--bg').trim() || '#07111f';
 
       // Capture each slide
       for (let i = 0; i < SLIDES.length; i++) {
         await loadSlide(i);
-        // Wait briefly for layout/auto-scale to settle
         await new Promise(r => setTimeout(r, 200));
 
         const slideEl = deck.querySelector('.slide.active');
         if (!slideEl) continue;
 
-        const canvas = await html2canvas(slideEl, {
+        // Remove auto-scale transform so html2canvas captures at natural size
+        const prevTransform = slideEl.style.transform;
+        const prevTransformOrigin = slideEl.style.transformOrigin;
+        slideEl.style.transform = '';
+        slideEl.style.transformOrigin = '';
+
+        const rawCanvas = await html2canvas(slideEl, {
           backgroundColor: null,
           scale: 2,
           useCORS: true,
           logging: false,
         });
-        slideImages.push(canvas.toDataURL('image/png'));
-        slideEls.push(slideEl);
+
+        // Restore auto-scale
+        slideEl.style.transform = prevTransform;
+        slideEl.style.transformOrigin = prevTransformOrigin;
+
+        // Composite onto fully opaque background to eliminate alpha channel.
+        // The slide CSS gradient uses transparent/rgba() stops and many component
+        // backgrounds (cards, panels, quote-boxes) use semi-transparent surface
+        // tokens.  html2canvas preserves that alpha in the PNG, which looks like a
+        // "frosted mask" when placed over a white PPTX background.
+        // By drawing the raw capture onto a solid opaque canvas, all semi-transparent
+        // pixels are alpha-blended with the theme background — matching what the
+        // viewer actually sees on screen.
+        const comp = document.createElement('canvas');
+        comp.width = rawCanvas.width;
+        comp.height = rawCanvas.height;
+        const ctx = comp.getContext('2d');
+        ctx.fillStyle = themeBg;
+        ctx.fillRect(0, 0, comp.width, comp.height);
+        ctx.drawImage(rawCanvas, 0, 0);
+
+        slideImages.push(comp.toDataURL('image/png'));
       }
 
       // Restore original slide
@@ -607,12 +635,12 @@ ${slidesHtml}
 
       // Build PPTX
       const pptx = new PptxGenJS();
-      pptx.defineLayout({ name:'CUSTOM', width:'13.333', height:'7.5' });
+      pptx.defineLayout({ name:'CUSTOM', width:13.333, height:7.5 });
       pptx.layout = 'CUSTOM';
 
-      slideImages.forEach((dataUrl, i) => {
+      slideImages.forEach((dataUrl) => {
         const s = pptx.addSlide();
-        s.addImage({ data: dataUrl, x: 0, y: 0, w: '13.333', h: '7.5' });
+        s.addImage({ data: dataUrl, x: 0, y: 0, w: 13.333, h: 7.5 });
       });
 
       const title = document.title || 'HTML Deck';
@@ -620,7 +648,8 @@ ${slidesHtml}
 
       const pptxBlob = await pptx.write({ outputType: 'blob' });
 
-      // Try save dialog, fallback to download
+      // Try save dialog, fallback to download link
+      let saved = false;
       if (typeof window.showSaveFilePicker === 'function') {
         try {
           const handle = await window.showSaveFilePicker({
@@ -630,10 +659,16 @@ ${slidesHtml}
           const writable = await handle.createWritable();
           await writable.write(pptxBlob);
           await writable.close();
+          saved = true;
         } catch (e) {
-          if (e.name !== 'AbortError') throw e;
+          // AbortError = user cancelled; SecurityError = lost user gesture.
+          // Either way, fall through to download fallback.
+          if (e.name !== 'AbortError' && e.name !== 'SecurityError') {
+            console.warn('showSaveFilePicker 失败，使用下载回退:', e.name);
+          }
         }
-      } else {
+      }
+      if (!saved) {
         const url = URL.createObjectURL(pptxBlob);
         const a = document.createElement('a');
         a.href = url;

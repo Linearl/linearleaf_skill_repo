@@ -31,6 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Templates restructured: dropped .tpl suffix, added slides-config.json, slide_section.html, style_part.css
   - Added LICENSE, CHANGELOG.md, CONTRIBUTING.md, .gitignore to skill directory
 
+### Fixed
+
+- **html-deck-pipeline-skill: PPTX export semi-transparent overlay mask** — html2canvas preserves alpha channel from CSS gradients and semi-transparent surface tokens (cards, panels, quote-boxes), producing PNGs where nearly all pixels have alpha < 255. When placed over white PPTX background, this created a "frosted mask" effect. Fixed by compositing the raw capture onto a solid opaque canvas pre-filled with the theme `--bg` color via Canvas 2D `drawImage`, eliminating the alpha channel entirely (verified: all slides 100% opaque after fix).
+- **html-deck-pipeline-skill: PPTX export SecurityError fallback** — `showSaveFilePicker()` expired during long export (18 slides × 2x scaling + pptxgenjs build), causing unhandled `SecurityError`. Extended catch block to silently handle both `AbortError` and `SecurityError`, with automatic fallback to `<a download>` for all failure cases.
+- **html-deck-pipeline-skill: static asset caching** — serve.py now adds `Cache-Control: public, max-age=3600` header, eliminating ~200 redundant CSS requests during PPTX export.
+- **html-deck-pipeline-skill: pptxgenjs type warnings** — `pptx.defineLayout` width/height changed from strings to numbers.
+
 ## [1.2.0] - 2026-02-03
 
 ### Added
